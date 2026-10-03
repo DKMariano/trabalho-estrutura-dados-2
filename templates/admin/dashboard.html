@@ -1,0 +1,436 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+<!-- =====================================
+     DASHBOARD ADMINISTRATIVO
+====================================== -->
+<section class="admin-dashboard">
+
+    <!-- =====================================
+         APRESENTAÇÃO E INDICADORES
+    ====================================== -->
+    <section class="admin-dashboard-hero">
+
+        <!-- Apresentação -->
+        <div class="admin-dashboard-apresentacao">
+
+            <div class="admin-dashboard-destaque"></div>
+
+            <h1 class="admin-dashboard-titulo">
+                Bem-vindo, Administrador!
+            </h1>
+
+            <p class="admin-dashboard-descricao">
+                Gerencie os países atendidos pela DGB SIM,
+                consulte a cobertura de internet e acompanhe
+                as informações da Tabela Hash.
+            </p>
+
+        </div>
+
+
+        <!-- Indicadores -->
+        <div class="row g-3 admin-indicadores">
+
+            <!-- Países cadastrados -->
+            <div class="col-12 col-md-6">
+
+                <div class="card h-100 admin-indicador-card">
+
+                    <div class="card-body">
+
+                        <div class="admin-indicador-icone">
+                            <i class="bi bi-globe-americas"></i>
+                        </div>
+
+                        <div class="admin-indicador-conteudo">
+
+                            <strong class="admin-indicador-valor">
+                                {{ total_paises }}
+                            </strong>
+
+                            <span class="admin-indicador-label">
+                                Países cadastrados
+                            </span>
+
+                            <span class="admin-indicador-detalhe">
+                                Total de países na base.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Países com cobertura -->
+            <div class="col-12 col-md-6">
+
+                <div class="card h-100 admin-indicador-card">
+
+                    <div class="card-body">
+
+                        <div class="admin-indicador-icone">
+                            <i class="bi bi-wifi"></i>
+                        </div>
+
+                        <div class="admin-indicador-conteudo">
+
+                            <strong class="admin-indicador-valor">
+                                {{ total_coberturas }}
+                            </strong>
+
+                            <span class="admin-indicador-label">
+                                Com cobertura
+                            </span>
+
+                            <span class="admin-indicador-detalhe">
+                                Países disponíveis para consulta.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         AÇÕES RÁPIDAS
+    ====================================== -->
+    <section class="card admin-acoes-card mb-4">
+
+        <div class="card-header bg-transparent">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <i class="bi bi-lightning-charge-fill admin-secao-icone"></i>
+
+                <div>
+
+                    <h2 class="admin-dashboard-subtitulo">
+                        Ações rápidas
+                    </h2>
+
+                    <p class="admin-dashboard-card-descricao">
+                        Acesse as principais funcionalidades do sistema.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <!-- Cadastrar país -->
+                <div class="col-12 col-lg-4">
+
+                    <a href="#" class="admin-acao">
+
+                        <div class="admin-acao-icone">
+                            <i class="bi bi-plus-circle"></i>
+                        </div>
+
+                        <div class="admin-acao-conteudo">
+
+                            <strong>
+                                Cadastrar país
+                            </strong>
+
+                            <span>
+                                Adicionar um novo país e informar
+                                sua cobertura.
+                            </span>
+
+                        </div>
+
+                        <i class="bi bi-arrow-right admin-acao-seta"></i>
+
+                    </a>
+
+                </div>
+
+
+                <!-- Gerenciar países -->
+                <div class="col-12 col-lg-4">
+
+                    <a href="#" class="admin-acao">
+
+                        <div class="admin-acao-icone">
+                            <i class="bi bi-list-ul"></i>
+                        </div>
+
+                        <div class="admin-acao-conteudo">
+
+                            <strong>
+                                Gerenciar países
+                            </strong>
+
+                            <span>
+                                Visualizar, consultar, alterar
+                                ou remover países.
+                            </span>
+
+                        </div>
+
+                        <i class="bi bi-arrow-right admin-acao-seta"></i>
+
+                    </a>
+
+                </div>
+
+
+                <!-- Consultar cobertura -->
+                <div class="col-12 col-lg-4">
+
+                    <a
+                        href="{{ url_for('paises') }}"
+                        class="admin-acao"
+                    >
+
+                        <div class="admin-acao-icone">
+                            <i class="bi bi-wifi"></i>
+                        </div>
+
+                        <div class="admin-acao-conteudo">
+
+                            <strong>
+                                Consultar cobertura
+                            </strong>
+
+                            <span>
+                                Verificar se há cobertura de
+                                internet em um país.
+                            </span>
+
+                        </div>
+
+                        <i class="bi bi-arrow-right admin-acao-seta"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         INFORMAÇÕES INFERIORES
+    ====================================== -->
+    <div class="row g-4">
+
+        <!-- Países disponíveis -->
+        <div class="col-12 col-xl-8">
+
+            <section class="card h-100 admin-dashboard-card">
+
+                <div
+                    class="card-header bg-white
+                           d-flex justify-content-between
+                           align-items-center"
+                >
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <i class="bi bi-file-earmark-text admin-secao-icone"></i>
+
+                        <div>
+
+                            <h2 class="admin-dashboard-subtitulo">
+                                Países disponíveis
+                            </h2>
+
+                            <p class="admin-dashboard-card-descricao">
+                                Dados atualmente utilizados no MVP.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <span class="badge text-bg-primary">
+                        {{ total_paises }} registros
+                    </span>
+
+                </div>
+
+
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+                                    <th scope="col">Código</th>
+                                    <th scope="col">País</th>
+                                    <th scope="col">Região</th>
+                                    <th scope="col">Operadora</th>
+                                    <th scope="col">Tecnologia</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for codigo, pais in paises.items() %}
+
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            {{ codigo }}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        {{ pais.nome }}
+                                    </td>
+
+                                    <td>
+                                        {{ pais.regiao }}
+                                    </td>
+
+                                    <td>
+                                        {{ pais.operadora }}
+                                    </td>
+
+                                    <td>
+
+                                        <span class="badge text-bg-success">
+                                            {{ pais.tecnologia }}
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- Sobre o sistema -->
+        <div class="col-12 col-xl-4">
+
+            <section class="card h-100 admin-dashboard-card">
+
+                <div class="card-header bg-white">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <i class="bi bi-info-circle admin-secao-icone"></i>
+
+                        <h2 class="admin-dashboard-subtitulo mb-0">
+                            Sobre o sistema (Etapa 1)
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="alert alert-danger small" role="alert">
+                        Esta interface corresponde à versão atual da Etapa 1
+                        do projeto e poderá sofrer alterações ao longo das
+                        próximas etapas, conforme novas funcionalidades e
+                        estruturas de dados forem incorporadas.
+                    </div>
+
+                    <p class="admin-sobre-texto">
+                        Esta é a primeira etapa do trabalho prático
+                        da disciplina de Estruturas de Dados II.
+                    </p>
+
+                    <div class="admin-sobre-item">
+
+                        <i class="bi bi-globe-americas"></i>
+
+                        <span>
+                            Gerenciamento de países atendidos
+                            utilizando Tabela Hash.
+                        </span>
+
+                    </div>
+
+
+                    <div class="admin-sobre-item">
+
+                        <i class="bi bi-database"></i>
+
+                        <span>
+                            Persistência dos dados em arquivo JSON.
+                        </span>
+
+                    </div>
+
+
+                    <div class="admin-sobre-item">
+
+                        <i class="bi bi-search"></i>
+
+                        <span>
+                            Consulta de cobertura por código do país.
+                        </span>
+
+                    </div>
+
+
+                    <div class="admin-sobre-item">
+
+                        <i class="bi bi-gear"></i>
+
+                        <span>
+                            Acompanhamento das métricas da Tabela Hash
+                            na seção específica.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

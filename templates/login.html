@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+
+{% block title %}Acesso | DGB SIM{% endblock %}
+ 
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =====================================
+     TELA DE ACESSO
+====================================== -->
+<main class="login-container d-flex flex-column d-lg-grid">
+
+
+    <!-- =====================================
+         APRESENTAÇÃO DO DGB SIM
+    ====================================== -->
+    <section class="login-apresentacao">
+
+        <div class="login-apresentacao-conteudo">
+
+
+            <!-- Identidade visual do sistema -->
+            <div class="login-marca">
+
+                <img
+                    src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
+                    alt="DGB SIM - Internet internacional com eSIM"
+                    class="login-logo"
+                >
+
+            </div>
+
+
+            <!-- Apresentação principal do serviço -->
+            <div class="login-chamada">
+
+                <div class="login-destaque"></div>
+
+                <h1>
+                    Conecte-se<br>
+                    ao mundo.
+                </h1>
+
+                <p>
+                    Internet internacional de forma simples,
+                    segura e acessível, com tecnologia eSIM.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================
+                 BENEFÍCIOS DO SERVIÇO
+            ====================================== -->
+            <div class="login-beneficios">
+
+
+                <!-- Cobertura -->
+                <div class="login-beneficio">
+
+                    <div
+                        class="login-beneficio-icone"
+                        aria-hidden="true"
+                    >
+                        ◎
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Cobertura em diversos países
+                        </h2>
+
+                        <p>
+                            Verifique a disponibilidade de internet
+                            no seu destino.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Planos -->
+                <div class="login-beneficio">
+
+                    <div
+                        class="login-beneficio-icone"
+                        aria-hidden="true"
+                    >
+                        ▣
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Planos flexíveis
+                        </h2>
+
+                        <p>
+                            Escolha o plano ideal para o seu
+                            tipo de viagem.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Conectividade -->
+                <div class="login-beneficio">
+
+                    <div
+                        class="login-beneficio-icone"
+                        aria-hidden="true"
+                    >
+                        ▥
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Conexão sem complicação
+                        </h2>
+
+                        <p>
+                            Tecnologia eSIM para você viajar
+                            com mais liberdade.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         ÁREA DE ACESSO
+    ====================================== -->
+    <section class="login-acesso">
+
+        <div class="login-card">
+
+
+            <!-- Identidade visual apresentada no formulário -->
+            <header class="login-card-cabecalho">
+
+                <img
+                    src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
+                    alt="DGB SIM - Internet internacional com eSIM"
+                    class="login-card-logo"
+                >
+
+            </header>
+
+
+            <!-- Introdução do formulário -->
+            <div class="login-card-introducao">
+
+                <h2>
+                    Acessar o sistema
+                </h2>
+
+                <p>
+                    Selecione o tipo de acesso e entre com
+                    suas credenciais para continuar.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================
+                FORMULÁRIO
+            ====================================== -->
+
+            {% if mensagem %}
+            <div class="alert alert-danger" role="alert">
+                {{ mensagem }}
+            </div>
+            {% endif %}
+  
+            <form
+                class="login-form"
+                method="POST"
+                action="{{ url_for('login') }}"
+            >
+
+            <!--
+                Tipoo de acesso.
+            -->
+                <div class="login-tipos-acesso">
+
+
+                    <!-- Acesso como cliente -->
+                    <label class="login-tipo-card">
+
+                        <input
+                            type="radio"
+                            name="tipo_acesso"
+                            value="cliente"
+                            checked
+                        >
+
+                        <span
+                            class="login-tipo-icone"
+                            aria-hidden="true"
+                        >
+                            ●
+                        </span>
+
+                        <strong>
+                            Cliente
+                        </strong>
+
+                        <small>
+                            Consultar cobertura<br>
+                            e contratar planos
+                        </small>
+
+                    </label>
+
+
+                    <!-- Acesso como administrador -->
+                    <label class="login-tipo-card">
+
+                        <input
+                            type="radio"
+                            name="tipo_acesso"
+                            value="administrador"
+                        >
+
+                        <span
+                            class="login-tipo-icone"
+                            aria-hidden="true"
+                        >
+                            ⚙
+                        </span>
+
+                        <strong>
+                            Administrador
+                        </strong>
+
+                        <small>
+                            Gerenciar o sistema
+                        </small>
+
+                    </label>
+
+                </div>
+
+
+                <!-- =====================================
+                     CREDENCIAIS
+                ====================================== -->
+
+                <!-- Campo de usuário -->
+                <div class="login-campo">
+
+                    <label for="usuario">
+                        Usuário
+                    </label>
+
+                    <div class="login-input">
+
+                        <span
+                            class="login-input-icone"
+                            aria-hidden="true"
+                        >
+                            ●
+                        </span>
+
+                        <input
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            placeholder="Digite seu usuário"
+                            autocomplete="username"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Campo de senha -->
+                <div class="login-campo">
+
+                    <label for="senha">
+                        Senha
+                    </label>
+
+                    <div class="login-input">
+
+                        <span
+                            class="login-input-icone"
+                            aria-hidden="true"
+                        >
+                            ▣
+                        </span>
+
+                        <input
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            placeholder="Digite sua senha"
+                            autocomplete="current-password"
+                        >
+
+                        <!--
+                            Controle visual preparado para a futura
+                            funcionalidade de exibir ou ocultar a senha.
+                        -->
+                        <button
+                            type="button"
+                            class="login-senha-toggle"
+                            aria-label="Exibir ou ocultar senha"
+                        >
+                            ◉
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Ação principal -->
+                <button
+                    type="submit"
+                    class="btn btn-primary w-100 login-botao"
+                >
+                    <span>Entrar</span>
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+                </button>
+
+                <!--
+                    Permite retornar à página inicial sem comprometer
+                    o layout independente da tela de acesso.
+                -->
+                <div class="login-voltar">
+                    <a href="{{ url_for('inicio') }}">
+                        <span aria-hidden="true">←</span>
+                        Voltar para o início
+                    </a>
+                </div>
+
+                <!--
+                    Direciona novos clientes para o fluxo de cadastro.
+                    O cadastro será implementado em uma etapa posterior do projeto.
+                -->
+                <div class="login-cadastro">
+                    <span>Ainda não possui uma conta?</span>
+
+                    <a href="#"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalCadastro"
+                    >
+                        Cadastre-se
+                    </a>
+                </div>
+
+            </form>
+
+
+            <!-- =====================================
+                 INFORMAÇÃO SOBRE O MVP
+            ====================================== -->
+            <div class="login-aviso">
+
+                <span
+                    class="login-aviso-icone"
+                    aria-hidden="true"
+                >
+                    i
+                </span>
+
+                <div>
+
+                    <strong>
+                        Acesso simplificado
+                    </strong>
+
+                    <p>
+                        Esta é uma versão acadêmica desenvolvida para fins de demonstração.
+                       Seu layout não é definitivo e poderá sofrer alterações no decorrer das etapas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<!-- =====================================
+     MODAL - CADASTRO DE CLIENTE
+====================================== -->
+<div
+    class="modal fade"
+    id="modalCadastro"
+    tabindex="-1"
+    aria-labelledby="modalCadastroTitulo"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2
+                    class="modal-title fs-5"
+                    id="modalCadastroTitulo"
+                >
+                    Cadastro de cliente
+                </h2>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fechar"
+                ></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="alert alert-danger mb-0" role="alert">
+                    O cadastro de clientes estará disponível na Etapa 2 do projeto.
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                >
+                    Fechar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

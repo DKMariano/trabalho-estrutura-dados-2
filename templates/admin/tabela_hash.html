@@ -1,0 +1,476 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Tabela Hash | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+<!-- =====================================
+     MONITORAMENTO DA TABELA HASH
+====================================== -->
+<section class="admin-hash">
+
+    <!-- =====================================
+         APRESENTAÇÃO
+    ====================================== -->
+    <div class="admin-hash-cabecalho">
+
+        <div class="admin-dashboard-destaque"></div>
+
+        <h1 class="admin-dashboard-titulo">
+            Tabela Hash
+        </h1>
+
+        <p class="admin-dashboard-descricao">
+            Visualize as métricas e a distribuição demonstrativa
+            dos países utilizados pelo DGB SIM.
+        </p>
+
+    </div>
+
+
+    <!-- =====================================
+         AVISO DO MVP
+    ====================================== -->
+    <div
+        class="alert alert-primary
+               d-flex align-items-start gap-3
+               admin-hash-aviso"
+        role="alert"
+    >
+        <i class="bi bi-info-circle fs-4"></i>
+
+        <div>
+            <strong>Visualização demonstrativa do MVP.</strong>
+
+            <div>
+                Os dados abaixo são calculados atualmente a partir
+                do dicionário Python. A implementação definitiva
+                utilizará a Tabela Hash desenvolvida para a Etapa 1.
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =====================================
+         INDICADORES
+    ====================================== -->
+    <div class="row g-3 mb-4">
+
+        <!-- Elementos -->
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card admin-hash-indicador h-100">
+
+                <div class="card-body">
+
+                    <div class="admin-hash-indicador-icone">
+                        <i class="bi bi-database"></i>
+                    </div>
+
+                    <div>
+                        <strong class="admin-hash-indicador-valor">
+                            {{ metricas.total_elementos }}
+                        </strong>
+
+                        <span class="admin-hash-indicador-titulo">
+                            Elementos inseridos
+                        </span>
+
+                        <span class="admin-hash-indicador-descricao">
+                            Total de países cadastrados.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Capacidade -->
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card admin-hash-indicador h-100">
+
+                <div class="card-body">
+
+                    <div class="admin-hash-indicador-icone">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                    </div>
+
+                    <div>
+                        <strong class="admin-hash-indicador-valor">
+                            {{ metricas.capacidade }}
+                        </strong>
+
+                        <span class="admin-hash-indicador-titulo">
+                            Capacidade
+                        </span>
+
+                        <span class="admin-hash-indicador-descricao">
+                            Quantidade demonstrativa de buckets.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Colisões -->
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card admin-hash-indicador h-100">
+
+                <div class="card-body">
+
+                    <div class="admin-hash-indicador-icone">
+                        <i class="bi bi-link-45deg"></i>
+                    </div>
+
+                    <div>
+                        <strong class="admin-hash-indicador-valor">
+                            {{ metricas.colisoes }}
+                        </strong>
+
+                        <span class="admin-hash-indicador-titulo">
+                            Colisões
+                        </span>
+
+                        <span class="admin-hash-indicador-descricao">
+                            Elementos além do primeiro no bucket.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Fator de carga -->
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card admin-hash-indicador h-100">
+
+                <div class="card-body">
+
+                    <div class="admin-hash-indicador-icone">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </div>
+
+                    <div>
+                        <strong class="admin-hash-indicador-valor">
+                            {{ "%.2f"|format(metricas.fator_carga) }}
+                        </strong>
+
+                        <span class="admin-hash-indicador-titulo">
+                            Fator de carga
+                        </span>
+
+                        <span class="admin-hash-indicador-descricao">
+                            Relação entre elementos e capacidade.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         DISTRIBUIÇÃO E STATUS
+    ====================================== -->
+    <div class="row g-4 mb-4">
+
+        <!-- =================================
+             GRÁFICO
+        ================================== -->
+        <div class="col-12 col-xl-7">
+
+            <div class="card admin-hash-card h-100">
+
+                <div class="card-body">
+
+                    <div class="admin-hash-card-titulo">
+
+                        <i class="bi bi-bar-chart-fill"></i>
+
+                        <div>
+                            <h2>
+                                Distribuição de registros por bucket
+                            </h2>
+
+                            <p>
+                                Quantidade de registros em cada posição.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!--
+                        O gráfico utiliza apenas HTML e CSS.
+                        Não é necessária biblioteca JavaScript.
+                    -->
+                    <div class="admin-hash-grafico">
+
+                        {% for indice, registros in metricas.buckets.items() %}
+
+                        <div class="admin-hash-coluna">
+
+                            <span class="admin-hash-quantidade">
+                                {{ registros|length }}
+                            </span>
+
+                            <div class="admin-hash-barra-area">
+
+                                {% if metricas.maior_bucket > 0 %}
+
+                                <div
+                                    class="admin-hash-barra"
+                                    style="
+                                        height:
+                                        {{
+                                            (registros|length /
+                                            metricas.maior_bucket * 100)
+                                        }}%;
+                                    "
+                                ></div>
+
+                                {% endif %}
+
+                            </div>
+
+                            <span class="admin-hash-indice">
+                                {{ indice }}
+                            </span>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <p class="admin-hash-eixo">
+                        Índice do bucket
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             STATUS
+        ================================== -->
+        <div class="col-12 col-xl-5">
+
+            <div class="card admin-hash-card h-100">
+
+                <div class="card-body">
+
+                    <div class="admin-hash-card-titulo">
+
+                        <i class="bi bi-database"></i>
+
+                        <div>
+                            <h2>
+                                Status da estrutura
+                            </h2>
+
+                            <p>
+                                Métricas calculadas com os registros atuais.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-responsive">
+
+                        <table
+                            class="table
+                                   table-sm
+                                   align-middle
+                                   admin-hash-status"
+                        >
+
+                            <tbody>
+
+                                <tr>
+                                    <td>Elementos inseridos</td>
+                                    <th>
+                                        {{ metricas.total_elementos }}
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td>Capacidade</td>
+                                    <th>
+                                        {{ metricas.capacidade }}
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td>Buckets ocupados</td>
+                                    <th>
+                                        {{ metricas.buckets_ocupados }}
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td>Buckets vazios</td>
+                                    <th>
+                                        {{ metricas.buckets_vazios }}
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td>Colisões</td>
+                                    <th>
+                                        {{ metricas.colisoes }}
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td>Fator de carga</td>
+                                    <th>
+                                        {{
+                                            "%.2f"|format(
+                                                metricas.fator_carga
+                                            )
+                                        }}
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td>Maior tamanho de bucket</td>
+                                    <th>
+                                        {{ metricas.maior_bucket }}
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td>Menor tamanho de bucket</td>
+                                    <th>
+                                        {{ metricas.menor_bucket }}
+                                    </th>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         CONTEÚDO DOS BUCKETS
+    ====================================== -->
+    <div class="card admin-hash-card">
+
+        <div class="card-body">
+
+            <div class="admin-hash-card-titulo mb-4">
+
+                <i class="bi bi-list-ul"></i>
+
+                <div>
+                    <h2>
+                        Conteúdo dos buckets
+                    </h2>
+
+                    <p>
+                        Visualize os países distribuídos em cada posição.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="row g-3">
+
+                {% for indice, registros in metricas.buckets.items() %}
+
+                <div class="col-12 col-sm-6 col-lg-4 col-xl">
+
+                    <div class="admin-hash-bucket h-100">
+
+                        <div class="admin-hash-bucket-cabecalho">
+
+                            <strong>
+                                Bucket {{ indice }}
+                            </strong>
+
+                            <span>
+                                {{ registros|length }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="admin-hash-bucket-conteudo">
+
+                            {% if registros %}
+
+                                {% for registro in registros %}
+
+                                <div class="admin-hash-registro">
+
+                                    <strong>
+                                        {{ registro.codigo }}
+                                    </strong>
+
+                                    <span>
+                                        {{ registro.nome }}
+                                    </span>
+
+                                </div>
+
+                                {% endfor %}
+
+                            {% else %}
+
+                                <div class="admin-hash-vazio">
+                                    Vazio
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

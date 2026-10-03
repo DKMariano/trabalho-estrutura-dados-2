@@ -1,0 +1,3394 @@
+/* ========================================
+   CONFIGURAÇÕES GERAIS
+======================================== */
+
+:root {
+    --azul-escuro: #062f5b;
+    --azul-principal: #0067b8;
+    --azul-destaque: #168cff;
+
+    --texto-principal: #102a43;
+    --texto-secundario: #627d98;
+
+    --fundo-claro: #f4f8fc;
+    --azul-claro: #eaf4ff;
+
+    --borda: #e1e8f0;
+    --branco: #ffffff;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--texto-principal);
+    background-color: var(--branco);
+}
+
+/* ========================================
+   CABEÇALHO
+======================================== */
+
+.cabecalho {
+    width: 100%;
+    background-color: var(--azul-escuro);
+}
+
+.cabecalho .navbar {
+    min-height: 76px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.cabecalho .container {
+    min-height: 76px;
+}
+
+/* Logo */
+
+.navbar-brand {
+    margin: 0;
+    padding: 0;
+}
+
+.logo {
+    width: 180px;
+    height: auto;
+    display: block;
+}
+
+/* Navegação */
+
+.cabecalho .navbar-nav {
+    gap: 32px;
+}
+
+.cabecalho .nav-link {
+    position: relative;
+
+    min-height: 76px;
+    padding: 0 4px;
+
+    display: flex;
+    align-items: center;
+
+    color: var(--branco);
+    font-weight: 500;
+}
+
+.cabecalho .nav-link:hover,
+.cabecalho .nav-link:focus {
+    color: var(--branco);
+}
+
+.cabecalho .nav-link.ativo {
+    color: var(--branco);
+    font-weight: 700;
+}
+
+.cabecalho .nav-link.ativo::after {
+    content: "";
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    height: 4px;
+
+    background-color: var(--azul-destaque);
+    border-radius: 4px 4px 0 0;
+}
+
+/* Menu responsivo */
+
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+/* ========================================
+   RODAPÉ
+======================================== */
+
+.rodape {
+    color: var(--branco);
+    background-color: var(--azul-escuro);
+}
+
+/* ========================================
+   CAROUSEL / HERO
+======================================== */
+
+.hero-slide {
+    background-size: cover;
+    background-position: center;
+}
+
+.hero-santorini {
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.90) 35%,
+            rgba(255, 255, 255, 0.20) 65%,
+            rgba(255, 255, 255, 0) 100%
+        ),
+        url("../img/carousel/hero-santorini.png");
+}
+
+.hero-paris {
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.90) 35%,
+            rgba(255, 255, 255, 0.20) 65%,
+            rgba(255, 255, 255, 0) 100%
+        ),
+        url("../img/carousel/hero-paris.png");
+}
+
+.hero-nova-york {
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.90) 35%,
+            rgba(255, 255, 255, 0.20) 65%,
+            rgba(255, 255, 255, 0) 100%
+        ),
+        url("../img/carousel/hero-nova-york.png");
+}
+
+.hero-linha {
+    min-height: 480px;
+}
+
+.hero-conteudo {
+    padding: 72px 0;
+}
+
+.hero-conteudo h1 {
+    margin-bottom: 20px;
+
+    color: var(--texto-principal);
+
+    font-size: 48px;
+    line-height: 1.1;
+    font-weight: 700;
+}
+
+.hero-conteudo p {
+    max-width: 500px;
+    margin-bottom: 32px;
+
+    color: #486581;
+
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* Indicadores do carousel */
+
+.carousel-indicators [data-bs-target] {
+    width: 9px;
+    height: 9px;
+
+    border: 0;
+    border-radius: 50%;
+}
+
+/* ========================================
+   BOTÕES
+======================================== */
+
+.botao-principal {
+    padding: 12px 24px;
+
+    background-color: var(--azul-principal);
+    border-color: var(--azul-principal);
+
+    color: var(--branco);
+
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.botao-principal:hover,
+.botao-principal:focus {
+    background-color: #00599f;
+    border-color: #00599f;
+
+    color: var(--branco);
+}
+
+/* ========================================
+   BENEFÍCIOS
+======================================== */
+
+.beneficios {
+    background-color: var(--branco);
+}
+
+.beneficio {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    padding: 12px 0;
+}
+
+.beneficio-icone {
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--azul-claro);
+    border-radius: 50%;
+
+    font-size: 22px;
+}
+
+.beneficio h2 {
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.beneficio p {
+    margin-bottom: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ========================================
+   TÍTULOS DAS SEÇÕES
+======================================== */
+
+.secao-titulo h2 {
+    margin-bottom: 10px;
+
+    color: var(--texto-principal);
+
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.secao-titulo p {
+    margin-bottom: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 16px;
+}
+
+/* ========================================
+   COMO FUNCIONA
+======================================== */
+
+.como-funciona {
+    background-color: var(--fundo-claro);
+}
+
+.passo {
+    height: 100%;
+    padding: 24px 20px;
+
+    background-color: var(--branco);
+
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.passo-numero {
+    width: 46px;
+    height: 46px;
+
+    margin: 0 auto 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--azul-claro);
+    color: var(--azul-principal);
+
+    border-radius: 50%;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.passo h3 {
+    margin-bottom: 10px;
+
+    color: var(--texto-principal);
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.passo p {
+    margin-bottom: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   DEPOIMENTOS
+======================================== */
+
+.depoimentos {
+    background-color: var(--branco);
+}
+
+.depoimento-card {
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+
+    box-shadow: 0 4px 14px rgba(16, 42, 67, 0.06);
+}
+
+.depoimento-card .card-body {
+    padding: 24px;
+}
+
+.estrelas {
+    color: #f5b301;
+    letter-spacing: 2px;
+}
+
+.depoimento-card .card-text {
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.depoimento-card strong {
+    color: var(--texto-principal);
+}
+/* Identificação do cliente */
+
+.cliente {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding-top: 16px;
+}
+
+.foto-cliente {
+    width: 60px;
+    height: 60px;
+
+    flex-shrink: 0;
+
+    object-fit: cover;
+
+    border: 2px solid var(--azul-claro);
+}
+
+.cliente strong {
+    display: block;
+
+    color: var(--texto-principal);
+
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+/* ========================================
+   PLANOS
+======================================== */
+
+.planos {
+    background-color: var(--fundo-claro);
+}
+
+.plano-card {
+    min-width: 0;
+
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+
+    text-align: center;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+    overflow: hidden;
+}
+
+.plano-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 8px 20px rgba(16, 42, 67, 0.08);
+}
+
+.plano-card .card-body {
+    padding: 22px 18px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.plano-card h3 {
+    min-height: 44px;
+    margin-bottom: 20px;
+
+    color: var(--texto-principal);
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.plano-imagem {
+    transition: transform 0.3s ease;
+}
+
+.plano-card:hover .plano-imagem {
+    transform: scale(1.03);
+}
+
+.plano-dados {
+    margin-bottom: 24px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.plano-dados strong {
+    color: var(--azul-principal);
+
+    font-size: 26px;
+}
+
+.plano-dados span {
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+}
+
+.plano-card .btn {
+    margin-top: auto;
+}
+
+/* Imagens dos cards dos planos */
+
+.plano-imagem {
+    width: 100%;
+    height: 120px;
+
+    object-fit: cover;
+
+    border-radius: 12px 12px 0 0;
+}
+
+/* Imagem exibida dentro do modal */
+
+.modal-plano-imagem {
+    width: 100%;
+    height: 220px;
+
+    object-fit: cover;
+}
+
+/* Informações do plano no modal */
+
+.modal-plano-dados {
+    margin-top: 24px;
+}
+
+.modal-plano-dados p {
+    margin-bottom: 10px;
+
+    color: var(--texto-secundario);
+}
+
+.modal-plano-dados strong {
+    color: var(--texto-principal);
+}
+
+/* ========================================
+   PÁGINA DE COBERTURA
+======================================== */
+
+/*
+   Hero principal da página.
+
+   A imagem será aplicada como plano de fundo,
+   enquanto o gradiente preserva a legibilidade
+   do conteúdo apresentado no lado esquerdo.
+*/
+.cobertura-hero {
+    min-height: 470px;
+
+    display: flex;
+    align-items: center;
+
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.92) 38%,
+            rgba(255, 255, 255, 0.45) 68%,
+            rgba(255, 255, 255, 0.08) 100%
+        ),
+        url("../img/cobertura/cobertura-paises.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/*
+   Área que concentra o título, a descrição
+   e o formulário de consulta.
+*/
+.cobertura-conteudo {
+    max-width: 680px;
+    padding: 64px 0;
+}
+
+/*
+   Pequeno elemento visual utilizado para reforçar
+   a identidade da seção antes do título principal.
+*/
+.cobertura-destaque {
+    width: 48px;
+    height: 4px;
+    margin-bottom: 18px;
+
+    background-color: var(--azul-destaque);
+    border-radius: 4px;
+}
+
+/* Título principal da página */
+.cobertura-conteudo h1 {
+    margin-bottom: 18px;
+
+    color: var(--texto-principal);
+
+    font-size: 44px;
+    line-height: 1.12;
+    font-weight: 700;
+}
+
+/* Texto introdutório apresentado abaixo do título */
+.cobertura-descricao {
+    max-width: 520px;
+    margin-bottom: 28px;
+
+    color: var(--texto-secundario);
+
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+/*
+   Card que contém os controles utilizados
+   para iniciar a consulta de cobertura.
+*/
+.cobertura-formulario {
+    max-width: 650px;
+    padding: 22px;
+
+    background-color: rgba(255, 255, 255, 0.96);
+
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+
+    box-shadow: 0 8px 24px rgba(16, 42, 67, 0.10);
+}
+
+/* Rótulo do campo de seleção */
+.cobertura-formulario .form-label {
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/*
+   Mantém o campo e o botão com a mesma altura,
+   criando alinhamento visual no formulário.
+*/
+.cobertura-formulario .form-select,
+.cobertura-formulario .btn {
+    min-height: 46px;
+}
+
+/* Campo de seleção do destino */
+.cobertura-formulario .form-select {
+    color: var(--texto-principal);
+
+    border-color: var(--borda);
+    border-radius: 6px;
+}
+
+/*
+   Destaque do campo quando recebe foco.
+   Mantém a identidade visual do DGB SIM.
+*/
+.cobertura-formulario .form-select:focus {
+    border-color: var(--azul-principal);
+
+    box-shadow:
+        0 0 0 0.2rem rgba(0, 103, 184, 0.15);
+}
+
+/* Botão principal da consulta */
+.cobertura-formulario .btn-primary {
+    background-color: var(--azul-principal);
+    border-color: var(--azul-principal);
+
+    font-weight: 600;
+}
+
+/* Estado visual do botão durante a interação */
+.cobertura-formulario .btn-primary:hover {
+    background-color: var(--azul-escuro);
+    border-color: var(--azul-escuro);
+}
+
+/* Orientação complementar exibida abaixo dos controles */
+.cobertura-ajuda {
+    margin-top: 12px;
+    margin-bottom: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+/* ========================================
+   RESULTADO DA CONSULTA DE COBERTURA
+======================================== */
+
+/*
+   Área destinada ao resultado da consulta.
+   O fundo claro separa visualmente os resultados
+   do hero utilizado na parte superior da página.
+*/
+.resultado-cobertura {
+    background-color: var(--fundo-claro);
+}
+
+/*
+   Estrutura base compartilhada pelos cards de
+   cobertura e instrumentação da Tabela Hash.
+*/
+.resultado-card {
+    padding: 28px;
+
+    background-color: var(--branco);
+
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+
+    box-shadow: 0 6px 20px rgba(16, 42, 67, 0.06);
+}
+
+/* ========================================
+   CARD DE COBERTURA DISPONÍVEL
+======================================== */
+
+/*
+   Aplica um destaque discreto ao resultado positivo
+   sem comprometer a identidade visual da página.
+*/
+.resultado-disponivel {
+    border-top: 4px solid #28a745;
+}
+
+/*
+   Agrupa o ícone de confirmação e os textos
+   que identificam o status da cobertura.
+*/
+.resultado-status,
+.hash-cabecalho {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    margin-bottom: 26px;
+}
+
+/* Indicador visual utilizado para resultados positivos */
+.resultado-status-icone {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    color: #198754;
+    background-color: #e9f7ef;
+
+    border-radius: 50%;
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* Título do status da cobertura */
+.resultado-status h2 {
+    margin-bottom: 5px;
+
+    color: #198754;
+
+    font-size: 21px;
+    font-weight: 700;
+}
+
+/* Texto complementar apresentado abaixo do status */
+.resultado-status p,
+.hash-cabecalho p {
+    margin-bottom: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+}
+
+/*
+   Remove os espaçamentos padrão da lista de
+   descrição utilizada para apresentar os dados.
+*/
+.resultado-dados {
+    margin-bottom: 0;
+}
+
+/*
+   Cada linha representa uma propriedade do país
+   e o respectivo valor retornado pela consulta.
+*/
+.resultado-dados > div,
+.hash-dados > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid var(--borda);
+}
+
+/* Remove a divisória da última informação */
+.resultado-dados > div:last-child {
+    border-bottom: 0;
+}
+
+/* Nome da propriedade apresentada */
+.resultado-dados dt,
+.hash-dados dt {
+    color: var(--texto-secundario);
+
+    font-weight: 500;
+}
+
+/* Valor associado à propriedade */
+.resultado-dados dd {
+    margin-bottom: 0;
+
+    color: var(--texto-principal);
+
+    font-weight: 600;
+    text-align: right;
+}
+
+/* Destaque utilizado para a tecnologia de conexão */
+.tecnologia-badge {
+    display: inline-block;
+
+    padding: 4px 10px;
+
+    color: #198754;
+    background-color: #e9f7ef;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* ========================================
+   CARD DE INSTRUMENTAÇÃO DA TABELA HASH
+======================================== */
+
+/*
+   O destaque azul diferencia as informações
+   técnicas dos dados comerciais da cobertura.
+*/
+.hash-card {
+    border-top: 4px solid var(--azul-principal);
+}
+
+/* Cabeçalho do painel de instrumentação */
+
+/*
+   Elemento visual associado à estrutura de dados.
+   Utiliza o símbolo # apenas como representação
+   gráfica temporária no MVP.
+*/
+.hash-icone {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--azul-principal);
+    background-color: var(--azul-claro);
+
+    border-radius: 8px;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Título do painel técnico */
+.hash-cabecalho h2 {
+    margin-bottom: 5px;
+
+    color: var(--texto-principal);
+
+    font-size: 21px;
+    font-weight: 700;
+}
+
+/* Descrição complementar da instrumentação */
+
+/* Remove o espaçamento padrão da lista de métricas */
+.hash-dados {
+    margin-bottom: 20px;
+}
+
+/*
+   Organiza cada métrica da consulta em uma linha
+   com identificação à esquerda e valor à direita.
+*/
+
+/* Nome da métrica apresentada */
+
+/* Valor demonstrativo associado à métrica */
+.hash-dados dd {
+    margin-bottom: 0;
+
+    color: var(--texto-principal);
+
+    font-weight: 700;
+    text-align: right;
+}
+
+/*
+   Caixa informativa utilizada para explicar,
+   de forma resumida, o tratamento de colisões.
+*/
+.hash-observacao {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    padding: 14px 16px;
+
+    color: var(--azul-escuro);
+    background-color: var(--azul-claro);
+
+    border-radius: 8px;
+}
+
+/* Texto explicativo da instrumentação */
+.hash-observacao p {
+    margin-bottom: 0;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ========================================
+   TELA DE ACESSO
+======================================== */
+
+/*
+    Estrutura principal da tela de acesso.
+
+    No desktop, a interface é dividida entre
+    a apresentação institucional e o formulário.
+*/
+.login-container {
+    display: grid;
+    grid-template-columns: 47% 53%;
+
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* ========================================
+   PAINEL DE APRESENTAÇÃO
+======================================== */
+
+/*
+    O painel utiliza uma imagem relacionada a viagens
+    combinada com uma sobreposição azul para preservar
+    o contraste e a legibilidade do conteúdo.
+*/
+.login-apresentacao {
+    position: relative;
+    min-height: 100vh;
+
+    color: var(--branco);
+
+    background-image:
+        linear-gradient(
+            180deg,
+            rgba(3, 39, 78, 0.88) 0%,
+            rgba(3, 43, 83, 0.72) 45%,
+            rgba(3, 40, 77, 0.90) 100%
+        ),
+        url("../img/login/login-aviao.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/*
+    Limita e posiciona o conteúdo institucional
+    dentro do painel de apresentação.
+*/
+.login-apresentacao-conteudo {
+    position: relative;
+    z-index: 1;
+
+    width: min(100%, 660px);
+    min-height: 100vh;
+
+    margin: 0 auto;
+    padding: 48px 64px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* Identidade visual apresentada no topo do painel */
+.login-marca {
+    margin-bottom: 70px;
+}
+
+.login-logo {
+    display: block;
+    width: min(100%, 320px);
+    height: auto;
+}
+
+/* ========================================
+   CHAMADA PRINCIPAL
+======================================== */
+
+.login-chamada {
+    max-width: 580px;
+}
+
+.login-destaque {
+    width: 68px;
+    height: 7px;
+
+    margin-bottom: 28px;
+
+    border-radius: 999px;
+
+    background-color: var(--azul-destaque);
+}
+
+.login-chamada h1 {
+    margin-bottom: 20px;
+
+    color: var(--branco);
+
+    font-size: clamp(3.5rem, 5vw, 5.2rem);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+}
+
+.login-chamada p {
+    max-width: 560px;
+    margin: 0;
+
+    color: rgba(255, 255, 255, 0.94);
+
+    font-size: 1.45rem;
+    line-height: 1.55;
+}
+
+/* ========================================
+   BENEFÍCIOS
+======================================== */
+
+.login-beneficios {
+    margin-top: auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.login-beneficio {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.login-beneficio-icone {
+    width: 62px;
+    height: 62px;
+
+    flex: 0 0 62px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: var(--branco);
+    background-color: rgba(73, 139, 220, 0.65);
+
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.login-beneficio h2 {
+    margin: 0 0 4px;
+
+    color: var(--branco);
+
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.login-beneficio p {
+    margin: 0;
+
+    color: rgba(255, 255, 255, 0.92);
+
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+
+/* ========================================
+   ÁREA DO FORMULÁRIO
+======================================== */
+
+/*
+    Área clara que posteriormente receberá o card
+    completo de autenticação.
+*/
+.login-acesso {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 48px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(22, 140, 255, 0.08),
+            transparent 55%
+        ),
+        #f4f9fe;
+}
+
+/*
+    Dimensões iniciais do card.
+
+    A aparência interna será refinada na próxima
+    etapa da construção da interface.
+*/
+.login-card {
+    width: min(100%, 585px);
+
+    padding: 42px 52px;
+
+    border: 1px solid var(--borda);
+    border-radius: 18px;
+
+    background-color: rgba(255, 255, 255, 0.96);
+
+    box-shadow:
+        0 18px 50px rgba(20, 74, 120, 0.08);
+}
+
+.login-card-cabecalho {
+    text-align: center;
+}
+
+.login-card-logo {
+    width: min(100%, 260px);
+    height: auto;
+}
+
+/* ========================================
+   ACESSO AO SISTEMA
+======================================== */
+
+/*
+    Link utilizado para direcionar visitantes à tela de acesso.
+    Mantém a identidade visual do cabeçalho sem representar
+    um usuário autenticado.
+*/
+.acesso-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    color: var(--branco);
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: opacity 0.2s ease;
+}
+
+.acesso-login:hover,
+.acesso-login:focus {
+    color: var(--branco);
+    opacity: 0.85;
+}
+
+/* ========================================
+   LOGIN — RESPONSIVIDADE
+======================================== */
+
+/* Permite que os painéis e seus conteúdos encolham */
+.login-container > section,
+.login-card,
+.login-beneficio > div:last-child,
+.login-aviso > div {
+    min-width: 0;
+}
+
+/* Tablet e celular */
+@media (max-width: 991.98px) {
+    .login-apresentacao,
+    .login-apresentacao-conteudo,
+    .login-acesso {
+        min-height: auto;
+    }
+
+    .login-apresentacao-conteudo {
+        padding: 32px 24px;
+    }
+
+    .login-marca {
+        margin-bottom: 28px;
+    }
+
+    .login-logo {
+        width: min(100%, 240px);
+    }
+
+    .login-chamada h1 {
+        font-size: 44px;
+    }
+
+    .login-chamada p {
+        font-size: 18px;
+    }
+
+    .login-beneficios {
+        margin-top: 32px;
+        gap: 18px;
+    }
+
+    .login-beneficio {
+        gap: 16px;
+    }
+
+    .login-beneficio-icone {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+        font-size: 22px;
+    }
+
+    .login-acesso {
+        padding: 32px 24px;
+    }
+
+    .login-card {
+        padding: 32px;
+    }
+
+    .login-cadastro {
+        flex-wrap: wrap;
+        text-align: center;
+    }
+}
+
+/* Celular */
+@media (max-width: 575.98px) {
+    .login-apresentacao-conteudo {
+        padding: 28px 20px;
+    }
+
+    .login-chamada h1 {
+        font-size: 36px;
+    }
+
+    .login-chamada p {
+        font-size: 16px;
+    }
+
+    .login-beneficio h2 {
+        font-size: 15px;
+    }
+
+    .login-beneficio p {
+        font-size: 14px;
+    }
+
+    .login-acesso {
+        padding: 24px 16px;
+    }
+
+    .login-card {
+        padding: 24px 20px;
+        border-radius: 12px;
+    }
+
+    .login-card-logo {
+        width: min(100%, 220px);
+    }
+
+    .login-card-introducao h2 {
+        font-size: 24px;
+    }
+
+    .login-tipos-acesso {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .login-tipo-card {
+        min-width: 0;
+        padding: 18px 8px;
+    }
+
+    .login-tipo-card strong {
+        font-size: 13px;
+    }
+
+    .login-tipo-card small {
+        font-size: 11px;
+    }
+}
+
+/* Celulares muito estreitos */
+@media (max-width: 359.98px) {
+    .login-tipos-acesso {
+        grid-template-columns: 1fr;
+    }
+
+    .login-tipo-card {
+        min-height: 110px;
+    }
+}
+
+/* ========================================
+   ÁREA ADMINISTRATIVA
+======================================== */
+
+/*
+    Estilos compartilhados pelas páginas da área administrativa.
+    O cabeçalho e o menu lateral permanecem no template base,
+    enquanto o conteúdo principal varia conforme a página acessada.
+*/
+
+/* ========================================
+   CABEÇALHO ADMINISTRATIVO
+======================================== */
+
+.admin-topo {
+    background-color: var(--azul-escuro);
+}
+
+.admin-navbar {
+    min-height: 76px;
+    padding: 0 32px;
+}
+
+.admin-logo {
+    display: block;
+
+    width: 180px;
+    height: auto;
+}
+
+.admin-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: var(--branco);
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.admin-usuario i {
+    font-size: 24px;
+}
+
+/* ========================================
+   ESTRUTURA PRINCIPAL
+======================================== */
+
+.admin-corpo {
+    display: flex;
+
+    min-height: calc(100vh - 76px);
+}
+
+.admin-menu {
+    width: 250px;
+
+    flex-shrink: 0;
+
+    padding: 28px 16px;
+
+    background-color: var(--branco);
+
+    border-right: 1px solid var(--borda);
+}
+
+.admin-conteudo {
+    min-width: 0;
+
+    flex: 1;
+
+    padding: 40px 32px;
+
+    background-color: var(--fundo-claro);
+}
+
+/* ========================================
+   MENU LATERAL
+======================================== */
+
+.admin-menu-nav {
+    gap: 6px;
+}
+
+.admin-menu-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 13px 18px;
+
+    color: var(--texto-principal);
+
+    border-radius: 8px;
+
+    font-weight: 500;
+}
+
+.admin-menu-nav .nav-link i {
+    width: 22px;
+
+    flex-shrink: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 20px;
+
+    text-align: center;
+}
+
+.admin-menu-nav .nav-link:hover {
+    color: var(--azul-principal);
+    background-color: var(--fundo-claro);
+}
+
+.admin-menu-nav .nav-link:hover i {
+    color: var(--azul-principal);
+}
+
+.admin-menu-nav .nav-link.active {
+    color: var(--azul-principal);
+    background-color: var(--azul-claro);
+
+    font-weight: 700;
+}
+
+.admin-menu-nav .nav-link.active i {
+    color: var(--azul-principal);
+}
+
+.admin-menu-nav hr {
+    margin: 18px 0;
+
+    border-color: var(--borda);
+}
+
+/* ========================================
+   DASHBOARD
+======================================== */
+
+.admin-dashboard {
+    width: 100%;
+}
+
+/* ========================================
+   HERO DO DASHBOARD
+======================================== */
+
+/*
+    O mapa é utilizado apenas como elemento visual do dashboard.
+    Por isso, permanece como imagem de fundo e não interfere
+    semanticamente no conteúdo da página.
+*/
+
+.admin-dashboard-hero {
+    min-height: 330px;
+
+    padding: 8px 0 32px;
+
+    background-image: url("../img/admin/mapa-mundi.png");
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: auto 300px;
+}
+
+.admin-dashboard-apresentacao {
+    max-width: 680px;
+
+    margin-bottom: 28px;
+}
+
+.admin-dashboard-destaque {
+    width: 48px;
+    height: 4px;
+
+    margin-bottom: 16px;
+
+    background-color: var(--azul-destaque);
+
+    border-radius: 4px;
+}
+
+.admin-dashboard-titulo {
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 36px;
+    line-height: 1.15;
+    font-weight: 700;
+}
+
+.admin-dashboard-descricao {
+    max-width: 650px;
+
+    margin-bottom: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* ========================================
+   INDICADORES
+======================================== */
+
+.admin-indicadores {
+    max-width: 780px;
+}
+
+.admin-indicador-card {
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+
+    background-color: rgba(255, 255, 255, 0.96);
+
+    box-shadow: 0 4px 14px rgba(16, 42, 67, 0.05);
+}
+
+.admin-indicador-card .card-body {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    min-height: 130px;
+
+    padding: 20px;
+}
+
+.admin-indicador-icone {
+    width: 60px;
+    height: 60px;
+
+    flex: 0 0 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--azul-principal);
+    background-color: var(--azul-claro);
+
+    border-radius: 50%;
+
+    font-size: 28px;
+}
+
+.admin-indicador-conteudo {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-indicador-valor {
+    color: var(--texto-principal);
+
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.admin-indicador-label {
+    margin-top: 5px;
+
+    color: var(--texto-principal);
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.admin-indicador-detalhe {
+    margin-top: 3px;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+}
+
+/* ========================================
+   ELEMENTOS COMPARTILHADOS DO DASHBOARD
+======================================== */
+
+.admin-dashboard-subtitulo {
+    margin-bottom: 3px;
+
+    color: var(--texto-principal);
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.admin-dashboard-card-descricao {
+    margin-bottom: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+}
+
+.admin-secao-icone {
+    flex-shrink: 0;
+
+    color: var(--azul-principal);
+
+    font-size: 24px;
+}
+
+/* ========================================
+   AÇÕES RÁPIDAS
+======================================== */
+
+.admin-acoes-card,
+.admin-dashboard-card {
+    overflow: hidden;
+
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+
+    background-color: var(--branco);
+
+    box-shadow: 0 4px 14px rgba(16, 42, 67, 0.05);
+}
+
+.admin-acoes-card .card-header {
+    padding: 16px 20px;
+
+    border-bottom: 1px solid var(--borda);
+}
+
+.admin-acoes-card .card-body {
+    padding: 14px;
+}
+
+.admin-acao {
+    min-height: 110px;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 18px;
+
+    color: var(--texto-principal);
+    background-color: var(--branco);
+
+    border: 1px solid var(--borda);
+    border-radius: 9px;
+
+    text-decoration: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.admin-acao:hover {
+    color: var(--texto-principal);
+
+    border-color: var(--azul-destaque);
+
+    box-shadow: 0 5px 15px rgba(16, 42, 67, 0.08);
+
+    transform: translateY(-2px);
+}
+
+.admin-acao-icone {
+    width: 54px;
+    height: 54px;
+
+    flex: 0 0 54px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--azul-principal);
+    background-color: var(--azul-claro);
+
+    border-radius: 50%;
+
+    font-size: 26px;
+}
+
+.admin-acao-conteudo {
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-acao-conteudo strong {
+    margin-bottom: 3px;
+
+    color: var(--texto-principal);
+
+    font-size: 15px;
+}
+
+.admin-acao-conteudo span {
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.admin-acao-seta {
+    flex-shrink: 0;
+
+    color: var(--azul-principal);
+
+    font-size: 22px;
+}
+
+/* ========================================
+   CARDS INFERIORES
+======================================== */
+
+.admin-dashboard-card .card-header {
+    padding: 18px 20px;
+
+    border-bottom: 1px solid var(--borda);
+}
+
+/* ========================================
+   TABELA DO DASHBOARD
+======================================== */
+
+.admin-dashboard-card .table {
+    margin-bottom: 0;
+}
+
+.admin-dashboard-card .table th {
+    padding: 13px 18px;
+
+    color: var(--texto-secundario);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+.admin-dashboard-card .table td {
+    padding: 14px 18px;
+
+    color: var(--texto-principal);
+
+    font-size: 13px;
+}
+
+/* ========================================
+   SOBRE O SISTEMA
+======================================== */
+
+.admin-sobre-texto {
+    margin-bottom: 22px;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.admin-sobre-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+
+    margin-bottom: 18px;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.admin-sobre-item:last-child {
+    margin-bottom: 0;
+}
+
+.admin-sobre-item i {
+    width: 22px;
+
+    flex-shrink: 0;
+
+    color: var(--azul-principal);
+
+    font-size: 20px;
+
+    text-align: center;
+}
+
+/* ========================================
+   PAGINAÇÃO
+======================================== */
+
+.admin-dashboard-card .card-footer {
+    padding: 16px 18px;
+
+    border-top: 1px solid var(--borda);
+}
+
+.admin-dashboard-card .pagination {
+    gap: 4px;
+}
+
+.admin-dashboard-card .page-link {
+    min-width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+}
+
+/* ========================================
+   ADMINISTRAÇÃO - PAÍSES
+======================================== */
+
+/*
+    Estrutura principal da página de gerenciamento
+    de países da área administrativa.
+*/
+.admin-paises {
+    width: 100%;
+}
+
+/* ========================================
+   APRESENTAÇÃO
+======================================== */
+
+/*
+    O mapa é utilizado como elemento visual da página.
+    A altura permite acomodar o título, a descrição
+    e o indicador de países cadastrados.
+*/
+.admin-paises-hero {
+    min-height: 320px;
+
+    padding: 8px 0 28px;
+
+    background-image: url("../img/admin/mapa-mundi.png");
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: auto 290px;
+}
+
+/*
+    Limita a largura do texto para evitar que ele
+    avance sobre a área ocupada pelo mapa.
+*/
+.admin-paises-hero .admin-dashboard-descricao {
+    max-width: 700px;
+}
+
+/*
+    Controla a largura do indicador apresentado
+    abaixo da descrição da página.
+*/
+.admin-paises-indicador {
+    max-width: 590px;
+}
+
+/* ========================================
+   BUSCA E FILTROS
+======================================== */
+
+/*
+    Card responsável por reunir busca, filtro
+    por região e acesso ao cadastro de países.
+*/
+.admin-paises-filtros {
+    overflow: hidden;
+
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+
+    background-color: var(--branco);
+
+    box-shadow: 0 4px 14px rgba(16, 42, 67, 0.04);
+}
+
+.admin-paises-filtros .card-body {
+    padding: 18px;
+}
+
+/*
+    Mantém os rótulos dos controles consistentes
+    com a identidade visual da área administrativa.
+*/
+.admin-paises-filtros .form-label {
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 14px;
+}
+
+.admin-paises-filtros .form-label i {
+    color: var(--azul-principal);
+}
+
+/*
+    Padroniza a altura dos campos e botões utilizados
+    nos controles da página.
+*/
+.admin-paises-filtros .form-control,
+.admin-paises-filtros .form-select,
+.admin-paises-filtros .input-group-text,
+.admin-paises-filtros .btn {
+    min-height: 42px;
+}
+
+/* ========================================
+   TABELA
+======================================== */
+
+/*
+    Evita que títulos e ações sejam quebrados
+    desnecessariamente dentro da tabela.
+*/
+.admin-paises .table th {
+    white-space: nowrap;
+}
+
+.admin-paises .table td {
+    vertical-align: middle;
+}
+
+.admin-paises .table td:last-child {
+    white-space: nowrap;
+}
+
+/*
+    Mantém os botões de visualizar, editar e excluir
+    com dimensões consistentes.
+*/
+.admin-paises .table .btn-sm {
+    min-width: 38px;
+}
+
+/*
+    Destaca visualmente a página atualmente selecionada.
+*/
+.admin-paises .page-item.active .page-link {
+    color: var(--branco);
+
+    background-color: var(--azul-principal);
+    border-color: var(--azul-principal);
+}
+
+.admin-paises .page-item.disabled .page-link {
+    color: var(--texto-secundario);
+}
+
+/* ========================================
+   RESPONSIVIDADE - TABLET
+======================================== */
+
+@media (max-width: 991.98px) {
+
+    /*
+        Reduz o mapa para preservar espaço quando
+        a largura disponível começa a diminuir.
+    */
+    .admin-paises-hero {
+        min-height: 280px;
+
+        background-size: auto 220px;
+    }
+
+}
+
+/* ========================================
+   RESPONSIVIDADE - CELULAR
+======================================== */
+
+@media (max-width: 767.98px) {
+
+    /*
+        Em telas pequenas o mapa deixa de ser exibido,
+        priorizando o conteúdo e os controles.
+    */
+    .admin-paises-hero {
+        min-height: auto;
+
+        background-image: none;
+    }
+
+    .admin-paises-indicador {
+        max-width: none;
+    }
+
+    .admin-paises-filtros .card-body {
+        padding: 16px;
+    }
+
+    /*
+        A tabela mantém sua estrutura e passa a utilizar
+        a rolagem horizontal fornecida pelo Bootstrap.
+    */
+    .admin-paises .table {
+        min-width: 850px;
+    }
+
+    /*
+        Permite que quantidade de registros e paginação
+        se reorganizem quando não houver largura suficiente.
+    */
+    .admin-paises .admin-dashboard-card .card-footer {
+        align-items: flex-start !important;
+    }
+
+    .admin-paises .pagination {
+        flex-wrap: wrap;
+    }
+
+}
+
+/* ========================================
+   ADMINISTRAÇÃO - CADASTRAR PAÍS
+======================================== */
+
+/*
+   Estilos específicos da tela de cadastro.
+   A estrutura responsiva, os formulários, os cards
+   e os botões utilizam componentes do Bootstrap.
+*/
+
+.admin-cadastrar-pais {
+    width: 100%;
+}
+
+/* ========================================
+   CABEÇALHO
+======================================== */
+
+.admin-cadastro-cabecalho {
+    margin-bottom: 24px;
+}
+
+.admin-breadcrumb {
+    margin-bottom: 12px;
+}
+
+.admin-breadcrumb a {
+    color: var(--azul-principal);
+
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.admin-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+/* ========================================
+   CARD PRINCIPAL
+======================================== */
+
+.admin-cadastro-card,
+.admin-cadastro-info {
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+
+    background-color: var(--branco);
+
+    box-shadow:
+        0 4px 16px rgba(16, 42, 67, 0.05);
+}
+
+.admin-cadastro-card .card-body {
+    padding: 28px;
+}
+
+.admin-cadastro-info .card-body {
+    padding: 26px;
+}
+
+/* ========================================
+   TÍTULOS INTERNOS
+======================================== */
+
+.admin-cadastro-secao-titulo,
+.admin-cadastro-info-titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 22px;
+}
+
+.admin-cadastro-barra {
+    width: 5px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    background-color: var(--azul-destaque);
+
+    border-radius: 999px;
+}
+
+.admin-cadastro-secao-titulo h2,
+.admin-cadastro-info-titulo h2 {
+    margin: 0;
+
+    color: var(--texto-principal);
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* ========================================
+   CAMPOS
+======================================== */
+
+.admin-cadastro-card .form-label {
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-cadastro-card .form-control,
+.admin-cadastro-card .form-select {
+    min-height: 48px;
+
+    color: var(--texto-principal);
+
+    border-color: var(--borda);
+    border-radius: 7px;
+}
+
+.admin-cadastro-card .form-control:focus,
+.admin-cadastro-card .form-select:focus {
+    border-color: var(--azul-principal);
+
+    box-shadow:
+        0 0 0 0.2rem rgba(0, 103, 184, 0.12);
+}
+
+.admin-cadastro-card .form-control::placeholder {
+    color: #829ab1;
+}
+
+.admin-cadastro-card .form-text {
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+}
+
+/* ========================================
+   TECNOLOGIA
+======================================== */
+
+.admin-cadastro-tecnologia {
+    margin-top: 32px;
+    padding-top: 26px;
+
+    border-top: 1px solid var(--borda);
+}
+
+.admin-cadastro-ajuda {
+    margin-bottom: 18px;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+}
+
+/* ========================================
+   BOTÕES
+======================================== */
+
+.admin-cadastro-acoes {
+    margin-top: 36px;
+    padding-top: 24px;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+
+    border-top: 1px solid var(--borda);
+}
+
+.admin-cadastro-botao {
+    min-width: 190px;
+    min-height: 48px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 600;
+}
+
+/* ========================================
+   INFORMAÇÕES TÉCNICAS
+======================================== */
+
+.admin-cadastro-info-titulo i {
+    color: var(--azul-principal);
+
+    font-size: 27px;
+}
+
+.admin-cadastro-info-descricao {
+    margin-bottom: 22px;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   DADOS TÉCNICOS
+======================================== */
+
+.admin-cadastro-info-dados {
+    margin-bottom: 20px;
+    padding: 16px;
+
+    background-color: var(--fundo-claro);
+
+    border-radius: 8px;
+}
+
+.admin-cadastro-info-dados > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 8px 0;
+}
+
+.admin-cadastro-info-dados strong {
+    color: var(--texto-principal);
+
+    font-size: 13px;
+}
+
+.admin-cadastro-info-dados span {
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+    text-align: right;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 767.98px) {
+
+    .admin-cadastro-card .card-body,
+    .admin-cadastro-info .card-body {
+        padding: 20px;
+    }
+
+    .admin-cadastro-acoes {
+        flex-direction: column-reverse;
+    }
+
+    .admin-cadastro-botao {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .admin-cadastro-info-dados > div {
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .admin-cadastro-info-dados span {
+        text-align: left;
+    }
+
+}
+
+/* ========================================
+   ADMINISTRAÇÃO - TABELA HASH
+======================================== */
+
+.admin-hash {
+    width: 100%;
+}
+
+/* ========================================
+   CABEÇALHO
+======================================== */
+
+.admin-hash-cabecalho {
+    margin-bottom: 22px;
+}
+
+.admin-hash-aviso {
+    max-width: 100%;
+
+    margin-bottom: 24px;
+
+    border: 1px solid #cfe5ff;
+    border-radius: 10px;
+
+    font-size: 13px;
+}
+
+/* ========================================
+   INDICADORES
+======================================== */
+
+.admin-hash-indicador {
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+
+    background-color: var(--branco);
+
+    box-shadow:
+        0 4px 14px rgba(16, 42, 67, 0.05);
+}
+
+.admin-hash-indicador .card-body {
+    min-height: 130px;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 18px;
+}
+
+.admin-hash-indicador-icone {
+    width: 58px;
+    height: 58px;
+
+    flex: 0 0 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--azul-principal);
+    background-color: var(--azul-claro);
+
+    border-radius: 50%;
+
+    font-size: 26px;
+}
+
+.admin-hash-indicador-valor,
+.admin-hash-indicador-titulo,
+.admin-hash-indicador-descricao {
+    display: block;
+}
+
+.admin-hash-indicador-valor {
+    margin-bottom: 4px;
+
+    color: var(--texto-principal);
+
+    font-size: 27px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.admin-hash-indicador-titulo {
+    color: var(--texto-principal);
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.admin-hash-indicador-descricao {
+    margin-top: 3px;
+
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* ========================================
+   CARDS
+======================================== */
+
+.admin-hash-card {
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+
+    background-color: var(--branco);
+
+    box-shadow:
+        0 4px 14px rgba(16, 42, 67, 0.05);
+}
+
+.admin-hash-card .card-body {
+    padding: 20px;
+}
+
+.admin-hash-card-titulo {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+}
+
+.admin-hash-card-titulo > i {
+    flex-shrink: 0;
+
+    color: var(--azul-principal);
+
+    font-size: 24px;
+}
+
+.admin-hash-card-titulo h2 {
+    margin: 0 0 2px;
+
+    color: var(--texto-principal);
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.admin-hash-card-titulo p {
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+}
+
+/* ========================================
+   GRÁFICO
+======================================== */
+
+.admin-hash-grafico {
+    height: 250px;
+
+    margin-top: 24px;
+    padding: 20px 10px 0;
+
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+
+    border-bottom: 1px solid var(--borda);
+}
+
+.admin-hash-coluna {
+    min-width: 0;
+    height: 100%;
+
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.admin-hash-quantidade {
+    margin-bottom: 5px;
+
+    color: var(--texto-secundario);
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.admin-hash-barra-area {
+    width: 70%;
+    height: 180px;
+
+    display: flex;
+    align-items: flex-end;
+}
+
+.admin-hash-barra {
+    width: 100%;
+
+    min-height: 4px;
+
+    background-color: var(--azul-destaque);
+
+    border-radius: 4px 4px 0 0;
+
+    transition: height 0.2s ease;
+}
+
+.admin-hash-indice {
+    margin-top: 7px;
+
+    color: var(--texto-principal);
+
+    font-size: 11px;
+}
+
+.admin-hash-eixo {
+    margin: 12px 0 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+    text-align: center;
+}
+
+/* ========================================
+   STATUS
+======================================== */
+
+.admin-hash-status {
+    margin-top: 18px;
+    margin-bottom: 0;
+}
+
+.admin-hash-status td,
+.admin-hash-status th {
+    padding: 8px 12px;
+
+    border-color: var(--borda);
+
+    font-size: 12px;
+}
+
+.admin-hash-status td {
+    color: var(--texto-secundario);
+}
+
+.admin-hash-status th {
+    color: var(--texto-principal);
+
+    text-align: right;
+}
+
+/* ========================================
+   BUCKETS
+======================================== */
+
+.admin-hash-bucket {
+    min-width: 150px;
+
+    overflow: hidden;
+
+    border: 1px solid #cfe5ff;
+    border-radius: 8px;
+
+    background-color: var(--branco);
+}
+
+.admin-hash-bucket-cabecalho {
+    padding: 10px 12px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    color: var(--azul-escuro);
+    background-color: var(--azul-claro);
+
+    font-size: 12px;
+}
+
+.admin-hash-bucket-cabecalho span {
+    min-width: 23px;
+    height: 23px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--branco);
+
+    border-radius: 50%;
+
+    color: var(--azul-principal);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-hash-bucket-conteudo {
+    min-height: 100px;
+
+    padding: 8px 12px;
+}
+
+.admin-hash-registro {
+    padding: 8px 0;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    border-bottom: 1px solid var(--borda);
+}
+
+.admin-hash-registro:last-child {
+    border-bottom: 0;
+}
+
+.admin-hash-registro strong {
+    min-width: 28px;
+
+    color: var(--azul-escuro);
+
+    font-size: 11px;
+}
+
+.admin-hash-registro span {
+    min-width: 0;
+
+    overflow: hidden;
+
+    color: var(--texto-secundario);
+
+    font-size: 11px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-hash-vazio {
+    padding: 22px 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 11px;
+    text-align: center;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 767.98px) {
+
+    .admin-hash-grafico {
+        height: 220px;
+
+        overflow-x: auto;
+
+        gap: 8px;
+    }
+
+    .admin-hash-coluna {
+        min-width: 40px;
+    }
+
+    .admin-hash-barra-area {
+        height: 150px;
+    }
+
+    .admin-hash-card .card-body {
+        padding: 16px;
+    }
+
+}
+
+/* ========================================
+   RESPONSIVIDADE DA ÁREA ADMINISTRATIVA
+======================================== */
+
+@media (max-width: 991.98px) {
+
+    .admin-conteudo {
+        padding: 32px 24px;
+    }
+
+    .admin-dashboard-hero {
+        background-size: auto 220px;
+    }
+
+    .admin-dashboard-titulo {
+        font-size: 30px;
+    }
+
+}
+
+@media (max-width: 767.98px) {
+
+    .admin-corpo {
+        display: block;
+    }
+
+    .admin-menu {
+        width: 100%;
+
+        border-right: 0;
+        border-bottom: 1px solid var(--borda);
+    }
+
+    .admin-conteudo {
+        padding: 28px 18px;
+    }
+
+    .admin-dashboard-hero {
+        min-height: auto;
+
+        background-image: none;
+    }
+
+    .admin-dashboard-titulo {
+        font-size: 26px;
+    }
+
+    .admin-dashboard-descricao {
+        font-size: 14px;
+    }
+
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 991.98px) {
+
+    .cabecalho .navbar {
+        padding: 12px 0;
+    }
+
+    .cabecalho .navbar-nav {
+        gap: 0;
+        padding: 16px 0;
+    }
+
+    .cabecalho .nav-link {
+        min-height: auto;
+        padding: 10px 0;
+    }
+
+    .cabecalho .nav-link.ativo::after {
+        display: none;
+    }
+
+.hero-linha {
+        min-height: 440px;
+    }
+
+    .hero-conteudo h1 {
+        font-size: 40px;
+    }
+}
+
+/* ========================================
+   PRÓXIMO PASSO
+======================================== */
+
+/*
+   Card de continuidade exibido após o resultado
+   da consulta, orientando o usuário para os planos.
+*/
+.proximo-passo-card {
+    padding: 28px 32px;
+
+    background-color: var(--azul-claro);
+
+    border: 1px solid #d5e9ff;
+    border-radius: 12px;
+}
+
+/* Identificação da etapa apresentada ao usuário */
+.proximo-passo-etapa {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--azul-principal);
+
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Título principal do bloco */
+.proximo-passo-card h2 {
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* Texto complementar do próximo passo */
+.proximo-passo-card p {
+    max-width: 650px;
+    margin-bottom: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Botão utilizado para direcionar aos planos */
+.proximo-passo-botao {
+    min-height: 46px;
+    padding: 11px 20px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+
+    /* ========================================
+       NAVBAR
+    ======================================== */
+
+    .logo {
+        width: 150px;
+    }
+
+    /* ========================================
+       HERO / CAROUSEL
+    ======================================== */
+
+    .hero-slide {
+        background-position: center;
+    }
+
+    .hero-linha {
+        min-height: 390px;
+    }
+
+    .hero-conteudo {
+        padding: 48px 0;
+    }
+
+    .hero-conteudo h1 {
+        font-size: 34px;
+    }
+
+    .hero-conteudo p {
+        font-size: 16px;
+    }
+
+    /* Imagens do carousel no celular */
+
+    .hero-santorini {
+        background-image:
+            linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.92) 0%,
+                rgba(255, 255, 255, 0.78) 50%,
+                rgba(255, 255, 255, 0.35) 100%
+            ),
+            url("../img/carousel/hero-santorini.png");
+    }
+
+    .hero-paris {
+        background-image:
+            linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.92) 0%,
+                rgba(255, 255, 255, 0.78) 50%,
+                rgba(255, 255, 255, 0.35) 100%
+            ),
+            url("../img/carousel/hero-paris.png");
+    }
+
+    .hero-nova-york {
+        background-image:
+            linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.92) 0%,
+                rgba(255, 255, 255, 0.78) 50%,
+                rgba(255, 255, 255, 0.35) 100%
+            ),
+            url("../img/carousel/hero-nova-york.png");
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 10%;
+    }
+
+    /* ========================================
+       TÍTULOS DAS SEÇÕES
+    ======================================== */
+
+    .secao-titulo h2 {
+        font-size: 26px;
+    }
+
+    /* ========================================
+       COMO FUNCIONA
+    ======================================== */
+
+    .passo h3 {
+        margin-bottom: 10px;
+    }
+
+    /* ========================================
+       PLANOS
+    ======================================== */
+
+    .plano-dados {
+        margin-bottom: 22px;
+    }
+
+        /* ========================================
+       PÁGINA DE COBERTURA
+    ======================================== */
+
+    /*
+       Em telas pequenas, o conteúdo ocupa toda
+       a largura disponível e o hero fica mais compacto.
+    */
+    .cobertura-hero {
+        min-height: auto;
+
+        background-position: center;
+    }
+
+    .cobertura-conteudo {
+        max-width: 100%;
+        padding: 48px 0;
+    }
+
+    .cobertura-conteudo h1 {
+        font-size: 34px;
+    }
+
+    .cobertura-descricao {
+        font-size: 16px;
+    }
+
+    /*
+       Reduz o espaçamento interno do formulário
+       para aproveitar melhor a largura do celular.
+    */
+    .cobertura-formulario {
+        padding: 18px;
+    }
+
+        /* ========================================
+       RESULTADO DA CONSULTA DE COBERTURA
+    ======================================== */
+
+    /*
+       Reduz os espaçamentos internos dos cards
+       para melhor aproveitamento em telas pequenas.
+    */
+    .resultado-card {
+        padding: 22px;
+    }
+
+    .resultado-status h2,
+    .hash-cabecalho h2 {
+        font-size: 19px;
+    }
+
+    /*
+       Mantém rótulos e valores legíveis mesmo
+       quando a largura disponível é reduzida.
+    */
+    .resultado-dados > div,
+    .hash-dados > div {
+        gap: 12px;
+    }
+
+        /* ========================================
+       PRÓXIMO PASSO
+    ======================================== */
+
+    /*
+       Reduz os espaçamentos e permite que o botão
+       ocupe toda a largura disponível no celular.
+    */
+    .proximo-passo-card {
+        padding: 22px;
+    }
+
+    .proximo-passo-card h2 {
+        font-size: 20px;
+    }
+
+    .proximo-passo-botao {
+        width: 100%;
+        justify-content: center;
+    }
+}
+    /* ========================================
+     CONTEÚDO DO CARD DE ACESSO
+    ======================================== */
+
+/*
+    Apresentação do título e da orientação inicial
+    exibidos antes das opções de acesso.
+*/
+.login-card-introducao {
+    margin-top: 28px;
+    margin-bottom: 26px;
+    text-align: center;
+}
+
+.login-card-introducao h2 {
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.login-card-introducao p {
+    max-width: 420px;
+    margin: 0 auto;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   TIPO DE ACESSO
+======================================== */
+
+/*
+    Organiza as opções Cliente e Administrador
+    lado a lado dentro do formulário.
+*/
+.login-tipos-acesso {
+    margin-bottom: 26px;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+/*
+    Card utilizado para representar cada perfil
+    disponível na tela de acesso.
+*/
+.login-tipo-card {
+    position: relative;
+
+    min-height: 135px;
+    padding: 18px 16px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid var(--borda);
+    border-radius: 10px;
+
+    background-color: var(--branco);
+
+    text-align: center;
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/*
+    O radio permanece funcional, mas é posicionado
+    discretamente no canto superior do card.
+*/
+.login-tipo-card input {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+
+    accent-color: var(--azul-principal);
+}
+
+/*
+    Destaca automaticamente o tipo de acesso
+    selecionado pelo usuário.
+
+    A seleção utiliza o próprio estado do campo
+    radio, dispensando JavaScript nesta interação.
+*/
+.login-tipo-card:has(input:checked) {
+    border-color: var(--azul-principal);
+    background-color: #f1f8ff;
+
+    box-shadow:
+        0 0 0 2px rgba(0, 103, 184, 0.06);
+}
+
+/* Reforça o ícone correspondente à opção selecionada */
+.login-tipo-card:has(input:checked) .login-tipo-icone {
+    color: var(--azul-principal);
+}
+
+.login-tipo-icone {
+    margin-bottom: 8px;
+
+    color: var(--azul-principal);
+
+    font-size: 24px;
+    line-height: 1;
+}
+
+.login-tipo-card strong {
+    margin-bottom: 5px;
+
+    color: var(--texto-principal);
+
+    font-size: 15px;
+}
+
+.login-tipo-card small {
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* ========================================
+   CAMPOS DE ACESSO
+======================================== */
+
+.login-campo {
+    margin-bottom: 20px;
+}
+
+.login-campo > label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/*
+    Container visual compartilhado pelos campos
+    de usuário e senha.
+*/
+.login-input {
+    min-height: 50px;
+
+    display: flex;
+    align-items: center;
+
+    border: 1px solid var(--borda);
+    border-radius: 7px;
+
+    background-color: var(--branco);
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* Realça o campo quando algum elemento interno recebe foco */
+.login-input:focus-within {
+    border-color: var(--azul-principal);
+
+    box-shadow:
+        0 0 0 0.2rem rgba(0, 103, 184, 0.12);
+}
+
+.login-input-icone {
+    padding-left: 16px;
+
+    color: #829ab1;
+
+    font-size: 11px;
+}
+
+.login-input input {
+    width: 100%;
+    min-width: 0;
+
+    padding: 13px 14px;
+
+    color: var(--texto-principal);
+    background: transparent;
+
+    border: 0;
+    outline: 0;
+
+    font-size: 14px;
+}
+
+.login-input input::placeholder {
+    color: #9fb3c8;
+}
+
+/*
+    Controle visual reservado para a futura função
+    de exibir ou ocultar a senha.
+*/
+.login-senha-toggle {
+    padding: 12px 16px;
+
+    color: var(--texto-secundario);
+    background: transparent;
+
+    border: 0;
+
+    cursor: pointer;
+}
+
+/* ========================================
+   BOTÃO DE ACESSO
+======================================== */
+.login-botao {
+    min-height: 50px;
+    margin-top: 6px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    font-weight: 700;
+}
+
+/* ========================================
+   CADASTRO DE NOVO CLIENTE
+======================================== */
+
+/*
+    Apresenta o acesso ao cadastro como ação secundária,
+    preservando o botão Entrar como principal ação da tela.
+*/
+.login-cadastro {
+    margin-top: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+}
+
+.login-cadastro a {
+    color: var(--azul-principal);
+
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.login-cadastro a:hover,
+.login-cadastro a:focus {
+    color: var(--azul-escuro);
+    text-decoration: underline;
+}
+
+/* ========================================
+   RETORNO À PÁGINA INICIAL
+======================================== */
+
+/*
+    Oferece uma saída da tela de acesso sem a necessidade
+    de exibir a navegação principal nesta página.
+*/
+.login-voltar {
+    margin-top: 18px;
+    text-align: center;
+}
+
+.login-voltar a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--azul-principal);
+
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.login-voltar a:hover,
+.login-voltar a:focus {
+    color: var(--azul-escuro);
+    text-decoration: underline;
+}
+
+/* ========================================
+   AVISO ACADÊMICO
+======================================== */
+
+/*
+    Informação complementar que identifica o caráter
+    acadêmico e simplificado desta versão do acesso.
+*/
+.login-aviso {
+    margin-top: 24px;
+    padding: 15px 16px;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    color: var(--azul-escuro);
+    background-color: var(--azul-claro);
+
+    border-radius: 8px;
+}
+
+.login-aviso-icone {
+    width: 24px;
+    height: 24px;
+
+    flex: 0 0 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--branco);
+    background-color: var(--azul-principal);
+
+    border-radius: 50%;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.login-aviso strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 13px;
+}
+
+.login-aviso p {
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+    line-height: 1.5;
+}

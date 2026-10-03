@@ -1,0 +1,16 @@
+# Cache gerado pelo Python
+__pycache__/
+*.py[cod]
+
+# Ambientes virtuais Python
+.venv/
+venv/
+env/
+
+# Variáveis de ambiente / segredos
+.env
+.env.*
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db

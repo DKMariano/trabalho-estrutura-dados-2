@@ -1,0 +1,394 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Cadastrar país | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+<!-- =====================================
+     CADASTRO DE PAÍS
+====================================== -->
+<section class="admin-cadastrar-pais">
+
+    <!-- =====================================
+         CABEÇALHO DA PÁGINA
+    ====================================== -->
+    <div class="admin-cadastro-cabecalho">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="Navegação estrutural">
+            <ol class="breadcrumb admin-breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('admin_paises') }}">
+                        Países
+                    </a>
+                </li>
+
+                <li
+                    class="breadcrumb-item active"
+                    aria-current="page"
+                >
+                    Cadastrar país
+                </li>
+            </ol>
+        </nav>
+
+        <h1 class="admin-dashboard-titulo">
+            Cadastrar país
+        </h1>
+
+        <p class="admin-dashboard-descricao">
+            Adicione um novo país à base de dados do DGB SIM.
+            Nesta versão do projeto, as informações são armazenadas
+            temporariamente na estrutura utilizada pelo MVP.
+        </p>
+
+    </div>
+
+
+    <!-- =====================================
+         CONTEÚDO
+    ====================================== -->
+    <div class="row g-4 align-items-start">
+
+        <!-- =================================
+             FORMULÁRIO
+        ================================== -->
+        <div class="col-12 col-xl-8">
+
+            <div class="card admin-cadastro-card">
+
+                <div class="card-body">
+
+                    <!-- Título -->
+                    <div class="admin-cadastro-secao-titulo">
+                        <span class="admin-cadastro-barra"></span>
+
+                        <h2>
+                            Informações do país
+                        </h2>
+                    </div>
+
+
+                    <!-- =================================
+                         MENSAGEM DE ERRO
+                    ================================== -->
+                    {% if mensagem %}
+                    <div
+                        class="alert alert-danger"
+                        role="alert"
+                    >
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        {{ mensagem }}
+                    </div>
+                    {% endif %}
+
+
+                    <!-- =================================
+                         FORMULÁRIO DE CADASTRO
+                    ================================== -->
+                    <form
+                        action="{{ url_for('admin_cadastrar_pais') }}"
+                        method="POST"
+                    >
+
+                        <div class="row g-4">
+
+                            <!-- Nome -->
+                            <div class="col-12 col-md-6">
+
+                                <label
+                                    for="nome"
+                                    class="form-label"
+                                >
+                                    Nome do país
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="nome"
+                                    name="nome"
+                                    placeholder="Ex.: Itália"
+                                    value="{{ dados_formulario.get('nome', '') }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- Código -->
+                            <div class="col-12 col-md-6">
+
+                                <label
+                                    for="codigo"
+                                    class="form-label"
+                                >
+                                    Código (ISO)
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control text-uppercase"
+                                    id="codigo"
+                                    name="codigo"
+                                    placeholder="Ex.: IT"
+                                    value="{{ dados_formulario.get('codigo', '') }}"
+                                    minlength="2"
+                                    maxlength="2"
+                                    required
+                                >
+
+                                <div class="form-text">
+                                    Código de 2 letras (ISO 3166-1 alpha-2).
+                                </div>
+
+                            </div>
+
+
+                            <!-- Região -->
+                            <div class="col-12 col-md-6">
+
+                                <label
+                                    for="regiao"
+                                    class="form-label"
+                                >
+                                    Região
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <select
+                                    class="form-select"
+                                    id="regiao"
+                                    name="regiao"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Selecione a região
+                                    </option>
+
+                                    {% for regiao in regioes %}
+                                    <option
+                                        value="{{ regiao }}"
+                                        {% if dados_formulario.get('regiao') == regiao %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ regiao }}
+                                    </option>
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- Operadora -->
+                            <div class="col-12 col-md-6">
+
+                                <label
+                                    for="operadora"
+                                    class="form-label"
+                                >
+                                    Operadora local
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="operadora"
+                                    name="operadora"
+                                    placeholder="Ex.: Operadora IT"
+                                    value="{{ dados_formulario.get('operadora', '') }}"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================
+                             TECNOLOGIA
+                        ================================== -->
+                        <div class="admin-cadastro-tecnologia">
+
+                            <div class="admin-cadastro-secao-titulo mb-2">
+
+                                <span class="admin-cadastro-barra"></span>
+
+                                <h2>
+                                    Tecnologia disponível
+                                    <span class="text-danger">*</span>
+                                </h2>
+
+                            </div>
+
+                            <p class="admin-cadastro-ajuda">
+                                Selecione a tecnologia de rede disponível
+                                neste país.
+                            </p>
+
+
+                            <div class="row">
+
+                                <div class="col-12 col-md-6">
+
+                                    <select
+                                        class="form-select"
+                                        id="tecnologia"
+                                        name="tecnologia"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Selecione a tecnologia
+                                        </option>
+
+                                        {% for tecnologia in tecnologias %}
+                                        <option
+                                            value="{{ tecnologia }}"
+                                            {% if dados_formulario.get('tecnologia') == tecnologia %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            {{ tecnologia }}
+                                        </option>
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================
+                             AÇÕES
+                        ================================== -->
+                        <div class="admin-cadastro-acoes">
+
+                            <a
+                                href="{{ url_for('admin_paises') }}"
+                                class="btn btn-outline-primary admin-cadastro-botao"
+                            >
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Cancelar
+                            </a>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary admin-cadastro-botao"
+                            >
+                                <i class="bi bi-floppy me-2"></i>
+                                Salvar país
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             INFORMAÇÕES TÉCNICAS
+        ================================== -->
+        <div class="col-12 col-xl-4">
+
+            <aside class="card admin-cadastro-info">
+
+                <div class="card-body">
+
+                    <div class="admin-cadastro-info-titulo">
+
+                        <i class="bi bi-database"></i>
+
+                        <h2>
+                            Informações técnicas
+                        </h2>
+
+                    </div>
+
+
+                    <p class="admin-cadastro-info-descricao">
+                        Durante o MVP, o país será armazenado no
+                        dicionário utilizado temporariamente pela aplicação.
+                    </p>
+
+
+                    <div class="admin-cadastro-info-dados">
+
+                        <div>
+                            <strong>
+                                Chave:
+                            </strong>
+
+                            <span>
+                                Código ISO
+                            </span>
+                        </div>
+
+
+                        <div>
+                            <strong>
+                                Formato:
+                            </strong>
+
+                            <span>
+                                2 letras
+                            </span>
+                        </div>
+
+
+                        <div>
+                            <strong>
+                                Estrutura atual:
+                            </strong>
+
+                            <span>
+                                Dicionário Python
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="alert alert-primary
+                               d-flex align-items-start
+                               gap-3 mb-0"
+                        role="alert"
+                    >
+
+                        <i class="bi bi-info-circle fs-4"></i>
+
+                        <div>
+                            O código do país será utilizado posteriormente
+                            como chave única na implementação da
+                            Tabela Hash.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}DGB SIM{% endblock %}</title>
+
+
+    <!-- =====================================
+         ESTILOS
+    ====================================== -->
+
+    <!-- Bootstrap local -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"
+    >
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='bootstrap/icons/bootstrap-icons.min.css') }}"
+    >
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- =====================================
+         CABEÇALHO / NAVEGAÇÃO PRINCIPAL
+    ====================================== -->
+    {% block header %}
+
+    <header class="cabecalho">
+
+        <nav class="navbar navbar-expand-lg">
+
+            <div class="container">
+
+                <!-- Identidade visual e acesso à página inicial -->
+                <a
+                    class="navbar-brand"
+                    href="{{ url_for('inicio') }}"
+                >
+                    <img
+                        class="logo"
+                        src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
+                        alt="DGB SIM - Internet internacional com eSIM"
+                    >
+                </a>
+
+
+                <!--
+                    Controle do menu responsivo.
+                    O Bootstrap exibe este botão em telas menores.
+                -->
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#menuPrincipal"
+                    aria-controls="menuPrincipal"
+                    aria-expanded="false"
+                    aria-label="Abrir menu"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+
+                <!-- Área recolhível da navegação -->
+                <div
+                    class="collapse navbar-collapse"
+                    id="menuPrincipal"
+                >
+
+                    <!-- Navegação principal -->
+                    <ul class="navbar-nav mx-auto">
+
+                        <!--
+                            A classe "ativo" é aplicada dinamicamente
+                            conforme o endpoint atual do Flask.
+                        -->
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link {% if request.endpoint == 'inicio' %}ativo{% endif %}"
+                                href="{{ url_for('inicio') }}"
+                            >
+                                Início
+                            </a>
+
+                        </li>
+
+
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link {% if request.endpoint == 'paises' %}ativo{% endif %}"
+                                href="{{ url_for('paises') }}"
+                            >
+                                Cobertura
+                            </a>
+
+                        </li>
+
+                        <!-- <li class="nav-item">
+
+                            <a
+                                class="nav-link nav-estatico"
+                                href="#"
+                            >
+                                Planos
+                            </a>
+
+                        </li> -->
+
+                    </ul>
+                    <!--
+                        Acesso à área de autenticação.
+                    -->
+                    <a
+                        class="acesso-login"
+                        href="{{ url_for('login') }}"
+                    >
+                        <span>Login</span>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+    {% endblock %}
+
+    <!-- =====================================
+         CONTEÚDO PRINCIPAL
+    ====================================== -->
+
+    {% block content %}
+    {% endblock %}
+
+    <!-- =====================================
+        RODAPÉ
+    ====================================== -->
+    {% block footer %}
+    <footer class="rodape mt-auto py-3">
+        <div
+            class="container d-flex flex-column flex-md-row
+                justify-content-between align-items-center
+                gap-2 text-center"
+        >
+            <span class="fw-bold">DGB SIM</span>
+
+            <small>
+                Projeto acadêmico — Estrutura de Dados II
+            </small>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <!-- =====================================
+         SCRIPTS
+    ====================================== -->
+
+    <script
+        src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"
+    ></script>
+
+    <!-- JavaScript personalizado da aplicação -->
+    <script
+        src="{{ url_for('static', filename='js/main.js') }}"
+    ></script>
+
+</body>
+
+</html>

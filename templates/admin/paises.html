@@ -1,0 +1,711 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Países | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+<!-- =====================================
+     GERENCIAMENTO DE PAÍSES
+====================================== -->
+<section class="admin-paises">
+
+    <!-- =====================================
+         APRESENTAÇÃO
+    ====================================== -->
+    <section class="admin-paises-hero">
+
+        <div class="admin-dashboard-destaque"></div>
+
+        <h1 class="admin-dashboard-titulo">
+            Países
+        </h1>
+
+        <p class="admin-dashboard-descricao">
+            Visualize, consulte, cadastre, altere ou remova
+            os países atendidos pela DGB SIM.
+            O código do país é a chave utilizada na Tabela Hash.
+        </p>
+
+        <!-- Indicador -->
+        <div class="admin-paises-indicador mt-4">
+
+            <div class="card admin-indicador-card">
+
+                <div class="card-body">
+
+                    <div class="admin-indicador-icone">
+                        <i class="bi bi-globe-americas"></i>
+                    </div>
+
+                    <div class="admin-indicador-conteudo">
+
+                        <strong class="admin-indicador-valor">
+                            {{ total_paises }}
+                        </strong>
+
+                        <span class="admin-indicador-label">
+                            Países cadastrados
+                        </span>
+
+                        <span class="admin-indicador-detalhe">
+                            Total de países na base.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         BUSCA E FILTROS
+    ====================================== -->
+    <section class="card admin-paises-filtros mb-4">
+
+        <div class="card-body">
+
+            <form
+                action="{{ url_for('admin_paises') }}"
+                method="GET"
+                class="row g-3 align-items-end"
+            >
+
+                <!-- Busca -->
+                <div class="col-12 col-lg-6">
+
+                    <label
+                        for="busca"
+                        class="form-label fw-semibold"
+                    >
+                        <i class="bi bi-search me-2"></i>
+                        Buscar país
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="busca"
+                            name="busca"
+                            value="{{ busca }}"
+                            placeholder="Digite o nome do país ou o código (ex: BR)"
+                        >
+
+                        <button
+                            class="btn btn-primary px-4"
+                            type="submit"
+                        >
+                            Buscar
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Filtro por região -->
+                <div class="col-12 col-md-6 col-lg-3">
+
+                    <label
+                        for="regiao"
+                        class="form-label fw-semibold"
+                    >
+                        <i class="bi bi-funnel-fill me-2"></i>
+                        Filtrar por região
+                    </label>
+
+                    <select
+                        class="form-select"
+                        id="regiao"
+                        name="regiao"
+                    >
+
+                        <option value="">
+                            Todas
+                        </option>
+
+                        {% for regiao in regioes %}
+
+                        <option
+                            value="{{ regiao }}"
+                            {% if regiao == regiao_selecionada %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ regiao }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Cadastrar país -->
+                <div class="col-12 col-md-6 col-lg-3">
+
+                    <a
+                        href="{{ url_for('admin_cadastrar_pais') }}"
+                        class="btn btn-primary w-100"
+                    >
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Cadastrar país
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         LISTAGEM DE PAÍSES
+    ====================================== -->
+    <section class="card admin-dashboard-card admin-paises-tabela">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th>#</th>
+                            <th>País</th>
+                            <th>Código</th>
+                            <th>Região</th>
+                            <th>Operadora</th>
+                            <th>Tecnologia</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for codigo, pais in paises %}
+
+                        <tr>
+
+                            <!-- Número do registro -->
+                            <td>
+                                {{ ((pagina - 1) * por_pagina) + loop.index }}
+                            </td>
+
+
+                            <!-- País -->
+                            <td>
+                                <strong>
+                                    {{ pais.nome }}
+                                </strong>
+                            </td>
+
+
+                            <!-- Código -->
+                            <td>
+                                {{ codigo }}
+                            </td>
+
+
+                            <!-- Região -->
+                            <td>
+                                {{ pais.regiao }}
+                            </td>
+
+
+                            <!-- Operadora -->
+                            <td>
+                                {{ pais.operadora }}
+                            </td>
+
+
+                            <!-- Tecnologia -->
+                            <td>
+
+                                <span class="badge text-bg-success">
+                                    {{ pais.tecnologia }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- =====================================
+                                 AÇÕES
+                            ====================================== -->
+                            <td class="text-end">
+
+                                <!-- Visualizar -->
+                                <a
+                                    href="{{ url_for(
+                                        'admin_visualizar_pais',
+                                        codigo=codigo
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="Visualizar"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+
+                                <!-- Editar -->
+                                <a
+                                    href="{{ url_for(
+                                        'admin_editar_pais',
+                                        codigo=codigo
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="Editar"
+                                >
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+
+
+                                <!-- Excluir -->
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    title="Excluir"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalExcluir{{ codigo }}"
+                                >
+                                    <i class="bi bi-trash"></i>
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- =====================================
+                             MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+
+                             Utiliza o componente Modal nativo
+                             do Bootstrap. A exclusão somente
+                             ocorre após a confirmação do usuário.
+                        ====================================== -->
+                        <div
+                            class="modal fade"
+                            id="modalExcluir{{ codigo }}"
+                            tabindex="-1"
+                            aria-labelledby="modalExcluirLabel{{ codigo }}"
+                            aria-hidden="true"
+                        >
+
+                            <div class="modal-dialog modal-dialog-centered">
+
+                                <div class="modal-content">
+
+                                    <!-- Cabeçalho -->
+                                    <div class="modal-header">
+
+                                        <h2
+                                            class="modal-title fs-5 d-flex align-items-center gap-3"
+                                            id="modalExcluirLabel{{ codigo }}"
+                                        >
+
+                                            <span
+                                                class="d-inline-flex
+                                                       align-items-center
+                                                       justify-content-center
+                                                       rounded-circle
+                                                       bg-danger-subtle
+                                                       text-danger
+                                                       p-3"
+                                            >
+                                                <i class="bi bi-trash"></i>
+                                            </span>
+
+                                            Confirmar remoção
+
+                                        </h2>
+
+
+                                        <button
+                                            type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Fechar"
+                                        ></button>
+
+                                    </div>
+
+
+                                    <!-- Corpo -->
+                                    <div class="modal-body">
+
+                                        <p class="mb-1">
+                                            Tem certeza que deseja remover
+                                            este país da base de dados?
+                                        </p>
+
+                                        <p class="text-secondary mb-4">
+                                            Esta ação removerá o país dos
+                                            dados utilizados pela aplicação.
+                                        </p>
+
+
+                                        <!-- Informações do país -->
+                                        <div class="bg-light border rounded p-3">
+
+                                            <div class="row g-3">
+
+                                                <!-- País -->
+                                                <div class="col-6">
+
+                                                    <small
+                                                        class="text-secondary d-block"
+                                                    >
+                                                        País
+                                                    </small>
+
+                                                    <strong>
+                                                        {{ pais.nome }}
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <!-- Região -->
+                                                <div class="col-6">
+
+                                                    <small
+                                                        class="text-secondary d-block"
+                                                    >
+                                                        Região
+                                                    </small>
+
+                                                    <strong>
+                                                        {{ pais.regiao }}
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <!-- Código -->
+                                                <div class="col-6">
+
+                                                    <small
+                                                        class="text-secondary d-block"
+                                                    >
+                                                        Código
+                                                    </small>
+
+                                                    <strong>
+                                                        {{ codigo }}
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <!-- Operadora -->
+                                                <div class="col-6">
+
+                                                    <small
+                                                        class="text-secondary d-block"
+                                                    >
+                                                        Operadora
+                                                    </small>
+
+                                                    <strong>
+                                                        {{ pais.operadora }}
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <!-- Tecnologia -->
+                                                <div class="col-6">
+
+                                                    <small
+                                                        class="text-secondary d-block"
+                                                    >
+                                                        Tecnologia
+                                                    </small>
+
+                                                    <span
+                                                        class="badge text-bg-success"
+                                                    >
+                                                        {{ pais.tecnologia }}
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- Rodapé -->
+                                    <div class="modal-footer">
+
+                                        <!-- Cancelar -->
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-secondary"
+                                            data-bs-dismiss="modal"
+                                        >
+                                            Cancelar
+                                        </button>
+
+
+                                        <!-- Confirmar exclusão -->
+                                        <form
+                                            action="{{ url_for(
+                                                'admin_excluir_pais',
+                                                codigo=codigo
+                                            ) }}"
+                                            method="POST"
+                                        >
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-danger"
+                                            >
+                                                <i class="bi bi-trash me-2"></i>
+                                                Remover país
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {% else %}
+
+                        <!-- Nenhum resultado -->
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center py-5 text-secondary"
+                            >
+                                <i
+                                    class="bi bi-search d-block fs-3 mb-2"
+                                ></i>
+
+                                Nenhum país encontrado.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             RODAPÉ DA TABELA
+        ====================================== -->
+        <div
+            class="card-footer
+                   bg-white
+                   d-flex
+                   flex-wrap
+                   justify-content-between
+                   align-items-center
+                   gap-3"
+        >
+
+            <!-- Quantidade de registros -->
+            <span class="text-secondary">
+
+                {% if total_filtrados > 0 %}
+
+                    Mostrando
+
+                    {{ ((pagina - 1) * por_pagina) + 1 }}
+
+                    a
+
+                    {{
+                        [
+                            pagina * por_pagina,
+                            total_filtrados
+                        ] | min
+                    }}
+
+                    de {{ total_filtrados }} países
+
+                {% else %}
+
+                    Nenhum país encontrado
+
+                {% endif %}
+
+            </span>
+
+
+            <!-- =====================================
+                 PAGINAÇÃO
+            ====================================== -->
+            {% if total_paginas > 1 %}
+
+            <nav aria-label="Paginação dos países">
+
+                <ul class="pagination mb-0">
+
+
+                    <!-- Primeira página -->
+                    <li
+                        class="page-item
+                        {% if pagina == 1 %}
+                            disabled
+                        {% endif %}"
+                    >
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'admin_paises',
+                                pagina=1,
+                                busca=busca,
+                                regiao=regiao_selecionada
+                            ) }}"
+                            aria-label="Primeira página"
+                        >
+                            <i class="bi bi-chevron-double-left"></i>
+                        </a>
+
+                    </li>
+
+
+                    <!-- Página anterior -->
+                    <li
+                        class="page-item
+                        {% if pagina == 1 %}
+                            disabled
+                        {% endif %}"
+                    >
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'admin_paises',
+                                pagina=pagina - 1,
+                                busca=busca,
+                                regiao=regiao_selecionada
+                            ) }}"
+                            aria-label="Página anterior"
+                        >
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+
+                    </li>
+
+
+                    <!-- Números das páginas -->
+                    {% for numero in range(1, total_paginas + 1) %}
+
+                    <li
+                        class="page-item
+                        {% if numero == pagina %}
+                            active
+                        {% endif %}"
+                    >
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'admin_paises',
+                                pagina=numero,
+                                busca=busca,
+                                regiao=regiao_selecionada
+                            ) }}"
+                        >
+                            {{ numero }}
+                        </a>
+
+                    </li>
+
+                    {% endfor %}
+
+
+                    <!-- Próxima página -->
+                    <li
+                        class="page-item
+                        {% if pagina == total_paginas %}
+                            disabled
+                        {% endif %}"
+                    >
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'admin_paises',
+                                pagina=pagina + 1,
+                                busca=busca,
+                                regiao=regiao_selecionada
+                            ) }}"
+                            aria-label="Próxima página"
+                        >
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+
+                    </li>
+
+
+                    <!-- Última página -->
+                    <li
+                        class="page-item
+                        {% if pagina == total_paginas %}
+                            disabled
+                        {% endif %}"
+                    >
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'admin_paises',
+                                pagina=total_paginas,
+                                busca=busca,
+                                regiao=regiao_selecionada
+                            ) }}"
+                            aria-label="Última página"
+                        >
+                            <i class="bi bi-chevron-double-right"></i>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </nav>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Editar País | DGB SIM{% endblock %}
+
+{% block admin_content %}
+<section class="w-100">
+
+    <!-- Cabeçalho -->
+    <div class="admin-cadastro-cabecalho">
+        <nav aria-label="Navegação estrutural">
+            <ol class="breadcrumb admin-breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('admin_paises') }}">Países</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Editar país
+                </li>
+            </ol>
+        </nav>
+
+        <h1 class="admin-dashboard-titulo">Editar país</h1>
+        <p class="admin-dashboard-descricao">
+            Altere as informações do país selecionado.
+        </p>
+    </div>
+
+    <div class="row g-4 align-items-start">
+
+        <!-- Formulário -->
+        <div class="col-12 col-xl-8">
+            <div class="card admin-cadastro-card">
+                <div class="card-body">
+                    <div class="admin-cadastro-secao-titulo">
+                        <span class="admin-cadastro-barra" aria-hidden="true"></span>
+                        <h2>Informações do país</h2>
+                    </div>
+
+                    <form method="POST">
+                        <div class="row g-4">
+
+                            <div class="col-12 col-md-6">
+                                <label for="nome" class="form-label">
+                                    Nome do país <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control"
+                                       id="nome" name="nome"
+                                       value="{{ pais.nome }}" required>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="codigo" class="form-label">Código (ISO)</label>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control pe-5"
+                                           id="codigo" value="{{ codigo }}"
+                                           aria-describedby="codigo-ajuda" disabled>
+                                    <i class="bi bi-lock-fill position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"
+                                       aria-hidden="true"></i>
+                                </div>
+                                <div id="codigo-ajuda" class="form-text">
+                                    O código do país não pode ser alterado.
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="regiao" class="form-label">
+                                    Região <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control"
+                                       id="regiao" name="regiao"
+                                       value="{{ pais.regiao }}" required>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="operadora" class="form-label">
+                                    Operadora local <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control"
+                                       id="operadora" name="operadora"
+                                       value="{{ pais.operadora }}" required>
+                            </div>
+
+                        </div>
+
+                        <!-- Tecnologia -->
+                        <div class="admin-cadastro-tecnologia">
+                            <div class="admin-cadastro-secao-titulo mb-2">
+                                <span class="admin-cadastro-barra" aria-hidden="true"></span>
+                                <h2>
+                                    <label for="tecnologia" class="mb-0">
+                                        Tecnologia disponível <span class="text-danger">*</span>
+                                    </label>
+                                </h2>
+                            </div>
+                            <p id="tecnologia-ajuda" class="admin-cadastro-ajuda">
+                                Selecione a tecnologia de rede disponível neste país.
+                            </p>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <select class="form-select" id="tecnologia"
+                                            name="tecnologia"
+                                            aria-describedby="tecnologia-ajuda" required>
+                                        <option value="4G"
+                                            {% if pais.tecnologia == "4G" %}
+                                                selected
+                                            {% endif %}
+                                        >4G</option>
+                                        <option value="5G"
+                                            {% if pais.tecnologia == "5G" %}
+                                                selected
+                                            {% endif %}
+                                        >5G</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ações -->
+                        <div class="admin-cadastro-acoes">
+                            <a href="{{ url_for('admin_paises') }}"
+                               class="btn btn-outline-primary admin-cadastro-botao">
+                                <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>
+                                Cancelar
+                            </a>
+                            <button type="submit"
+                                    class="btn btn-primary admin-cadastro-botao">
+                                <i class="bi bi-floppy me-2" aria-hidden="true"></i>
+                                Salvar alterações
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações do registro atual -->
+        <div class="col-12 col-xl-4">
+            <aside class="card admin-cadastro-info">
+                <div class="card-body">
+                    <div class="admin-cadastro-info-titulo">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>
+                        <h2>Informações do país</h2>
+                    </div>
+                    <p class="admin-cadastro-info-descricao">
+                        Confira os dados do registro que está sendo editado.
+                    </p>
+                    <table class="table mb-4">
+                        <tbody>
+                            <tr>
+                                <th scope="row">País:</th>
+                                <td class="text-end">{{ pais.nome }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Código ISO:</th>
+                                <td class="text-end">{{ codigo }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Região:</th>
+                                <td class="text-end">{{ pais.regiao }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="alert alert-primary d-flex align-items-start gap-3 mb-0"
+                         role="note">
+                        <i class="bi bi-info-circle fs-4" aria-hidden="true"></i>
+                        <div>
+                            O código ISO identifica este país e permanece fixo
+                            durante a edição.
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block title %}Cobertura | DGB SIM{% endblock %}
+
+{% block content %}
+
+<main>
+
+    <!-- =====================================
+         CONSULTA DE COBERTURA
+    ====================================== -->
+    <section class="cobertura-hero">
+
+        <div class="container">
+
+            <div class="row">
+
+                <div class="col-12 col-lg-8">
+
+                    <!-- Conteúdo principal da página -->
+                    <div class="cobertura-conteudo">
+
+                        <div class="cobertura-destaque"></div>
+
+                        <h1>
+                            Consulte a cobertura<br>
+                            no seu destino
+                        </h1>
+
+                        <p>
+                            Verifique se há cobertura de internet
+                            no país que deseja visitar.
+                        </p>
+
+
+                        <!-- =====================================
+                             FORMULÁRIO DE CONSULTA                             
+                        ====================================== -->
+                        <form
+                            action="{{ url_for('paises') }}"
+                            method="POST"
+                            class="cobertura-formulario"
+                        >
+
+                            <label
+                                for="destino"
+                                class="form-label"
+                            >
+                                Destino
+                            </label>
+
+                            <div class="row g-3">
+                                
+                                <div class="col-12 col-md-7">
+
+                                    <select
+                                        id="destino"
+                                        name="destino"
+                                        class="form-select"
+                                        required
+                                    >
+
+                                        {% for codigo, pais in paises.items() %}
+
+                                            <option
+                                                value="{{ codigo }}"
+                                                {% if codigo == codigo_selecionado %}selected{% endif %}
+                                            >
+                                                {{ pais.nome }} ({{ codigo }})
+                                            </option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+
+                                <!-- Envia o código selecionado para a rota de cobertura -->
+                                <div class="col-12 col-md-5">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary w-100"
+                                    >
+                                        Consultar cobertura
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Orientação complementar para o usuário -->
+                            <p class="cobertura-ajuda">
+                                Selecione o país que deseja verificar
+                                a disponibilidade de internet.
+                            </p>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         RESULTADO DA CONSULTA
+    ====================================== -->
+    {% if resultado %}
+
+        <section class="resultado-cobertura py-5">
+
+            <div class="container">
+
+                <div class="row g-4">
+
+
+                    <!-- =====================================
+                         COBERTURA DO DESTINO
+                    ====================================== -->
+                    <div class="col-12 col-lg-6">
+
+                        <article class="resultado-card resultado-disponivel h-100">
+
+                            <!-- Status da cobertura -->
+                            <div class="resultado-status">
+
+                                <div
+                                    class="resultado-status-icone"
+                                    aria-hidden="true"
+                                >
+                                    ✓
+                                </div>
+
+                                <div>
+
+                                    <h2>
+                                        Cobertura disponível!
+                                    </h2>
+
+                                    <p>
+                                        O DGB SIM possui cobertura
+                                        para este destino.
+                                    </p>
+
+                                </div>
+
+                            </div>
+                            
+                            <dl class="resultado-dados">
+
+                                <div>
+                                    <dt>País</dt>
+
+                                    <dd>
+                                        {{ resultado.nome }}
+                                        ({{ codigo_selecionado }})
+                                    </dd>
+                                </div>
+
+
+                                <div>
+                                    <dt>Região</dt>
+                                    <dd>{{ resultado.regiao }}</dd>
+                                </div>
+
+
+                                <div>
+                                    <dt>Operadora</dt>
+                                    <dd>{{ resultado.operadora }}</dd>
+                                </div>
+
+
+                                <div>
+                                    <dt>Tecnologia</dt>
+
+                                    <dd>
+                                        <span class="tecnologia-badge">
+                                            {{ resultado.tecnologia }}
+                                        </span>
+                                    </dd>
+                                </div>
+
+                            </dl>
+
+                        </article>
+
+                    </div>
+
+
+                    <!-- =====================================
+                         INSTRUMENTAÇÃO DA TABELA HASH
+                    ====================================== -->
+                    <div class="col-12 col-lg-6">
+
+                        <article class="resultado-card hash-card h-100">
+
+                            <!-- Identificação da consulta instrumentada -->
+                            <div class="hash-cabecalho">
+
+                                <div
+                                    class="hash-icone"
+                                    aria-hidden="true"
+                                >
+                                    #
+                                </div>
+
+                                <div>
+
+                                    <h2>
+                                        Instrumentação prevista da Tabela Hash
+                                    </h2>
+
+                                    <p>
+                                        Informações da busca pelo código
+                                        do país.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Métricas demonstrativas  -->
+                            <dl class="hash-dados">
+
+                                <div>
+                                    <dt>Código consultado</dt>
+                                    <dd>{{ codigo_selecionado }}</dd>
+                                </div>
+
+
+                                <div>
+                                    <dt>Índice calculado</dt>
+                                    <dd>{{ resultado.metricas_hash.indice }}</dd>
+                                </div>
+
+
+                                <div>
+                                    <dt>Comparações nesta busca</dt>
+                                    <dd>{{ resultado.metricas_hash.comparacoes }}</dd>
+                                </div>
+
+
+                                <div>
+                                    <dt>Registros neste bucket</dt>
+                                    <dd>{{ resultado.metricas_hash.registros_bucket }}</dd>
+                                </div>
+
+                            </dl>
+
+                            <!-- Métricas demonstrativas  -->
+                            <div class="hash-observacao">
+
+                                <span aria-hidden="true">ⓘ</span>
+
+                                <p>
+                                    No MVP, as métricas apresentadas são
+                                    demonstrativas. Na implementação definitiva,
+                                    esses valores serão calculados pela Tabela Hash
+                                    com tratamento de colisões.
+                                </p>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    {% endif %}
+
+
+    <!-- =====================================
+         PRÓXIMO PASSO
+    ====================================== -->
+    <section class="cobertura-proximo-passo pb-5">
+
+        <div class="container">
+
+            <div class="proximo-passo-card">
+
+                <div class="row align-items-center g-4">
+
+                    <!-- Orientação para continuidade da jornada -->
+                    <div class="col-12 col-md">
+
+                        <span class="proximo-passo-etapa">
+                            Próximo passo
+                        </span>
+
+                        <h2>
+                            Confira os planos disponíveis
+                        </h2>
+
+                        <p>
+                            Encontre o pacote ideal para sua viagem
+                            e escolha a opção que melhor atende
+                            às suas necessidades.
+                        </p>
+
+                    </div>
+                    
+                    <div class="col-12 col-md-auto">
+
+                        <button
+                            type="button"
+                            class="btn btn-primary proximo-passo-botao"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalPlanosIndisponiveis"
+                        >
+                            Ver planos disponíveis
+                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Aviso de recurso em desenvolvimento -->
+    <div
+        class="modal fade"
+        id="modalPlanosIndisponiveis"
+        tabindex="-1"
+        aria-labelledby="modalPlanosIndisponiveisTitulo"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-danger text-white">
+
+                <div class="modal-header">
+                    <h2
+                        class="modal-title fs-5"
+                        id="modalPlanosIndisponiveisTitulo"
+                    >
+                        <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
+                        Recurso em desenvolvimento
+                    </h2>
+
+                    <button
+                        type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        aria-label="Fechar"
+                    ></button>
+                </div>
+
+                <div class="modal-body">
+                    A consulta de planos não faz parte da Etapa 01 do projeto.
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal"
+                    >
+                        Entendi
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</main>
+
+{% endblock %}

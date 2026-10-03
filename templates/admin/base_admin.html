@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+
+<!-- =====================================
+     ÁREA ADMINISTRATIVA
+====================================== -->
+<div class="admin-layout">
+
+    <!-- =====================================
+         CABEÇALHO ADMINISTRATIVO
+    ====================================== -->
+    <header class="admin-topo">
+
+        <nav class="navbar admin-navbar">
+
+            <!-- Identidade visual -->
+            <a
+                class="navbar-brand"
+                href="{{ url_for('admin') }}"
+            >
+                <img
+                    src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
+                    alt="DGB SIM"
+                    class="admin-logo"
+                >
+            </a>
+
+            <!-- Identificação do usuário -->
+            <div class="admin-usuario ms-auto">
+                Administrador
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =====================================
+         CORPO DA ÁREA ADMINISTRATIVA
+    ====================================== -->
+    <div class="admin-corpo">
+
+        <!-- Menu lateral -->
+        <aside class="admin-menu">
+
+            <nav class="nav flex-column admin-menu-nav">
+
+                <a
+                    class="nav-link"
+                    href="{{ url_for('admin') }}"
+                >
+                    <i class="bi bi-house-fill"></i>
+                    Dashboard
+                </a>
+
+                <a
+                    class="nav-link"
+                    href="{{ url_for('admin_paises') }}"
+                >
+                    <i class="bi bi-globe-americas"></i>
+
+                    <span>
+                        Países
+                    </span>
+                </a>
+
+                <!-- <a class="nav-link" href="#">
+                    <i class="bi bi-wifi"></i>
+                    Cobertura
+                </a> -->
+
+<a
+                class="nav-link
+                    {% if pagina_ativa == 'tabela_hash' %}active{% endif %}"
+                href="{{ url_for('admin_tabela_hash') }}"
+            >
+                <i class="bi bi-bar-chart-fill"></i>
+                <span>Tabela Hash</span>
+            </a>
+
+                <hr>
+
+                <a
+                    class="nav-link"
+                    href="{{ url_for('login') }}"
+                >
+                    <i class="bi bi-box-arrow-right"></i>
+                    Sair
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- =====================================
+             CONTEÚDO ESPECÍFICO DE CADA PÁGINA
+        ====================================== -->
+        <main class="admin-conteudo">
+
+            {% block admin_content %}
+            {% endblock %}
+
+        </main>
+
+    </div>
+
+</div>
+
+{% endblock %}

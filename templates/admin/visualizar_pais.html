@@ -1,0 +1,115 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Visualizar País | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+<section>
+
+    <div class="mb-4">
+
+        <h1 class="admin-dashboard-titulo">
+            {{ pais.nome }}
+        </h1>
+
+        <p class="admin-dashboard-descricao">
+            Informações do país selecionado.
+        </p>
+
+    </div>
+
+
+    <div class="card admin-dashboard-card">
+
+        <div class="card-body p-4">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <small class="text-secondary">
+                        Código
+                    </small>
+
+                    <p class="fw-bold mb-0">
+                        {{ codigo }}
+                    </p>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-secondary">
+                        País
+                    </small>
+
+                    <p class="fw-bold mb-0">
+                        {{ pais.nome }}
+                    </p>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-secondary">
+                        Região
+                    </small>
+
+                    <p class="fw-bold mb-0">
+                        {{ pais.regiao }}
+                    </p>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-secondary">
+                        Operadora
+                    </small>
+
+                    <p class="fw-bold mb-0">
+                        {{ pais.operadora }}
+                    </p>
+                </div>
+
+
+                <div class="col-md-6">
+                    <small class="text-secondary">
+                        Tecnologia
+                    </small>
+
+                    <p class="mb-0">
+                        <span class="badge text-bg-success">
+                            {{ pais.tecnologia }}
+                        </span>
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="d-flex gap-2 mt-4">
+
+                <a
+                    href="{{ url_for(
+                        'admin_editar_pais',
+                        codigo=codigo
+                    ) }}"
+                    class="btn btn-primary"
+                >
+                    <i class="bi bi-pencil me-2"></i>
+                    Editar
+                </a>
+
+                <a
+                    href="{{ url_for('admin_paises') }}"
+                    class="btn btn-outline-secondary"
+                >
+                    Voltar
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
