@@ -1,7 +1,6 @@
 # DIÁRIO DE ALTERAÇÕES
 
 ## 06/09/2026
-
 ### ATUALIZAÇÃO E INTEGRAÇÃO DAS BRANCHES — DIMITRIUS
 * Criei a branch `feature/parte-dimitrius` a partir da `main` atualizada e integrei as alterações das branches `guilherme-development` e `feature/parte_bruno`.
 * Durante o merge da branch do Bruno, houve conflito em `Ordenacao.h` e `Ordenacao.cpp`, pois esses arquivos haviam sido reorganizados pelo Guilherme.
@@ -25,7 +24,6 @@
 * O algoritmo foi validado com vetores misto, ordenado e inversamente ordenado. Para `{8, 5, 3, 7, 6, 2, 1, 4}`, foram registradas 20 comparações e 37 movimentações; para `{1, 2, 3, 4, 5, 6, 7, 8}`, 11 comparações e 22 movimentações; e para `{8, 7, 6, 5, 4, 3, 2, 1}`, 20 comparações e 38 movimentações. Nos três testes o vetor foi ordenado corretamente.
 
 ### IMPLEMENTAÇÃO E ADAPTAÇÃO DO QUICK SORT — DIMITRIUS
-
 * Implementei o algoritmo Quick Sort na classe `Ordenacao`, utilizando como referência o código apresentado no material da professora.
 * Mantive a estrutura principal do algoritmo apresentado no material, composta por uma função de partição, uma função auxiliar recursiva de ordenação e uma função principal para iniciar o Quick Sort.
 * O código original utilizava `Item *A`, o tipo `Indice`, acesso ao campo `Chave` e indexação baseada nas posições de `1` até `n`. Como o projeto foi padronizado para utilizar `std::vector<int>`, adaptei a implementação para trabalhar diretamente com valores inteiros e índices de `0` até `n - 1`.
@@ -60,77 +58,46 @@
 ## 02/10/2026
 
 ### DESENVOLVIMENTO DA INTERFACE WEB E ÁREA ADMINISTRATIVA — DIMITRIUS
-
 * Dei continuidade ao desenvolvimento da interface web do projeto DGB SIM utilizando Python, Flask, HTML, CSS, Jinja e Bootstrap.
-
 * Organizei a interface pública da aplicação, mantendo a página inicial, a consulta de cobertura e a tela de acesso integradas por meio das rotas do Flask.
-
 * Mantive os dados temporários dos países em um dicionário Python durante a construção do MVP, permitindo testar as funcionalidades da interface antes da implementação definitiva da Tabela Hash.
-
 * Desenvolvi a consulta de cobertura por país, permitindo selecionar um país e visualizar informações como nome, região, operadora e tecnologia disponível.
-
 * Estruturei a tela de acesso ao sistema com as opções de Cliente e Administrador. Para esta etapa, implementei somente o acesso administrativo, utilizando credenciais temporárias para permitir a navegação e demonstração da área administrativa.
-
 * Mantive a opção de cadastro de cliente apenas como elemento visual da interface, exibindo uma mensagem informando que essa funcionalidade será disponibilizada em uma etapa posterior do projeto.
 
 ### DESENVOLVIMENTO DO PAINEL ADMINISTRATIVO — DIMITRIUS
-
 * Criei uma estrutura própria para a área administrativa por meio do template `admin/base_admin.html`, reutilizando o template principal da aplicação e evitando a repetição do cabeçalho, menu lateral e estrutura de navegação nas diferentes páginas administrativas.
-
 * Desenvolvi o Dashboard administrativo com indicadores calculados a partir dos dados atualmente disponíveis na aplicação.
-
 * Adicionei ao Dashboard atalhos para as principais funcionalidades administrativas e uma visualização dos países disponíveis no sistema.
-
 * Criei o menu lateral da área administrativa com acesso ao Dashboard, gerenciamento de Países, Cobertura e futura visualização da Tabela Hash.
-
 * Ajustei a identificação visual da página ativa no menu administrativo para facilitar a navegação entre as diferentes funcionalidades.
 
 ### GERENCIAMENTO DE PAÍSES — DIMITRIUS
-
 * Desenvolvi a tela administrativa de gerenciamento de países seguindo a identidade visual definida para o DGB SIM.
-
 * Organizei os países em uma tabela contendo as principais informações de cada registro, como código, nome do país, região, operadora, tecnologia e situação da cobertura.
-
 * Adicionei à interface recursos de busca e filtragem para facilitar a localização dos países cadastrados.
-
 * Adicionei os controles visuais para consultar, editar e excluir registros, além do botão destinado ao cadastro de novos países.
-
 * Implementei uma confirmação antes da exclusão de um país utilizando o componente Modal do Bootstrap, evitando que a remoção seja realizada imediatamente após o clique no botão de exclusão.
-
 * Desenvolvi a tela de cadastro de países com campos para nome, código ISO de duas letras, região, operadora e tecnologias disponíveis.
-
 * Organizei a tela de cadastro utilizando componentes e classes do Bootstrap sempre que possível, mantendo CSS próprio apenas para os elementos necessários à identidade visual do DGB SIM.
 
 ### ORGANIZAÇÃO E REFATORAÇÃO DA INTERFACE — DIMITRIUS
-
 * Refatorei os estilos da área administrativa para remover regras CSS duplicadas e reduzir conflitos entre componentes.
-
 * Mantive a utilização do Bootstrap para componentes comuns, como cards, tabelas, formulários, botões, alertas e modais, utilizando CSS personalizado principalmente para cores, espaçamento e identidade visual específica do projeto.
-
 * Mantive separadas as responsabilidades entre os templates públicos e administrativos, facilitando a continuidade do desenvolvimento das próximas funcionalidades.
-
 * A estrutura desenvolvida nesta fase funciona como MVP da interface. A implementação definitiva da Tabela Hash e a persistência dos países em arquivo JSON serão integradas posteriormente, substituindo os dados temporários utilizados durante a construção e validação visual da aplicação.
 
 ## 03/10/2026
-
 ### ANÁLISE DA CAMADA DE APRESENTAÇÃO — DIMITRIUS
-
 * Analisei a estrutura do MVP do DGB SIM para planejar uma refatoração conservadora do HTML e do CSS, preservando as funcionalidades e a identidade visual existentes.
-
 * Conferi a organização dos 11 templates HTML/Jinja, a herança entre `base.html`, `admin/base_admin.html` e as páginas derivadas, além das dependências entre CSS, Python e componentes Bootstrap.
-
 * Identifiquei que o arquivo `style.css` possuía 3.504 linhas e que o arquivo `main.js` estava vazio. Os comportamentos interativos existentes utilizavam principalmente os componentes do Bootstrap.
-
 * Diferenciei duplicações reais de regras responsivas. Preservei os seletores que reaparecem em media queries para ajustar a interface em diferentes larguras de tela.
-
 * Conferi as classes geradas dinamicamente pelo Python e utilizadas pelo Jinja, como `.hero-santorini`, `.hero-paris` e `.hero-nova-york`, evitando sua remoção incorreta.
 
 ### REFATORAÇÃO DO CSS — DIMITRIUS
-
 * Refatorei o arquivo `static/css/style.css`, reduzindo sua extensão de 3.504 para 3.246 linhas, sem estabelecer uma meta artificial de redução.
-
 * Removi as regras não utilizadas `.usuario`, `.usuario-icone` e `.usuario-seta`, incluindo o ajuste responsivo associado à antiga classe `.usuario`.
-
 * Consolidei sete conjuntos de regras com declarações iguais, agrupando os seletores existentes:
   * `.resultado-status` e `.hash-cabecalho`;
   * `.resultado-dados > div` e `.hash-dados > div`;
@@ -139,101 +106,59 @@
   * `.admin-acoes-card` e `.admin-dashboard-card`;
   * `.admin-cadastro-secao-titulo` e `.admin-cadastro-info-titulo`;
   * `.admin-cadastro-secao-titulo h2` e `.admin-cadastro-info-titulo h2`.
-
 * Reduzi espaços vazios excessivos, mantendo os comentários de organização e a posição das demais regras.
-
 * Preservei as declarações dos seletores mantidos, os contextos responsivos e os estilos específicos da identidade visual do projeto.
-
 * Nesta refatoração, não foi necessário alterar HTML, Jinja, Python, JavaScript, rotas ou formulários.
 
 ### VALIDAÇÃO DA REFATORAÇÃO — DIMITRIUS
-
 * Realizei a compilação dos templates Jinja e a renderização de 12 cenários de páginas, sem erros.
-
 * Comparei as declarações CSS antes e depois da refatoração e confirmei a preservação dos estilos associados aos seletores mantidos.
-
 * Conferi as regras atravessadas pelos agrupamentos e não identifiquei concorrência nos elementos das páginas renderizadas.
-
 * A comparação visual em navegador não foi realizada no ambiente utilizado, permanecendo necessária a conferência final da interface.
 
 ### PADRONIZAÇÃO DA TELA DE EDIÇÃO DE PAÍSES — DIMITRIUS
-
 * Elaborei e aprovei uma proposta visual para aproximar a tela de edição da tela de cadastro de países.
-
 * Produzi uma nova versão completa do template `templates/admin/editar_pais.html`, organizando o formulário à esquerda e um painel de informações do registro à direita.
-
 * Adicionei a navegação estrutural “Países / Editar país” e organizei os campos em duas colunas, utilizando a grade responsiva do Bootstrap.
-
 * Mantive o código ISO bloqueado para edição e acrescentei uma orientação explicando que esse identificador não pode ser alterado.
-
 * Organizei a tecnologia disponível em uma seção própria e padronizei os botões “Cancelar” e “Salvar alterações”.
-
 * Preservei o método `POST`, os nomes dos campos, os valores preenchidos e as condições Jinja utilizadas para selecionar a tecnologia.
-
 * Mantive Região como campo de texto e preservei as opções 4G e 5G existentes no formulário original de edição.
-
 * Reutilizei as classes CSS da tela de cadastro, sem necessidade de acrescentar ou remover estilos.
-
 * O novo template foi renderizado sem erros. A conferência visual final permaneceu pendente.
 
 ### AVISO SOBRE A CONSULTA DE PLANOS — DIMITRIUS
-
 * Preparei a alteração do botão “Ver planos disponíveis”, na página pública de cobertura, para abrir um modal em vez de navegar para a consulta de planos.
-
 * Utilizei o componente Modal do Bootstrap, acionado pelos atributos `data-bs-toggle` e `data-bs-target`, sem acrescentar JavaScript personalizado.
-
 * Defini o título “Recurso em desenvolvimento” e a mensagem “A consulta de planos não faz parte da Etapa 01 do projeto”.
-
 * Configurei o modal com fundo vermelho e texto branco, utilizando `bg-danger` e `text-white`, além do botão de fechamento branco e do botão “Entendi”.
-
 * Mantive o modal fora da condição de exibição do resultado da consulta e dentro do bloco de conteúdo da página.
-
 * A alteração utiliza os recursos existentes do Bootstrap e não exige CSS adicional.
 
 ### AJUSTES DE RESPONSIVIDADE DO LOGIN — DIMITRIUS
-
 * Identifiquei que a tela de login mantinha a divisão em duas colunas, com proporções de 47% e 53%, mesmo em telas menores, além de espaçamentos internos elevados.
-
 * Preparei o ajuste do elemento `.login-container` com as classes Bootstrap `d-flex flex-column d-lg-grid`, permitindo empilhar os painéis abaixo de 992px e manter a apresentação em duas colunas no desktop.
-
 * Preparei media queries específicas para reduzir espaçamentos, tamanhos de fontes, logos e ícones em tablets e celulares.
-
 * Ajustei o comportamento dos cards de seleção de perfil para permitir uma única coluna em telas inferiores a 360px.
-
 * Acrescentei orientações para permitir que os conteúdos encolham e que a área de cadastro quebre linha quando necessário.
-
 * Os ajustes preservam os campos, os métodos de envio e a lógica de autenticação. A validação visual em diferentes larguras de tela permaneceu pendente.
 
 ### INCLUSÃO DE RODAPÉ COMPARTILHADO — DIMITRIUS
-
 * Atualizei o `templates/base.html` para incluir um rodapé compartilhado após o conteúdo principal e antes dos scripts.
-
 * Adicionei ao `body` as classes Bootstrap `d-flex flex-column min-vh-100` e utilizei `mt-auto` no rodapé para posicioná-lo no final da tela quando o conteúdo for curto.
-
 * Organizei o rodapé com o nome “DGB SIM” e a identificação “Projeto acadêmico — Estrutura de Dados II”.
-
 * Utilizei classes Bootstrap para espaçamento, alinhamento e adaptação entre disposição vertical no celular e horizontal em telas maiores.
-
 * Criei o bloco Jinja `footer`, permitindo que os templates derivados controlem sua exibição.
-
 * Defini a ocultação do rodapé no login por meio de `{% block footer %}{% endblock %}`.
-
 * Preparei a classe `.rodape` com fundo azul-escuro e texto branco, reutilizando as variáveis de cores do projeto.
-
 * Conferi a estrutura do `base.html` atualizado. As demais páginas recebem o rodapé por herança, sem necessidade de alterações individuais.
 
 ### PRESERVAÇÃO DO ESCOPO DO MVP — DIMITRIUS
-
 * Mantive o uso temporário do dicionário Python para os dados dos países.
-
 * As alterações do dia concentraram-se na organização do CSS, padronização da interface, comunicação sobre recursos ainda não implementados, responsividade e inclusão do rodapé.
-
 * Não implementei a Tabela Hash definitiva, persistência em JSON, contratação de planos ou cadastro de clientes nesta rodada de alterações.
 
 ### DOCUMENTAÇÃO DO PROJETO — README — DIMITRIUS
-
 * Elaborei o README do projeto DGB SIM para centralizar sua apresentação e facilitar a compreensão do trabalho pela equipe.
-
 * Registrei o contexto acadêmico e o objetivo do sistema, diferenciando o MVP atual das implementações previstas para as próximas etapas.
-
 * A documentação servirá como referência para acompanhar a evolução do projeto e deverá ser atualizada conforme novas funcionalidades forem concluídas.
