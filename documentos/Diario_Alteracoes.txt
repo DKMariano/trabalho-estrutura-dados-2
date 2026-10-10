@@ -162,3 +162,42 @@
 * Elaborei o README do projeto DGB SIM para centralizar sua apresentação e facilitar a compreensão do trabalho pela equipe.
 * Registrei o contexto acadêmico e o objetivo do sistema, diferenciando o MVP atual das implementações previstas para as próximas etapas.
 * A documentação servirá como referência para acompanhar a evolução do projeto e deverá ser atualizada conforme novas funcionalidades forem concluídas.
+
+## 10/10/2026
+
+### REFATORAÇÃO CONSERVADORA DO HTML E CSS — DIMITRIUS
+* Dei continuidade à organização da camada de apresentação do DGB SIM, preservando as funcionalidades e a aparência existente.
+* As alterações ficaram restritas aos arquivos `static/css/style.css`, `templates/admin/paises.html` e `templates/admin/tabela_hash.html`.
+* Mantive o backend, as rotas, os dados provisórios, as imagens, os arquivos do Bootstrap e o JavaScript sem alterações.
+
+### LIMPEZA E CONSOLIDAÇÃO DO CSS — DIMITRIUS
+* Removi as duas ocorrências da classe `.cobertura-descricao`, uma geral e outra responsiva, após identificar que ela não era utilizada pelos templates nem pelos dados dinâmicos.
+* Removi também o comentário que ficou sem correspondência após a exclusão dessa classe.
+* Reuni em uma única regra as propriedades de `.plano-imagem`, que estavam distribuídas em dois blocos complementares.
+* Preservei os valores de transição, largura, altura, ajuste da imagem e arredondamento das bordas, mantendo o efeito visual existente.
+* Mantive as cores, dimensões, imagens, breakpoints e a ordem das demais regras. As sobreposições responsivas preexistentes do login não foram corrigidas nesta rodada.
+
+### CORREÇÃO DA ESTRUTURA DOS MODAIS DE EXCLUSÃO — DIMITRIUS
+* Corrigi o posicionamento dos modais de confirmação de exclusão em `templates/admin/paises.html`. Anteriormente, eles estavam entre as linhas dentro do `tbody`, fazendo o navegador reparar automaticamente uma estrutura HTML inválida.
+* Passei a renderizar os modais em um laço Jinja próprio, antes da tabela e dentro do mesmo contêiner.
+* Atribuí um identificador único a cada formulário de exclusão, utilizando `formExcluir{{ codigo }}`.
+* Vinculei explicitamente o botão “Remover país” ao formulário correspondente por meio do atributo HTML `form`, mantendo o botão fora do formulário e preservando a disposição do rodapé do modal.
+* Preservei os IDs dos modais, as informações dos países, os botões, as classes Bootstrap e o envio por `POST` para a rota de exclusão correspondente.
+* Mantive os recursos de busca, filtro regional, paginação, visualização, edição e cadastro da listagem.
+
+### REUTILIZAÇÃO DOS INDICADORES DO PAINEL HASH — DIMITRIUS
+* Refatorei os quatro cards de indicadores em `templates/admin/tabela_hash.html`, eliminando a repetição da mesma estrutura HTML.
+* Criei uma lista local de apresentação no Jinja, contendo o ícone, o valor, o título e a descrição de cada indicador.
+* Utilizei um laço para renderizar os cards de elementos inseridos, capacidade, colisões e fator de carga.
+* Preservei a ordem dos indicadores, a grade responsiva do Bootstrap, as classes, os ícones e os textos existentes.
+* Mantive a formatação do fator de carga com duas casas decimais e a origem provisória das métricas, calculadas a partir do dicionário Python.
+
+### VALIDAÇÃO DA REFATORAÇÃO — DIMITRIUS
+* Conforme o relatório de validação, os 11 templates Jinja foram compilados nas versões original e refatorada.
+* Foram verificados 14 cenários HTTP em cada versão, todos com resposta de status 200, mantendo o mesmo mapa de rotas e métodos.
+* Foram realizadas 42 comparações visuais, abrangendo os 14 cenários nas larguras de 1440, 768 e 375 pixels, com altura de viewport de 900 pixels.
+* As capturas comparadas apresentaram resultados idênticos nas condições de teste. Também foram preservados os textos renderizados, os controles dos formulários, as posições, as dimensões e as propriedades visuais verificadas.
+* Os cenários incluíram página inicial, login, consulta de cobertura vazia e preenchida, dashboard, listagem de países, segunda página, resultado vazio, filtro regional, cadastro, visualização, edição, painel Hash e modal de exclusão aberto.
+* A associação dos cinco botões de exclusão da primeira página aos respectivos formulários foi conferida. O envio de um `POST` para `/admin/paises/IT/excluir` foi interceptado durante o teste para evitar a remoção efetiva do registro.
+* Para evitar diferenças temporais nas capturas, o GIF do depoimento foi mascarado igualmente nas duas versões, o carrossel foi pausado e as animações foram desativadas somente no navegador de teste. Os arquivos originais foram preservados.
+* A validação ficou limitada aos cenários e às larguras descritos, sem representar cobertura de todos os navegadores e tamanhos de tela.

@@ -181,6 +181,210 @@
 
             <div class="table-responsive">
 
+                {% for codigo, pais in paises %}
+                <!-- =====================================
+                     MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+
+                     Utiliza o componente Modal nativo
+                     do Bootstrap. A exclusão somente
+                     ocorre após a confirmação do usuário.
+                ====================================== -->
+                <div
+                    class="modal fade"
+                    id="modalExcluir{{ codigo }}"
+                    tabindex="-1"
+                    aria-labelledby="modalExcluirLabel{{ codigo }}"
+                    aria-hidden="true"
+                >
+
+                    <div class="modal-dialog modal-dialog-centered">
+
+                        <div class="modal-content">
+
+                            <!-- Cabeçalho -->
+                            <div class="modal-header">
+
+                                <h2
+                                    class="modal-title fs-5 d-flex align-items-center gap-3"
+                                    id="modalExcluirLabel{{ codigo }}"
+                                >
+
+                                    <span
+                                        class="d-inline-flex
+                                               align-items-center
+                                               justify-content-center
+                                               rounded-circle
+                                               bg-danger-subtle
+                                               text-danger
+                                               p-3"
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                    </span>
+
+                                    Confirmar remoção
+
+                                </h2>
+
+
+                                <button
+                                    type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Fechar"
+                                ></button>
+
+                            </div>
+
+
+                            <!-- Corpo -->
+                            <div class="modal-body">
+
+                                <p class="mb-1">
+                                    Tem certeza que deseja remover
+                                    este país da base de dados?
+                                </p>
+
+                                <p class="text-secondary mb-4">
+                                    Esta ação removerá o país dos
+                                    dados utilizados pela aplicação.
+                                </p>
+
+
+                                <!-- Informações do país -->
+                                <div class="bg-light border rounded p-3">
+
+                                    <div class="row g-3">
+
+                                        <!-- País -->
+                                        <div class="col-6">
+
+                                            <small
+                                                class="text-secondary d-block"
+                                            >
+                                                País
+                                            </small>
+
+                                            <strong>
+                                                {{ pais.nome }}
+                                            </strong>
+
+                                        </div>
+
+
+                                        <!-- Região -->
+                                        <div class="col-6">
+
+                                            <small
+                                                class="text-secondary d-block"
+                                            >
+                                                Região
+                                            </small>
+
+                                            <strong>
+                                                {{ pais.regiao }}
+                                            </strong>
+
+                                        </div>
+
+
+                                        <!-- Código -->
+                                        <div class="col-6">
+
+                                            <small
+                                                class="text-secondary d-block"
+                                            >
+                                                Código
+                                            </small>
+
+                                            <strong>
+                                                {{ codigo }}
+                                            </strong>
+
+                                        </div>
+
+
+                                        <!-- Operadora -->
+                                        <div class="col-6">
+
+                                            <small
+                                                class="text-secondary d-block"
+                                            >
+                                                Operadora
+                                            </small>
+
+                                            <strong>
+                                                {{ pais.operadora }}
+                                            </strong>
+
+                                        </div>
+
+
+                                        <!-- Tecnologia -->
+                                        <div class="col-6">
+
+                                            <small
+                                                class="text-secondary d-block"
+                                            >
+                                                Tecnologia
+                                            </small>
+
+                                            <span
+                                                class="badge text-bg-success"
+                                            >
+                                                {{ pais.tecnologia }}
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Rodapé -->
+                            <div class="modal-footer">
+
+                                <!-- Cancelar -->
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    data-bs-dismiss="modal"
+                                >
+                                    Cancelar
+                                </button>
+
+
+                                <!-- O botão externo preserva a disposição original do rodapé. -->
+                                <form
+                                    id="formExcluir{{ codigo }}"
+                                    action="{{ url_for(
+                                        'admin_excluir_pais',
+                                        codigo=codigo
+                                    ) }}"
+                                    method="POST"
+                                ></form>
+
+                                <button
+                                    type="submit"
+                                    form="formExcluir{{ codigo }}"
+                                    class="btn btn-danger"
+                                >
+                                    <i class="bi bi-trash me-2"></i>
+                                    Remover país
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+                {% endfor %}
+
+
                 <table class="table table-hover align-middle mb-0">
 
                     <thead class="table-light">
@@ -291,207 +495,6 @@
 
                         </tr>
 
-
-                        <!-- =====================================
-                             MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
-
-                             Utiliza o componente Modal nativo
-                             do Bootstrap. A exclusão somente
-                             ocorre após a confirmação do usuário.
-                        ====================================== -->
-                        <div
-                            class="modal fade"
-                            id="modalExcluir{{ codigo }}"
-                            tabindex="-1"
-                            aria-labelledby="modalExcluirLabel{{ codigo }}"
-                            aria-hidden="true"
-                        >
-
-                            <div class="modal-dialog modal-dialog-centered">
-
-                                <div class="modal-content">
-
-                                    <!-- Cabeçalho -->
-                                    <div class="modal-header">
-
-                                        <h2
-                                            class="modal-title fs-5 d-flex align-items-center gap-3"
-                                            id="modalExcluirLabel{{ codigo }}"
-                                        >
-
-                                            <span
-                                                class="d-inline-flex
-                                                       align-items-center
-                                                       justify-content-center
-                                                       rounded-circle
-                                                       bg-danger-subtle
-                                                       text-danger
-                                                       p-3"
-                                            >
-                                                <i class="bi bi-trash"></i>
-                                            </span>
-
-                                            Confirmar remoção
-
-                                        </h2>
-
-
-                                        <button
-                                            type="button"
-                                            class="btn-close"
-                                            data-bs-dismiss="modal"
-                                            aria-label="Fechar"
-                                        ></button>
-
-                                    </div>
-
-
-                                    <!-- Corpo -->
-                                    <div class="modal-body">
-
-                                        <p class="mb-1">
-                                            Tem certeza que deseja remover
-                                            este país da base de dados?
-                                        </p>
-
-                                        <p class="text-secondary mb-4">
-                                            Esta ação removerá o país dos
-                                            dados utilizados pela aplicação.
-                                        </p>
-
-
-                                        <!-- Informações do país -->
-                                        <div class="bg-light border rounded p-3">
-
-                                            <div class="row g-3">
-
-                                                <!-- País -->
-                                                <div class="col-6">
-
-                                                    <small
-                                                        class="text-secondary d-block"
-                                                    >
-                                                        País
-                                                    </small>
-
-                                                    <strong>
-                                                        {{ pais.nome }}
-                                                    </strong>
-
-                                                </div>
-
-
-                                                <!-- Região -->
-                                                <div class="col-6">
-
-                                                    <small
-                                                        class="text-secondary d-block"
-                                                    >
-                                                        Região
-                                                    </small>
-
-                                                    <strong>
-                                                        {{ pais.regiao }}
-                                                    </strong>
-
-                                                </div>
-
-
-                                                <!-- Código -->
-                                                <div class="col-6">
-
-                                                    <small
-                                                        class="text-secondary d-block"
-                                                    >
-                                                        Código
-                                                    </small>
-
-                                                    <strong>
-                                                        {{ codigo }}
-                                                    </strong>
-
-                                                </div>
-
-
-                                                <!-- Operadora -->
-                                                <div class="col-6">
-
-                                                    <small
-                                                        class="text-secondary d-block"
-                                                    >
-                                                        Operadora
-                                                    </small>
-
-                                                    <strong>
-                                                        {{ pais.operadora }}
-                                                    </strong>
-
-                                                </div>
-
-
-                                                <!-- Tecnologia -->
-                                                <div class="col-6">
-
-                                                    <small
-                                                        class="text-secondary d-block"
-                                                    >
-                                                        Tecnologia
-                                                    </small>
-
-                                                    <span
-                                                        class="badge text-bg-success"
-                                                    >
-                                                        {{ pais.tecnologia }}
-                                                    </span>
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    <!-- Rodapé -->
-                                    <div class="modal-footer">
-
-                                        <!-- Cancelar -->
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-secondary"
-                                            data-bs-dismiss="modal"
-                                        >
-                                            Cancelar
-                                        </button>
-
-
-                                        <!-- Confirmar exclusão -->
-                                        <form
-                                            action="{{ url_for(
-                                                'admin_excluir_pais',
-                                                codigo=codigo
-                                            ) }}"
-                                            method="POST"
-                                        >
-
-                                            <button
-                                                type="submit"
-                                                class="btn btn-danger"
-                                            >
-                                                <i class="bi bi-trash me-2"></i>
-                                                Remover país
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
 
                         {% else %}
 

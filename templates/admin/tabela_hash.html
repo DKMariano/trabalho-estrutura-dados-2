@@ -56,7 +56,18 @@
     ====================================== -->
     <div class="row g-3 mb-4">
 
-        <!-- Elementos -->
+        {# Dados de apresentação; os valores continuam vindo das métricas existentes. #}
+        {% set indicadores = [
+            ("bi-database", metricas.total_elementos,
+             "Elementos inseridos", "Total de países cadastrados."),
+            ("bi-grid-3x3-gap", metricas.capacidade,
+             "Capacidade", "Quantidade demonstrativa de buckets."),
+            ("bi-link-45deg", metricas.colisoes,
+             "Colisões", "Elementos além do primeiro no bucket."),
+            ("bi-bar-chart-fill", "%.2f"|format(metricas.fator_carga),
+             "Fator de carga", "Relação entre elementos e capacidade.")
+        ] %}
+        {% for icone, valor, titulo, descricao in indicadores %}
         <div class="col-12 col-sm-6 col-xl-3">
 
             <div class="card admin-hash-indicador h-100">
@@ -64,20 +75,20 @@
                 <div class="card-body">
 
                     <div class="admin-hash-indicador-icone">
-                        <i class="bi bi-database"></i>
+                        <i class="bi {{ icone }}"></i>
                     </div>
 
                     <div>
                         <strong class="admin-hash-indicador-valor">
-                            {{ metricas.total_elementos }}
+                            {{ valor }}
                         </strong>
 
                         <span class="admin-hash-indicador-titulo">
-                            Elementos inseridos
+                            {{ titulo }}
                         </span>
 
                         <span class="admin-hash-indicador-descricao">
-                            Total de países cadastrados.
+                            {{ descricao }}
                         </span>
                     </div>
 
@@ -86,102 +97,7 @@
             </div>
 
         </div>
-
-
-        <!-- Capacidade -->
-        <div class="col-12 col-sm-6 col-xl-3">
-
-            <div class="card admin-hash-indicador h-100">
-
-                <div class="card-body">
-
-                    <div class="admin-hash-indicador-icone">
-                        <i class="bi bi-grid-3x3-gap"></i>
-                    </div>
-
-                    <div>
-                        <strong class="admin-hash-indicador-valor">
-                            {{ metricas.capacidade }}
-                        </strong>
-
-                        <span class="admin-hash-indicador-titulo">
-                            Capacidade
-                        </span>
-
-                        <span class="admin-hash-indicador-descricao">
-                            Quantidade demonstrativa de buckets.
-                        </span>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Colisões -->
-        <div class="col-12 col-sm-6 col-xl-3">
-
-            <div class="card admin-hash-indicador h-100">
-
-                <div class="card-body">
-
-                    <div class="admin-hash-indicador-icone">
-                        <i class="bi bi-link-45deg"></i>
-                    </div>
-
-                    <div>
-                        <strong class="admin-hash-indicador-valor">
-                            {{ metricas.colisoes }}
-                        </strong>
-
-                        <span class="admin-hash-indicador-titulo">
-                            Colisões
-                        </span>
-
-                        <span class="admin-hash-indicador-descricao">
-                            Elementos além do primeiro no bucket.
-                        </span>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Fator de carga -->
-        <div class="col-12 col-sm-6 col-xl-3">
-
-            <div class="card admin-hash-indicador h-100">
-
-                <div class="card-body">
-
-                    <div class="admin-hash-indicador-icone">
-                        <i class="bi bi-bar-chart-fill"></i>
-                    </div>
-
-                    <div>
-                        <strong class="admin-hash-indicador-valor">
-                            {{ "%.2f"|format(metricas.fator_carga) }}
-                        </strong>
-
-                        <span class="admin-hash-indicador-titulo">
-                            Fator de carga
-                        </span>
-
-                        <span class="admin-hash-indicador-descricao">
-                            Relação entre elementos e capacidade.
-                        </span>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
+        {% endfor %}
 
     </div>
 
