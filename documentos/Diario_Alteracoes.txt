@@ -201,3 +201,72 @@
 * A associação dos cinco botões de exclusão da primeira página aos respectivos formulários foi conferida. O envio de um `POST` para `/admin/paises/IT/excluir` foi interceptado durante o teste para evitar a remoção efetiva do registro.
 * Para evitar diferenças temporais nas capturas, o GIF do depoimento foi mascarado igualmente nas duas versões, o carrossel foi pausado e as animações foram desativadas somente no navegador de teste. Os arquivos originais foram preservados.
 * A validação ficou limitada aos cenários e às larguras descritos, sem representar cobertura de todos os navegadores e tamanhos de tela.
+
+## 15/10/2026
+
+### ANÁLISE DOS REQUISITOS E ORIENTAÇÃO DA PROFESSORA — DIMITRIUS
+* Analisei o enunciado e os arquivos do DGB SIM para adaptar a implementação da Tabela Hash à orientação da professora: utilizar dicionário de dicionário, aproveitando o mecanismo nativo de armazenamento e busca do Python.
+* Identifiquei que o MVP já armazenava os países nesse formato. A função de distribuição em buckets era utilizada somente para demonstração visual, sem participar das operações reais de cadastro e busca.
+* Defini a preservação das funcionalidades existentes e a separação entre a estrutura de dados, a persistência e as rotas Flask.
+* Identifiquei que a instrumentação básica continua prevista no PDF. Sua adequação à nova orientação permanece pendente, sem utilização de métricas fictícias.
+
+### IMPLEMENTAÇÃO DA TABELA HASH — DIMITRIUS
+* Criei o pacote `estruturas`, com o arquivo `__init__.py`, e o módulo `estruturas/tabela_hash.py`.
+* Implementei a classe `TabelaHash`, utilizando `self.paises` como dicionário principal. Cada código identifica um dicionário com os campos `nome`, `regiao`, `operadora` e `tecnologia`.
+* Mantive os nomes dos campos já utilizados pelo projeto para reduzir o impacto nos templates e nas rotas.
+* Implementei os métodos `inserir`, `buscar`, `listar`, `alterar` e `remover`.
+* Normalizei os códigos com `strip().upper()`, permitindo tratar códigos como `"BR"`, `"br"` e `" br "` como a mesma chave.
+* Mantive a validação de duas letras no cadastro e utilizei `ValueError` para impedir códigos duplicados, evitando a sobrescrita silenciosa.
+* Implementei a busca com `dict.get()`, retornando `None` quando o país não está cadastrado.
+* Implementei a listagem com `list(self.paises.items())`, retornando pares de código e dados do país.
+* Implementei a alteração dos dados preservando o código e a remoção do registro com `del`. Ambas verificam se o país existe.
+* Não implementei função hash manual, cálculo de índices, buckets ou tratamento manual de colisões.
+* Testei a estrutura vazia, inserção, duplicidade, busca com diferentes formas de escrever o código, busca inexistente, listagem, alteração e remoção.
+* Corrigi os erros de digitação identificados durante os testes, incluindo a chave `regiao`, o método `items()` e as mensagens de erro.
+
+### ATUALIZAÇÃO DA PÁGINA DE COBERTURA — DIMITRIUS
+* Removi de `templates/paises.html` o card demonstrativo que apresentava índice calculado, comparações, registros por bucket e explicações sobre colisões.
+* Avaliei alternativas de largura e posicionamento do resultado após a retirada do card.
+* Organizei o resultado em duas colunas: informações de cobertura à esquerda e apresentação dos planos à direita.
+* Reaproveitei o conteúdo da seção “Próximo passo”, evitando sua repetição após a consulta.
+* Mantive a chamada de planos abaixo do formulário enquanto não há resultado e ao lado da cobertura quando um país é encontrado.
+* Preservei país, código, região, operadora e tecnologia no resultado.
+* Mantive o botão “Ver planos disponíveis” abrindo o modal de recurso em desenvolvimento, sem implementar contratação ou associação automática de planos ao destino.
+* Utilizei os estilos existentes e classes Bootstrap para a nova composição.
+
+### REMOÇÃO DO PAINEL ANTIGO E LIMPEZA DO CSS — DIMITRIUS
+* Retirei o item “Tabela Hash” do menu administrativo em `templates/admin/base_admin.html`.
+* Removi de `app.py` a função `gerar_metricas_hash()` e a rota `admin_tabela_hash()`.
+* Confirmei a ausência de `templates/admin/tabela_hash.html` no projeto.
+* Atualizei os textos do dashboard, cadastro e listagem para retirar referências ao painel removido e à futura implementação manual.
+* Removi de `static/css/style.css` os estilos exclusivos `.admin-hash-*` e `.hash-*`, incluindo suas regras responsivas.
+* Preservei as propriedades dos seletores compartilhados com a cobertura, retirando somente os seletores da interface antiga.
+* Mantive `.resultado-card`, pois continua sendo utilizada pelos cards de cobertura e planos, e atualizei seu comentário.
+* Confirmei que a busca por `hash` no CSS não apresentou mais ocorrências.
+* Removi os campos `metricas_hash` dos seis países em `dados_site/dados_paises.py`.
+* Validei o funcionamento da consulta pública e das páginas administrativas após a limpeza.
+* Confirmei que `/admin/tabela-hash` passou a retornar 404, conforme esperado após a exclusão da rota.
+
+### PERSISTÊNCIA DOS PAÍSES EM JSON — DIMITRIUS
+* Criei `arquivos/paises.json` a partir dos seis países existentes no dicionário provisório.
+* Utilizei codificação UTF-8, `ensure_ascii=False` e `indent=4`, preservando os acentos e mantendo o arquivo legível.
+* Criei `arquivos/__init__.py` e o módulo `arquivos/persistencia_paises.py`.
+* Defini o caminho do JSON com `Path(__file__).resolve().parent / "paises.json"`, permitindo localizar o arquivo a partir da pasta do módulo.
+* Implementei `carregar_paises()`, que lê o JSON, cria uma instância de `TabelaHash` e insere os registros pelo método `inserir()`.
+* Reaproveitei a normalização e a verificação de duplicidade da classe durante o carregamento.
+* Corrigi a ausência da importação de `Path`, identificada no primeiro teste.
+* Implementei `salvar_paises(tabela)`, que grava o dicionário da estrutura no JSON, substituindo o conteúdo anterior pelo estado atual dos países.
+* Mantive as operações de arquivo separadas da classe `TabelaHash` e das rotas Flask.
+* Validei o carregamento dos seis países e a busca pelo código `" br "`.
+* Testei o fluxo de carregar, salvar e carregar novamente. O total permaneceu em seis registros e a comparação entre os dicionários retornou `True`.
+
+### INTEGRAÇÃO INICIAL COM FLASK — DIMITRIUS
+* Substituí em `app.py` a importação de `PAISES` pela importação de `carregar_paises()`.
+* Inicializei `tabela_paises` com os registros do JSON após a criação da aplicação Flask.
+* Mantive temporariamente `PAISES = tabela_paises.paises`, preservando as rotas administrativas ainda não adaptadas. Essa atribuição referencia o mesmo dicionário, sem copiar os registros.
+* Adaptei a rota `/paises` para normalizar o código recebido pelo formulário e consultar a estrutura com `tabela_paises.buscar()`.
+* Preservei o preenchimento do seletor de destinos, enviando `tabela_paises.paises` ao template.
+* Acrescentei comentários curtos de estudo sobre GET, POST, normalização, busca e envio dos dados ao Jinja.
+* Confirmei o funcionamento da consulta e da listagem administrativa após essa integração.
+* Atualizei os comentários desatualizados de `app.py` e preservei as importações dos dados de apresentação e dos usuários provisórios.
+

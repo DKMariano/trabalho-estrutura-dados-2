@@ -684,8 +684,8 @@ body {
 }
 
 /*
-   Estrutura base compartilhada pelos cards de
-   cobertura e instrumentação da Tabela Hash.
+   Estrutura visual compartilhada pelos cards
+   de cobertura e apresentação dos planos.
 */
 .resultado-card {
     padding: 28px;
@@ -711,11 +711,10 @@ body {
 }
 
 /*
-   Agrupa o ícone de confirmação e os textos
-   que identificam o status da cobertura.
+   Estrutura visual compartilhada pelos cards
+   de cobertura e apresentação dos planos.
 */
-.resultado-status,
-.hash-cabecalho {
+.resultado-status {
     display: flex;
     align-items: flex-start;
     gap: 16px;
@@ -753,8 +752,7 @@ body {
 }
 
 /* Texto complementar apresentado abaixo do status */
-.resultado-status p,
-.hash-cabecalho p {
+.resultado-status p{
     margin-bottom: 0;
 
     color: var(--texto-secundario);
@@ -774,8 +772,7 @@ body {
    Cada linha representa uma propriedade do país
    e o respectivo valor retornado pela consulta.
 */
-.resultado-dados > div,
-.hash-dados > div {
+.resultado-dados > div {
     display: flex;
     justify-content: space-between;
     gap: 20px;
@@ -791,8 +788,7 @@ body {
 }
 
 /* Nome da propriedade apresentada */
-.resultado-dados dt,
-.hash-dados dt {
+.resultado-dados dt {
     color: var(--texto-secundario);
 
     font-weight: 500;
@@ -821,102 +817,6 @@ body {
 
     font-size: 13px;
     font-weight: 700;
-}
-
-/* ========================================
-   CARD DE INSTRUMENTAÇÃO DA TABELA HASH
-======================================== */
-
-/*
-   O destaque azul diferencia as informações
-   técnicas dos dados comerciais da cobertura.
-*/
-.hash-card {
-    border-top: 4px solid var(--azul-principal);
-}
-
-/* Cabeçalho do painel de instrumentação */
-
-/*
-   Elemento visual associado à estrutura de dados.
-   Utiliza o símbolo # apenas como representação
-   gráfica temporária no MVP.
-*/
-.hash-icone {
-    width: 42px;
-    height: 42px;
-
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-
-    color: var(--azul-principal);
-    background-color: var(--azul-claro);
-
-    border-radius: 8px;
-
-    font-size: 20px;
-    font-weight: 700;
-}
-
-/* Título do painel técnico */
-.hash-cabecalho h2 {
-    margin-bottom: 5px;
-
-    color: var(--texto-principal);
-
-    font-size: 21px;
-    font-weight: 700;
-}
-
-/* Descrição complementar da instrumentação */
-
-/* Remove o espaçamento padrão da lista de métricas */
-.hash-dados {
-    margin-bottom: 20px;
-}
-
-/*
-   Organiza cada métrica da consulta em uma linha
-   com identificação à esquerda e valor à direita.
-*/
-
-/* Nome da métrica apresentada */
-
-/* Valor demonstrativo associado à métrica */
-.hash-dados dd {
-    margin-bottom: 0;
-
-    color: var(--texto-principal);
-
-    font-weight: 700;
-    text-align: right;
-}
-
-/*
-   Caixa informativa utilizada para explicar,
-   de forma resumida, o tratamento de colisões.
-*/
-.hash-observacao {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-
-    padding: 14px 16px;
-
-    color: var(--azul-escuro);
-    background-color: var(--azul-claro);
-
-    border-radius: 8px;
-}
-
-/* Texto explicativo da instrumentação */
-.hash-observacao p {
-    margin-bottom: 0;
-
-    font-size: 13px;
-    line-height: 1.5;
 }
 
 /* ========================================
@@ -2305,383 +2205,6 @@ body {
 }
 
 /* ========================================
-   ADMINISTRAÇÃO - TABELA HASH
-======================================== */
-
-.admin-hash {
-    width: 100%;
-}
-
-/* ========================================
-   CABEÇALHO
-======================================== */
-
-.admin-hash-cabecalho {
-    margin-bottom: 22px;
-}
-
-.admin-hash-aviso {
-    max-width: 100%;
-
-    margin-bottom: 24px;
-
-    border: 1px solid #cfe5ff;
-    border-radius: 10px;
-
-    font-size: 13px;
-}
-
-/* ========================================
-   INDICADORES
-======================================== */
-
-.admin-hash-indicador {
-    border: 1px solid var(--borda);
-    border-radius: 10px;
-
-    background-color: var(--branco);
-
-    box-shadow:
-        0 4px 14px rgba(16, 42, 67, 0.05);
-}
-
-.admin-hash-indicador .card-body {
-    min-height: 130px;
-
-    display: flex;
-    align-items: center;
-    gap: 16px;
-
-    padding: 18px;
-}
-
-.admin-hash-indicador-icone {
-    width: 58px;
-    height: 58px;
-
-    flex: 0 0 58px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: var(--azul-principal);
-    background-color: var(--azul-claro);
-
-    border-radius: 50%;
-
-    font-size: 26px;
-}
-
-.admin-hash-indicador-valor,
-.admin-hash-indicador-titulo,
-.admin-hash-indicador-descricao {
-    display: block;
-}
-
-.admin-hash-indicador-valor {
-    margin-bottom: 4px;
-
-    color: var(--texto-principal);
-
-    font-size: 27px;
-    line-height: 1;
-    font-weight: 700;
-}
-
-.admin-hash-indicador-titulo {
-    color: var(--texto-principal);
-
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.admin-hash-indicador-descricao {
-    margin-top: 3px;
-
-    color: var(--texto-secundario);
-
-    font-size: 12px;
-    line-height: 1.4;
-}
-
-/* ========================================
-   CARDS
-======================================== */
-
-.admin-hash-card {
-    border: 1px solid var(--borda);
-    border-radius: 10px;
-
-    background-color: var(--branco);
-
-    box-shadow:
-        0 4px 14px rgba(16, 42, 67, 0.05);
-}
-
-.admin-hash-card .card-body {
-    padding: 20px;
-}
-
-.admin-hash-card-titulo {
-    display: flex;
-    align-items: flex-start;
-    gap: 13px;
-}
-
-.admin-hash-card-titulo > i {
-    flex-shrink: 0;
-
-    color: var(--azul-principal);
-
-    font-size: 24px;
-}
-
-.admin-hash-card-titulo h2 {
-    margin: 0 0 2px;
-
-    color: var(--texto-principal);
-
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.admin-hash-card-titulo p {
-    margin: 0;
-
-    color: var(--texto-secundario);
-
-    font-size: 12px;
-}
-
-/* ========================================
-   GRÁFICO
-======================================== */
-
-.admin-hash-grafico {
-    height: 250px;
-
-    margin-top: 24px;
-    padding: 20px 10px 0;
-
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
-
-    border-bottom: 1px solid var(--borda);
-}
-
-.admin-hash-coluna {
-    min-width: 0;
-    height: 100%;
-
-    flex: 1;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-.admin-hash-quantidade {
-    margin-bottom: 5px;
-
-    color: var(--texto-secundario);
-
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.admin-hash-barra-area {
-    width: 70%;
-    height: 180px;
-
-    display: flex;
-    align-items: flex-end;
-}
-
-.admin-hash-barra {
-    width: 100%;
-
-    min-height: 4px;
-
-    background-color: var(--azul-destaque);
-
-    border-radius: 4px 4px 0 0;
-
-    transition: height 0.2s ease;
-}
-
-.admin-hash-indice {
-    margin-top: 7px;
-
-    color: var(--texto-principal);
-
-    font-size: 11px;
-}
-
-.admin-hash-eixo {
-    margin: 12px 0 0;
-
-    color: var(--texto-secundario);
-
-    font-size: 12px;
-    text-align: center;
-}
-
-/* ========================================
-   STATUS
-======================================== */
-
-.admin-hash-status {
-    margin-top: 18px;
-    margin-bottom: 0;
-}
-
-.admin-hash-status td,
-.admin-hash-status th {
-    padding: 8px 12px;
-
-    border-color: var(--borda);
-
-    font-size: 12px;
-}
-
-.admin-hash-status td {
-    color: var(--texto-secundario);
-}
-
-.admin-hash-status th {
-    color: var(--texto-principal);
-
-    text-align: right;
-}
-
-/* ========================================
-   BUCKETS
-======================================== */
-
-.admin-hash-bucket {
-    min-width: 150px;
-
-    overflow: hidden;
-
-    border: 1px solid #cfe5ff;
-    border-radius: 8px;
-
-    background-color: var(--branco);
-}
-
-.admin-hash-bucket-cabecalho {
-    padding: 10px 12px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    color: var(--azul-escuro);
-    background-color: var(--azul-claro);
-
-    font-size: 12px;
-}
-
-.admin-hash-bucket-cabecalho span {
-    min-width: 23px;
-    height: 23px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    background-color: var(--branco);
-
-    border-radius: 50%;
-
-    color: var(--azul-principal);
-
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.admin-hash-bucket-conteudo {
-    min-height: 100px;
-
-    padding: 8px 12px;
-}
-
-.admin-hash-registro {
-    padding: 8px 0;
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    border-bottom: 1px solid var(--borda);
-}
-
-.admin-hash-registro:last-child {
-    border-bottom: 0;
-}
-
-.admin-hash-registro strong {
-    min-width: 28px;
-
-    color: var(--azul-escuro);
-
-    font-size: 11px;
-}
-
-.admin-hash-registro span {
-    min-width: 0;
-
-    overflow: hidden;
-
-    color: var(--texto-secundario);
-
-    font-size: 11px;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.admin-hash-vazio {
-    padding: 22px 0;
-
-    color: var(--texto-secundario);
-
-    font-size: 11px;
-    text-align: center;
-}
-
-/* ========================================
-   RESPONSIVIDADE
-======================================== */
-
-@media (max-width: 767.98px) {
-
-    .admin-hash-grafico {
-        height: 220px;
-
-        overflow-x: auto;
-
-        gap: 8px;
-    }
-
-    .admin-hash-coluna {
-        min-width: 40px;
-    }
-
-    .admin-hash-barra-area {
-        height: 150px;
-    }
-
-    .admin-hash-card .card-body {
-        padding: 16px;
-    }
-
-}
-
-/* ========================================
    RESPONSIVIDADE DA ÁREA ADMINISTRATIVA
 ======================================== */
 
@@ -2973,21 +2496,19 @@ body {
         padding: 22px;
     }
 
-    .resultado-status h2,
-    .hash-cabecalho h2 {
+    .resultado-status h2{
         font-size: 19px;
     }
 
     /*
-       Mantém rótulos e valores legíveis mesmo
-       quando a largura disponível é reduzida.
+    Estrutura visual compartilhada pelos cards
+    de cobertura e apresentação dos planos.
     */
-    .resultado-dados > div,
-    .hash-dados > div {
+    .resultado-dados > div {
         gap: 12px;
     }
 
-        /* ========================================
+    /* ========================================
        PRÓXIMO PASSO
     ======================================== */
 

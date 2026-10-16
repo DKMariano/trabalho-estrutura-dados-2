@@ -14,10 +14,17 @@ from  dados_site.dados_inicio import (BENEFICIOS, DEPOIMENTOS, ITENS_CARROSSEL, 
 #ATENÇÃO!!!! CONFIRMAR SEP ODEMOS MANTER ESSA IMPORTAÇÃO
 from dados_site.dados_usuario import USUARIOS
 
-#ATENÇÃO!!!! ESSA IMPORTAÇÃO DEVERÁ SER EXCLUIÍDA QUANDO IMPLEMENTAR O HASH
-from dados_site.dados_paises import PAISES
+# Carrega os países do arquivo JSON na TabelaHash.
+from arquivos.persistencia_paises import carregar_paises
 
 app = Flask(__name__)
+
+# Carrega os registros persistidos na estrutura em memória.
+tabela_paises = carregar_paises()
+
+# Referência temporária para preservar as rotas ainda não adaptadas.
+PAISES = tabela_paises.paises
+
 
 
 @app.route("/")
@@ -31,21 +38,28 @@ def inicio():
         planos=PLANOS
     )
 
-
+# Define a URL /paises e permite dois tipos de requisição:
+# GET: acessar a página de consulta.
+# POST: enviar o formulário com o destino selecionado.
 @app.route("/paises", methods=["GET", "POST"])
 def paises():
-    #ATENÇÃO!!!! ESSE TRECHO DEVERÁ SER ALTERADO QUANDO IMPLEMENTAR O HASH
+    """Exibe o formulário e consulta a cobertura por código na TabelaHash."""    
+
+    # Começa sem resultado, pois o usuário pode apenas abrir a página.
     resultado = None
     codigo_selecionado = None
     
     if request.method == "POST":
-        codigo_selecionado = request.form.get("destino")
+        # Obtém o código, remove espaços e converte para maiúsculas.
+        codigo_selecionado = request.form.get("destino", "").strip().upper()     
         
-        resultado = PAISES.get(codigo_selecionado)
+        # Busca o país na TabelaHash; retorna None se não encontrar.   
+        resultado = tabela_paises.buscar(codigo_selecionado)
 
+    # Envia os países, o resultado e a seleção ao template.
     return render_template(
         "paises.html",
-        paises=PAISES,
+        paises=tabela_paises.paises,
         resultado=resultado,
         codigo_selecionado=codigo_selecionado
     )
@@ -90,7 +104,7 @@ def login():
 @app.route("/admin")
 def admin():
 
-    #ATENÇÃO!!!! ESSE TRECHO DEVERÁ SER ALTERADO QUANDO IMPLEMENTAR O HASH
+    # Pendente: integrar esta operação à classe TabelaHash.
     total_paises = len(PAISES)
     total_coberturas = len(PAISES)
 
@@ -99,7 +113,7 @@ def admin():
 
 @app.route("/admin/paises")
 def admin_paises():
-    #ATENÇÃO!!!! ESSE TRECHO DEVERÁ SER ALTERADO QUANDO IMPLEMENTAR O HASH
+    # Pendente: integrar esta operação à classe TabelaHash.
 
     busca = request.args.get("busca", "").strip().lower()
     regiao = request.args.get("regiao", "").strip()
@@ -179,7 +193,7 @@ def admin_paises():
 
 @app.route("/admin/paises/cadastrar", methods=["GET", "POST"])
 def admin_cadastrar_pais():
-    #ATENÇÃO!!!! ESSE TRECHO DEVERÁ SER ALTERADO QUANDO IMPLEMENTAR O HASH
+    # Pendente: integrar esta operação à classe TabelaHash.
     regioes = [
         "África",
         "América",
@@ -248,7 +262,7 @@ def admin_cadastrar_pais():
 
 @app.route("/admin/paises/<codigo>")
 def admin_visualizar_pais(codigo):
-    #ATENÇÃO!!!! ESSE TRECHO DEVERÁ SER ALTERADO QUANDO IMPLEMENTAR O HASH
+    # Pendente: integrar esta operação à classe TabelaHash.
 
     codigo = codigo.upper()
 
@@ -268,8 +282,7 @@ def admin_visualizar_pais(codigo):
     methods=["GET", "POST"]
 )
 def admin_editar_pais(codigo):
-    #ATENÇÃO!!!! ESSE TRECHO DEVERÁ SER ALTERADO QUANDO IMPLEMENTAR O HASH
-
+    # Pendente: integrar esta operação à classe TabelaHash.
     codigo = codigo.upper()
 
     pais = PAISES.get(codigo)
@@ -307,97 +320,3 @@ def admin_excluir_pais(codigo):
         del PAISES[codigo]
 
     return redirect(url_for("admin_paises"))
-
-
-def gerar_metricas_hash():
-    # ATENÇÃO!!!! ESSE TRECHO DEVERÁ SER ALTERADO QUANDO IMPLEMENTAR O HASH
-
-    capacidade = 10
-
-    # Cria dez buckets vazios.
-    buckets = {
-        indice: []
-        for indice in range(capacidade)
-    }
-
-    # Distribui os países entre os buckets.
-    for codigo, pais in PAISES.items():
-
-        # Função temporária e simples para o MVP.
-        indice = sum(ord(letra) for letra in codigo) % capacidade
-
-        buckets[indice].append({
-            "codigo": codigo,
-            "nome": pais["nome"]
-        })
-
-    total_elementos = len(PAISES)
-
-    buckets_ocupados = sum(
-        1
-        for registros in buckets.values()
-        if registros
-    )
-
-    buckets_vazios = capacidade - buckets_ocupados
-
-    # Cada registro além do primeiro em um bucket
-    # é contabilizado como uma colisão demonstrativa.
-    colisoes = sum(
-        max(0, len(registros) - 1)
-        for registros in buckets.values()
-    )
-
-    fator_carga = (
-        total_elementos / capacidade
-        if capacidade > 0
-        else 0
-    )
-
-    tamanhos = [
-        len(registros)
-        for registros in buckets.values()
-    ]
-
-    maior_bucket = max(tamanhos) if tamanhos else 0
-
-    tamanhos_ocupados = [
-        tamanho
-        for tamanho in tamanhos
-        if tamanho > 0
-    ]
-
-    menor_bucket = (
-        min(tamanhos_ocupados)
-        if tamanhos_ocupados
-        else 0
-    )
-
-    return {
-        "capacidade": capacidade,
-        "total_elementos": total_elementos,
-        "buckets_ocupados": buckets_ocupados,
-        "buckets_vazios": buckets_vazios,
-        "colisoes": colisoes,
-        "fator_carga": fator_carga,
-        "maior_bucket": maior_bucket,
-        "menor_bucket": menor_bucket,
-        "buckets": buckets,
-        "tamanhos": tamanhos
-    }
-
-
-@app.route("/admin/tabela-hash")
-def admin_tabela_hash():
-    """
-    Exibe o painel demonstrativo de monitoramento da estrutura
-    utilizada para organizar os países durante o MVP.
-    """
-
-    metricas = gerar_metricas_hash()
-
-    return render_template(
-        "admin/tabela_hash.html",
-        metricas=metricas,
-        pagina_ativa="tabela_hash"
-    )

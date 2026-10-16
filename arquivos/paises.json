@@ -1,0 +1,38 @@
+{
+    "IT": {
+        "nome": "Itália",
+        "regiao": "Europa",
+        "operadora": "Operadora IT",
+        "tecnologia": "5G"
+    },
+    "BR": {
+        "nome": "Brasil",
+        "regiao": "América",
+        "operadora": "Operadora BR",
+        "tecnologia": "5G"
+    },
+    "PT": {
+        "nome": "Portugal",
+        "regiao": "Europa",
+        "operadora": "Operadora PT",
+        "tecnologia": "5G"
+    },
+    "FR": {
+        "nome": "França",
+        "regiao": "Europa",
+        "operadora": "Operadora FR",
+        "tecnologia": "5G"
+    },
+    "US": {
+        "nome": "Estados Unidos",
+        "regiao": "América",
+        "operadora": "Operadora US",
+        "tecnologia": "5G"
+    },
+    "JP": {
+        "nome": "Japão",
+        "regiao": "Ásia",
+        "operadora": "Operadora JP",
+        "tecnologia": "5G"
+    }
+}

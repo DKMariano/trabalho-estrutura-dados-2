@@ -17,7 +17,6 @@
 
                 <div class="col-12 col-lg-8">
 
-                    <!-- Conteúdo principal da página -->
                     <div class="cobertura-conteudo">
 
                         <div class="cobertura-destaque"></div>
@@ -32,10 +31,6 @@
                             no país que deseja visitar.
                         </p>
 
-
-                        <!-- =====================================
-                             FORMULÁRIO DE CONSULTA                             
-                        ====================================== -->
                         <form
                             action="{{ url_for('paises') }}"
                             method="POST"
@@ -50,7 +45,7 @@
                             </label>
 
                             <div class="row g-3">
-                                
+
                                 <div class="col-12 col-md-7">
 
                                     <select
@@ -75,8 +70,6 @@
 
                                 </div>
 
-
-                                <!-- Envia o código selecionado para a rota de cobertura -->
                                 <div class="col-12 col-md-5">
 
                                     <button
@@ -90,8 +83,6 @@
 
                             </div>
 
-
-                            <!-- Orientação complementar para o usuário -->
                             <p class="cobertura-ajuda">
                                 Selecione o país que deseja verificar
                                 a disponibilidade de internet.
@@ -109,7 +100,6 @@
 
     </section>
 
-
     <!-- =====================================
          RESULTADO DA CONSULTA
     ====================================== -->
@@ -121,15 +111,11 @@
 
                 <div class="row g-4">
 
-
-                    <!-- =====================================
-                         COBERTURA DO DESTINO
-                    ====================================== -->
+                    <!-- Dados de cobertura do país consultado. -->
                     <div class="col-12 col-lg-6">
 
                         <article class="resultado-card resultado-disponivel h-100">
 
-                            <!-- Status da cobertura -->
                             <div class="resultado-status">
 
                                 <div
@@ -153,7 +139,7 @@
                                 </div>
 
                             </div>
-                            
+
                             <dl class="resultado-dados">
 
                                 <div>
@@ -165,18 +151,15 @@
                                     </dd>
                                 </div>
 
-
                                 <div>
                                     <dt>Região</dt>
                                     <dd>{{ resultado.regiao }}</dd>
                                 </div>
 
-
                                 <div>
                                     <dt>Operadora</dt>
                                     <dd>{{ resultado.operadora }}</dd>
                                 </div>
-
 
                                 <div>
                                     <dt>Tecnologia</dt>
@@ -194,78 +177,73 @@
 
                     </div>
 
-
-                    <!-- =====================================
-                         INSTRUMENTAÇÃO DA TABELA HASH
-                    ====================================== -->
+                    <!-- Apresentação dos planos, sem associação automática ao destino. -->
                     <div class="col-12 col-lg-6">
 
-                        <article class="resultado-card hash-card h-100">
+                        <article
+                            class="resultado-card h-100 d-flex flex-column border-top border-primary border-4"
+                        >
 
-                            <!-- Identificação da consulta instrumentada -->
-                            <div class="hash-cabecalho">
+                            <div class="d-flex align-items-start gap-3 mb-4">
 
-                                <div
-                                    class="hash-icone"
+                                <span
+                                    class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary p-3"
                                     aria-hidden="true"
                                 >
-                                    #
-                                </div>
+                                    <i class="bi bi-sim fs-4"></i>
+                                </span>
 
                                 <div>
 
-                                    <h2>
-                                        Instrumentação prevista da Tabela Hash
+                                    <span class="proximo-passo-etapa">
+                                        Próximo passo
+                                    </span>
+
+                                    <h2 class="h4 mb-2">
+                                        Internet para sua viagem
                                     </h2>
 
-                                    <p>
-                                        Informações da busca pelo código
-                                        do país.
+                                    <p class="text-secondary mb-0">
+                                        Conheça as opções de planos
+                                        de internet móvel da DGB SIM.
                                     </p>
 
                                 </div>
 
                             </div>
 
+                            <div class="bg-light border rounded-3 p-3 mb-4">
 
-                            <!-- Métricas demonstrativas  -->
-                            <dl class="hash-dados">
+                                <h3 class="h6 mb-2">
+                                    Confira os planos
+                                </h3>
 
-                                <div>
-                                    <dt>Código consultado</dt>
-                                    <dd>{{ codigo_selecionado }}</dd>
-                                </div>
+                                <p class="text-secondary mb-0">
+                                    Consulte as informações de franquia de
+                                    dados e validade para planejar sua conexão
+                                    durante a viagem.
+                                </p>
 
+                            </div>
 
-                                <div>
-                                    <dt>Índice calculado</dt>
-                                    <dd>{{ resultado.metricas_hash.indice }}</dd>
-                                </div>
+                            <div class="mt-auto">
 
+                                <button
+                                    type="button"
+                                    class="btn btn-primary w-100"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalPlanosIndisponiveis"
+                                >
+                                    Ver planos disponíveis
+                                    <i
+                                        class="bi bi-arrow-right ms-2"
+                                        aria-hidden="true"
+                                    ></i>
+                                </button>
 
-                                <div>
-                                    <dt>Comparações nesta busca</dt>
-                                    <dd>{{ resultado.metricas_hash.comparacoes }}</dd>
-                                </div>
-
-
-                                <div>
-                                    <dt>Registros neste bucket</dt>
-                                    <dd>{{ resultado.metricas_hash.registros_bucket }}</dd>
-                                </div>
-
-                            </dl>
-
-                            <!-- Métricas demonstrativas  -->
-                            <div class="hash-observacao">
-
-                                <span aria-hidden="true">ⓘ</span>
-
-                                <p>
-                                    No MVP, as métricas apresentadas são
-                                    demonstrativas. Na implementação definitiva,
-                                    esses valores serão calculados pela Tabela Hash
-                                    com tratamento de colisões.
+                                <p class="small text-secondary text-center mt-3 mb-0">
+                                    A consulta de planos estará disponível
+                                    em uma próxima etapa.
                                 </p>
 
                             </div>
@@ -282,59 +260,64 @@
 
     {% endif %}
 
+    <!-- Exibe a chamada inicial para planos enquanto não houver resultado. -->
+    {% if not resultado %}
 
-    <!-- =====================================
-         PRÓXIMO PASSO
-    ====================================== -->
-    <section class="cobertura-proximo-passo pb-5">
+        <section class="cobertura-proximo-passo py-5">
 
-        <div class="container">
+            <div class="container">
 
-            <div class="proximo-passo-card">
+                <div class="proximo-passo-card">
 
-                <div class="row align-items-center g-4">
+                    <div class="row align-items-center g-4">
 
-                    <!-- Orientação para continuidade da jornada -->
-                    <div class="col-12 col-md">
+                        <div class="col-12 col-md">
 
-                        <span class="proximo-passo-etapa">
-                            Próximo passo
-                        </span>
+                            <span class="proximo-passo-etapa">
+                                Próximo passo
+                            </span>
 
-                        <h2>
-                            Confira os planos disponíveis
-                        </h2>
+                            <h2>
+                                Confira os planos disponíveis
+                            </h2>
 
-                        <p>
-                            Encontre o pacote ideal para sua viagem
-                            e escolha a opção que melhor atende
-                            às suas necessidades.
-                        </p>
+                            <p>
+                                Conheça as opções de internet móvel
+                                para sua viagem.
+                            </p>
 
-                    </div>
-                    
-                    <div class="col-12 col-md-auto">
+                        </div>
 
-                        <button
-                            type="button"
-                            class="btn btn-primary proximo-passo-botao"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalPlanosIndisponiveis"
-                        >
-                            Ver planos disponíveis
-                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
-                        </button>
+                        <div class="col-12 col-md-auto">
+
+                            <button
+                                type="button"
+                                class="btn btn-primary proximo-passo-botao"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalPlanosIndisponiveis"
+                            >
+                                Ver planos disponíveis
+                                <i
+                                    class="bi bi-arrow-right"
+                                    aria-hidden="true"
+                                ></i>
+                            </button>
+
+                        </div>
+
                     </div>
 
                 </div>
 
             </div>
 
-        </div>
+        </section>
 
-    </section>
+    {% endif %}
 
-    <!-- Aviso de recurso em desenvolvimento -->
+    <!-- =====================================
+         AVISO DE RECURSO EM DESENVOLVIMENTO
+    ====================================== -->
     <div
         class="modal fade"
         id="modalPlanosIndisponiveis"
@@ -342,15 +325,21 @@
         aria-labelledby="modalPlanosIndisponiveisTitulo"
         aria-hidden="true"
     >
+
         <div class="modal-dialog modal-dialog-centered">
+
             <div class="modal-content bg-danger text-white">
 
                 <div class="modal-header">
+
                     <h2
                         class="modal-title fs-5"
                         id="modalPlanosIndisponiveisTitulo"
                     >
-                        <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
+                        <i
+                            class="bi bi-info-circle me-2"
+                            aria-hidden="true"
+                        ></i>
                         Recurso em desenvolvimento
                     </h2>
 
@@ -360,6 +349,7 @@
                         data-bs-dismiss="modal"
                         aria-label="Fechar"
                     ></button>
+
                 </div>
 
                 <div class="modal-body">
@@ -367,6 +357,7 @@
                 </div>
 
                 <div class="modal-footer">
+
                     <button
                         type="button"
                         class="btn btn-light"
@@ -374,10 +365,13 @@
                     >
                         Entendi
                     </button>
+
                 </div>
 
             </div>
+
         </div>
+
     </div>
 
 </main>
