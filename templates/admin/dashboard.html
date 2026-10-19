@@ -4,257 +4,329 @@
 
 {% block admin_content %}
 
-<!-- =====================================
-     DASHBOARD ADMINISTRATIVO
-====================================== -->
-<section class="admin-dashboard">
+{% set eventos = metricas.eventos | list %}
 
-    <!-- =====================================
-         APRESENTAÇÃO E INDICADORES
-    ====================================== -->
-    <section class="admin-dashboard-hero">
+<!-- Linhas reutilizadas nas tabelas do histórico -->
+{% macro linhas_eventos(lista) %}
+    {% for evento in lista %}
+    <tr>
+        <td class="text-nowrap">{{ evento.hora }}</td>
 
-        <!-- Apresentação -->
-        <div class="admin-dashboard-apresentacao">
+        <td>{{ evento.operacao | capitalize }}</td>
 
-            <div class="admin-dashboard-destaque"></div>
+        <td>
+            <strong>{{ evento.codigo }}</strong>
+        </td>
 
-            <h1 class="admin-dashboard-titulo">
-                Bem-vindo, Administrador!
-            </h1>
+        <td>
+            <span
+                class="badge {{ 'text-bg-success' if evento.sucesso else 'text-bg-danger' }}"
+            >
+                {{ evento.resultado }}
+            </span>
+        </td>
+    </tr>
+    {% endfor %}
+{% endmacro %}
 
-            <p class="admin-dashboard-descricao">
-                Gerencie os países atendidos pela DGB SIM
-                e consulte as informações de cobertura
-                de internet em cada destino.
-            </p>
+<section class="admin-dashboard mx-auto">
 
-        </div>
+    <!-- Apresentação -->
+    <section class="card admin-dashboard-card mb-4">
+        <div class="card-body p-4">
+            <div class="row align-items-center g-3">
 
+                <div class="col-12 col-lg-7">
 
-        <!-- Indicadores -->
-        <div class="row g-3 admin-indicadores">
+                    <div
+                        class="admin-dashboard-destaque mb-3"
+                        aria-hidden="true"
+                    ></div>
 
-            <!-- Países cadastrados -->
-            <div class="col-12 col-md-6">
+                    <h1 class="admin-dashboard-titulo fs-2 mb-2">
+                        Visão geral
+                    </h1>
 
-                <div class="card h-100 admin-indicador-card">
-
-                    <div class="card-body">
-
-                        <div class="admin-indicador-icone">
-                            <i class="bi bi-globe-americas"></i>
-                        </div>
-
-                        <div class="admin-indicador-conteudo">
-
-                            <strong class="admin-indicador-valor">
-                                {{ total_paises }}
-                            </strong>
-
-                            <span class="admin-indicador-label">
-                                Países cadastrados
-                            </span>
-
-                            <span class="admin-indicador-detalhe">
-                                Total de países na base.
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Países com cobertura -->
-            <div class="col-12 col-md-6">
-
-                <div class="card h-100 admin-indicador-card">
-
-                    <div class="card-body">
-
-                        <div class="admin-indicador-icone">
-                            <i class="bi bi-wifi"></i>
-                        </div>
-
-                        <div class="admin-indicador-conteudo">
-
-                            <strong class="admin-indicador-valor">
-                                {{ total_coberturas }}
-                            </strong>
-
-                            <span class="admin-indicador-label">
-                                Com cobertura
-                            </span>
-
-                            <span class="admin-indicador-detalhe">
-                                Países disponíveis para consulta.
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================
-         AÇÕES RÁPIDAS
-    ====================================== -->
-    <section class="card admin-acoes-card mb-4">
-
-        <div class="card-header bg-transparent">
-
-            <div class="d-flex align-items-center gap-3">
-
-                <i class="bi bi-lightning-charge-fill admin-secao-icone"></i>
-
-                <div>
-
-                    <h2 class="admin-dashboard-subtitulo">
-                        Ações rápidas
-                    </h2>
-
-                    <p class="admin-dashboard-card-descricao">
-                        Acesse as principais funcionalidades do sistema.
+                    <p class="admin-dashboard-descricao mb-0">
+                        Acompanhe os países cadastrados e as operações
+                        realizadas no sistema.
                     </p>
 
                 </div>
 
-            </div>
-
-        </div>
-
-
-        <div class="card-body">
-
-            <div class="row g-3">
-
-                <!-- Cadastrar país -->
-                <div class="col-12 col-lg-4">
-
-                    <a href="{{ url_for('admin_cadastrar_pais') }}" class="admin-acao">
-
-                        <div class="admin-acao-icone">
-                            <i class="bi bi-plus-circle"></i>
-                        </div>
-
-                        <div class="admin-acao-conteudo">
-
-                            <strong>
-                                Cadastrar país
-                            </strong>
-
-                            <span>
-                                Adicionar um novo país e informar
-                                sua cobertura.
-                            </span>
-
-                        </div>
-
-                        <i class="bi bi-arrow-right admin-acao-seta"></i>
-
-                    </a>
-
-                </div>
-
-
-                <!-- Gerenciar países -->
-                <div class="col-12 col-lg-4">
-
-                    <a href="{{ url_for('admin_paises') }}" class="admin-acao">
-
-                        <div class="admin-acao-icone">
-                            <i class="bi bi-list-ul"></i>
-                        </div>
-
-                        <div class="admin-acao-conteudo">
-
-                            <strong>
-                                Gerenciar países
-                            </strong>
-
-                            <span>
-                                Visualizar, consultar, alterar
-                                ou remover países.
-                            </span>
-
-                        </div>
-
-                        <i class="bi bi-arrow-right admin-acao-seta"></i>
-
-                    </a>
-
-                </div>
-
-
-                <!-- Consultar cobertura -->
-                <div class="col-12 col-lg-4">
-
-                    <a
-                        href="{{ url_for('paises') }}"
-                        class="admin-acao"
+                <div class="col-lg-5 d-none d-lg-block">
+                    <img
+                        src="{{ url_for('static', filename='img/admin/mapa-mundi.png') }}"
+                        class="img-fluid w-100 admin-dashboard-mapa"
+                        alt=""
+                        aria-hidden="true"
                     >
-
-                        <div class="admin-acao-icone">
-                            <i class="bi bi-wifi"></i>
-                        </div>
-
-                        <div class="admin-acao-conteudo">
-
-                            <strong>
-                                Consultar cobertura
-                            </strong>
-
-                            <span>
-                                Verificar se há cobertura de
-                                internet em um país.
-                            </span>
-
-                        </div>
-
-                        <i class="bi bi-arrow-right admin-acao-seta"></i>
-
-                    </a>
-
                 </div>
 
             </div>
-
         </div>
-
     </section>
 
+    <!-- Resumo, ações e histórico -->
+    <div class="row g-4 mb-4 align-items-start">
 
-    <!-- =====================================
-         INSTRUMENTAÇÃO DA TABELA HASH
+        <!-- Coluna esquerda -->
+        <div class="col-12 col-xl-5">
 
-         Contadores e tempos registrados pela própria
-         TabelaHash durante o uso da aplicação.
-    ====================================== -->
-    <section class="card admin-dashboard-card mb-4">
+            <!-- Indicadores -->
+            <div class="row g-3 mb-4">
+
+                <!-- Países cadastrados -->
+                <div class="col-12 col-sm-6">
+                    <div class="card h-100 admin-dashboard-card">
+                        <div
+                            class="card-body d-flex align-items-center gap-3 p-3"
+                        >
+
+                            <span
+                                class="d-inline-flex align-items-center
+                                       justify-content-center flex-shrink-0
+                                       bg-primary-subtle text-primary
+                                       rounded-circle p-3"
+                            >
+                                <i
+                                    class="bi bi-globe-americas fs-4"
+                                    aria-hidden="true"
+                                ></i>
+                            </span>
+
+                            <div>
+                                <strong class="d-block fs-3 lh-1 mb-2">
+                                    {{ total_paises }}
+                                </strong>
+
+                                <span class="d-block small text-secondary">
+                                    Países cadastrados
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operações realizadas -->
+                <div class="col-12 col-sm-6">
+                    <div class="card h-100 admin-dashboard-card">
+                        <div
+                            class="card-body d-flex align-items-center gap-3 p-3"
+                        >
+
+                            <span
+                                class="d-inline-flex align-items-center
+                                       justify-content-center flex-shrink-0
+                                       bg-success-subtle text-success
+                                       rounded-circle p-3"
+                            >
+                                <i
+                                    class="bi bi-activity fs-4"
+                                    aria-hidden="true"
+                                ></i>
+                            </span>
+
+                            <div>
+                                <strong class="d-block fs-3 lh-1 mb-2">
+                                    {{ metricas.total_chamadas }}
+                                </strong>
+
+                                <span class="d-block small text-secondary">
+                                    Operações realizadas
+                                </span>
+
+                                <small class="text-secondary">
+                                    Nesta execução.
+                                </small>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Ações rápidas -->
+            <section class="card admin-dashboard-card">
+
+                <div class="card-header bg-white">
+                    <h2 class="admin-dashboard-subtitulo mb-0">
+                        <i
+                            class="bi bi-lightning-charge-fill text-primary me-2"
+                            aria-hidden="true"
+                        ></i>
+                        Ações rápidas
+                    </h2>
+                </div>
+
+                <div class="card-body p-3">
+                    <div class="d-grid gap-3">
+
+                        <a
+                            href="{{ url_for('admin_cadastrar_pais') }}"
+                            class="btn btn-primary px-3 py-2"
+                        >
+                            <i
+                                class="bi bi-plus-lg me-2"
+                                aria-hidden="true"
+                            ></i>
+                            Cadastrar país
+                        </a>
+
+                        <a
+                            href="{{ url_for('admin_paises') }}"
+                            class="btn btn-outline-primary px-3 py-2"
+                        >
+                            <i
+                                class="bi bi-gear me-2"
+                                aria-hidden="true"
+                            ></i>
+                            Gerenciar países
+                        </a>
+
+                        <a
+                            href="{{ url_for('paises') }}"
+                            class="btn btn-outline-primary px-3 py-2"
+                        >
+                            <i
+                                class="bi bi-search me-2"
+                                aria-hidden="true"
+                            ></i>
+                            Consultar cobertura
+                        </a>
+
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- Coluna direita: histórico -->
+        <div class="col-12 col-xl-7">
+            <section class="card admin-dashboard-card admin-historico">
+
+                <div class="card-header bg-white">
+                    <h2 class="admin-dashboard-subtitulo mb-0">
+                        <i
+                            class="bi bi-clock-history text-primary me-2"
+                            aria-hidden="true"
+                        ></i>
+                        Últimas operações
+                    </h2>
+                </div>
+
+                <div class="card-body p-3">
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+
+                            <caption class="visually-hidden">
+                                Até cinco operações recentes, na ordem
+                                fornecida pelo sistema.
+                            </caption>
+
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Hora</th>
+                                    <th scope="col">Operação</th>
+                                    <th scope="col">Código</th>
+                                    <th scope="col">Resultado</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% if eventos %}
+                                    {{ linhas_eventos(eventos[:5]) }}
+                                {% else %}
+                                <tr>
+                                    <td
+                                        colspan="4"
+                                        class="text-center text-secondary py-4"
+                                    >
+                                        Nenhuma operação registrada ainda.
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    {% if eventos | length > 5 %}
+
+                    <!-- Operações adicionais -->
+                    <div class="collapse mt-3" id="operacoesAdicionais">
+
+                        <h3 class="h6 mb-3">
+                            Demais operações registradas
+                        </h3>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+
+                                <caption class="visually-hidden">
+                                    Demais operações mantidas no histórico.
+                                </caption>
+
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Hora</th>
+                                        <th scope="col">Operação</th>
+                                        <th scope="col">Código</th>
+                                        <th scope="col">Resultado</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {{ linhas_eventos(eventos[5:]) }}
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="btn btn-outline-primary btn-sm mt-3"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#operacoesAdicionais"
+                        aria-expanded="false"
+                        aria-controls="operacoesAdicionais"
+                    >
+                        Mostrar/ocultar demais operações
+                        ({{ eventos | length - 5 }})
+                    </button>
+
+                    {% endif %}
+
+                </div>
+
+            </section>
+        </div>
+
+    </div>
+
+    <!-- Instrumentação -->
+    <section class="card admin-dashboard-card admin-instrumentacao mb-4">
 
         <div
             class="card-header bg-white
-                   d-flex justify-content-between
-                   align-items-center"
+                   d-flex flex-wrap justify-content-between
+                   align-items-center gap-3"
         >
 
             <div class="d-flex align-items-center gap-3">
 
-                <i class="bi bi-speedometer2 admin-secao-icone"></i>
+                <i
+                    class="bi bi-speedometer2 admin-secao-icone"
+                    aria-hidden="true"
+                ></i>
 
                 <div>
-
                     <h2 class="admin-dashboard-subtitulo">
                         Instrumentação da Tabela Hash
                     </h2>
@@ -262,7 +334,6 @@
                     <p class="admin-dashboard-card-descricao">
                         Operações realizadas desde que o servidor foi iniciado.
                     </p>
-
                 </div>
 
             </div>
@@ -273,364 +344,81 @@
 
         </div>
 
+        <div class="card-body p-3">
 
-        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
 
-            <div class="row g-4">
+                    <caption class="visually-hidden">
+                        Contadores e tempos das operações da Tabela Hash.
+                    </caption>
 
-                <!-- Contadores e tempos por operação -->
-                <div class="col-12 col-xl-7">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Operação</th>
+                            <th scope="col" class="text-end">Chamadas</th>
+                            <th scope="col" class="text-end">Sucessos</th>
+                            <th scope="col" class="text-end">Falhas</th>
+                            <th scope="col" class="text-end">Tempo médio</th>
+                            <th scope="col" class="text-end">Tempo máximo</th>
+                        </tr>
+                    </thead>
 
-                    <div class="table-responsive">
+                    <tbody>
+                        {% for op in metricas.operacoes %}
+                        <tr>
 
-                        <table class="table table-hover align-middle mb-0">
+                            <th scope="row">
+                                {{ op.operacao | capitalize }}
+                            </th>
 
-                            <thead class="table-light">
+                            <td class="text-end">{{ op.chamadas }}</td>
+                            <td class="text-end">{{ op.sucessos }}</td>
+                            <td class="text-end">{{ op.falhas }}</td>
 
-                                <tr>
-                                    <th scope="col">Operação</th>
-                                    <th scope="col" class="text-end">Chamadas</th>
-                                    <th scope="col" class="text-end">Sucessos</th>
-                                    <th scope="col" class="text-end">Falhas</th>
-                                    <th scope="col" class="text-end">Tempo médio</th>
-                                    <th scope="col" class="text-end">Tempo máximo</th>
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                {% for op in metricas.operacoes %}
-
-                                <tr>
-
-                                    <td>
-                                        <strong>
-                                            {{ op.operacao | capitalize }}
-                                        </strong>
-                                    </td>
-
-                                    <td class="text-end">{{ op.chamadas }}</td>
-
-                                    <td class="text-end">{{ op.sucessos }}</td>
-
-                                    <td class="text-end">{{ op.falhas }}</td>
-
-                                    <td class="text-end">
-                                        {% if op.chamadas %}
-                                            {{ "%.2f" | format(op.tempo_medio_us) }} µs
-                                        {% else %}
-                                            —
-                                        {% endif %}
-                                    </td>
-
-                                    <td class="text-end">
-                                        {% if op.chamadas %}
-                                            {{ "%.2f" | format(op.tempo_max_us) }} µs
-                                        {% else %}
-                                            —
-                                        {% endif %}
-                                    </td>
-
-                                </tr>
-
-                                {% endfor %}
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                    <p class="small text-secondary mt-3 mb-0">
-                        Falha: inserção, alteração ou remoção recusada pelas
-                        validações, ou busca sem resultado. Os contadores ficam
-                        em memória e voltam a zero quando o servidor é
-                        reiniciado. Os tempos incluem o custo da própria medição.
-                    </p>
-
-                </div>
-
-
-                <!-- Últimas operações -->
-                <div class="col-12 col-xl-5">
-
-                    <h3 class="h6 mb-3">
-                        <i class="bi bi-clock-history me-2"></i>
-                        Últimas operações
-                    </h3>
-
-                    <div class="table-responsive">
-
-                        <table class="table table-sm align-middle mb-0">
-
-                            <thead class="table-light">
-
-                                <tr>
-                                    <th scope="col">Hora</th>
-                                    <th scope="col">Operação</th>
-                                    <th scope="col">Código</th>
-                                    <th scope="col">Resultado</th>
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                {% for evento in metricas.eventos %}
-
-                                <tr>
-
-                                    <td>{{ evento.hora }}</td>
-
-                                    <td>{{ evento.operacao | capitalize }}</td>
-
-                                    <td>
-                                        <strong>{{ evento.codigo }}</strong>
-                                    </td>
-
-                                    <td>
-
-                                        <span
-                                            class="badge
-                                                   {% if evento.sucesso %}
-                                                       text-bg-success
-                                                   {% else %}
-                                                       text-bg-danger
-                                                   {% endif %}"
-                                        >
-                                            {{ evento.resultado }}
-                                        </span>
-
-                                    </td>
-
-                                </tr>
-
+                            <td class="text-end text-nowrap">
+                                {% if op.chamadas %}
+                                    {{ "%.2f" | format(op.tempo_medio_us) }} µs
                                 {% else %}
+                                    —
+                                {% endif %}
+                            </td>
 
-                                <tr>
+                            <td class="text-end text-nowrap">
+                                {% if op.chamadas %}
+                                    {{ "%.2f" | format(op.tempo_max_us) }} µs
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
 
-                                    <td
-                                        colspan="4"
-                                        class="text-center text-secondary py-4"
-                                    >
-                                        Nenhuma operação registrada ainda.
-                                    </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td
+                                colspan="6"
+                                class="text-center text-secondary py-4"
+                            >
+                                Nenhuma métrica disponível.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
 
-                                </tr>
-
-                                {% endfor %}
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
+                </table>
             </div>
+
+            <p class="small text-secondary mt-3 mb-0">
+                Falha: inserção, alteração ou remoção recusada pelas
+                validações, ou busca sem resultado. Os contadores ficam
+                em memória e voltam a zero quando o servidor é
+                reiniciado. Os tempos são apresentados em microssegundos
+                (µs) e incluem o custo da própria medição.
+            </p>
 
         </div>
 
     </section>
-
-
-    <!-- =====================================
-         INFORMAÇÕES INFERIORES
-    ====================================== -->
-    <div class="row g-4">
-
-        <!-- Países disponíveis -->
-        <div class="col-12 col-xl-8">
-
-            <section class="card h-100 admin-dashboard-card">
-
-                <div
-                    class="card-header bg-white
-                           d-flex justify-content-between
-                           align-items-center"
-                >
-
-                    <div class="d-flex align-items-center gap-3">
-
-                        <i class="bi bi-file-earmark-text admin-secao-icone"></i>
-
-                        <div>
-
-                            <h2 class="admin-dashboard-subtitulo">
-                                Países disponíveis
-                            </h2>
-
-                            <p class="admin-dashboard-card-descricao">
-                                Dados atualmente utilizados no MVP.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <span class="badge text-bg-primary">
-                        {{ total_paises }} registros
-                    </span>
-
-                </div>
-
-
-                <div class="card-body p-0">
-
-                    <div class="table-responsive">
-
-                        <table class="table table-hover align-middle mb-0">
-
-                            <thead class="table-light">
-
-                                <tr>
-                                    <th scope="col">Código</th>
-                                    <th scope="col">País</th>
-                                    <th scope="col">Região</th>
-                                    <th scope="col">Operadora</th>
-                                    <th scope="col">Tecnologia</th>
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                {% for codigo, pais in paises %}
-
-                                <tr>
-
-                                    <td>
-                                        <strong>
-                                            {{ codigo }}
-                                        </strong>
-                                    </td>
-
-                                    <td>
-                                        {{ pais.nome }}
-                                    </td>
-
-                                    <td>
-                                        {{ pais.regiao }}
-                                    </td>
-
-                                    <td>
-                                        {{ pais.operadora }}
-                                    </td>
-
-                                    <td>
-
-                                        <span class="badge text-bg-success">
-                                            {{ pais.tecnologia }}
-                                        </span>
-
-                                    </td>
-
-                                </tr>
-
-                                {% endfor %}
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </div>
-
-
-        <!-- Sobre o sistema -->
-        <div class="col-12 col-xl-4">
-
-            <section class="card h-100 admin-dashboard-card">
-
-                <div class="card-header bg-white">
-
-                    <div class="d-flex align-items-center gap-3">
-
-                        <i class="bi bi-info-circle admin-secao-icone"></i>
-
-                        <h2 class="admin-dashboard-subtitulo mb-0">
-                            Sobre o sistema (Etapa 1)
-                        </h2>
-
-                    </div>
-
-                </div>
-
-
-                <div class="card-body">
-
-                    <div class="alert alert-danger small" role="alert">
-                        Esta interface corresponde à versão atual da Etapa 1
-                        do projeto e poderá sofrer alterações ao longo das
-                        próximas etapas, conforme novas funcionalidades e
-                        estruturas de dados forem incorporadas.
-                    </div>
-
-                    <p class="admin-sobre-texto">
-                        Esta é a primeira etapa do trabalho prático
-                        da disciplina de Estruturas de Dados II.
-                    </p>
-
-                    <div class="admin-sobre-item">
-
-                        <i class="bi bi-globe-americas"></i>
-
-                        <span>
-                            Cadastro, consulta, alteração e remoção
-                            dos países atendidos.
-                        </span>
-
-                    </div>
-
-
-                    <div class="admin-sobre-item">
-
-                        <i class="bi bi-database"></i>
-
-                        <span>
-                            Persistência dos dados em arquivo JSON.
-                        </span>
-
-                    </div>
-
-
-                    <div class="admin-sobre-item">
-
-                        <i class="bi bi-search"></i>
-
-                        <span>
-                            Consulta de cobertura por código do país.
-                        </span>
-
-                    </div>
-
-
-                    <div class="admin-sobre-item">
-
-                        <i class="bi bi-gear"></i>
-
-                        <span>
-                            Consulta de região, operadora e tecnologia
-                            dos países cadastrados.
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </div>
-
-    </div>
 
 </section>
 

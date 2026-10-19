@@ -1,111 +1,202 @@
 {% extends "admin/base_admin.html" %}
 
-{% block title %}Visualizar País | DGB SIM{% endblock %}
+{% block title %}Visualizar país | DGB SIM{% endblock %}
 
 {% block admin_content %}
 
-<section>
+<section class="w-100">
 
-    <div class="mb-4">
+    <!-- Cabeçalho -->
+    <div class="admin-cadastro-cabecalho">
 
-        <h1 class="admin-dashboard-titulo">
-            {{ pais.nome }}
+        <nav aria-label="Navegação estrutural">
+            <ol class="breadcrumb admin-breadcrumb">
+
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('admin_paises') }}">
+                        Países
+                    </a>
+                </li>
+
+                <li
+                    class="breadcrumb-item active"
+                    aria-current="page"
+                >
+                    Visualizar país
+                </li>
+
+            </ol>
+        </nav>
+
+        <h1 class="admin-dashboard-titulo fs-2 mb-2">
+            Visualizar país
         </h1>
 
         <p class="admin-dashboard-descricao">
-            Informações do país selecionado.
+            Confira os dados de cadastro e cobertura do país.
         </p>
 
     </div>
 
+    <div class="row g-4 align-items-start">
 
-    <div class="card admin-dashboard-card">
+        <!-- Dados do país -->
+        <div class="col-12 col-xl-8">
+            <div class="card admin-cadastro-card">
+                <div class="card-body">
 
-        <div class="card-body p-4">
+                    <div class="admin-cadastro-secao-titulo">
+                        <span
+                            class="admin-cadastro-barra"
+                            aria-hidden="true"
+                        ></span>
 
-            <div class="row g-4">
+                        <h2>Informações do país</h2>
+                    </div>
 
-                <div class="col-md-6">
-                    <small class="text-secondary">
-                        Código
-                    </small>
+                    <dl class="row g-4 mb-0">
 
-                    <p class="fw-bold mb-0">
-                        {{ codigo }}
-                    </p>
-                </div>
+                        <div class="col-12 col-md-6">
+                            <dt class="small text-secondary fw-normal mb-2">
+                                Nome do país
+                            </dt>
 
+                            <dd class="fw-semibold text-break mb-0">
+                                {{ pais.nome }}
+                            </dd>
+                        </div>
 
-                <div class="col-md-6">
-                    <small class="text-secondary">
-                        País
-                    </small>
+                        <div class="col-12 col-md-6">
+                            <dt class="small text-secondary fw-normal mb-2">
+                                Código ISO
+                            </dt>
 
-                    <p class="fw-bold mb-0">
-                        {{ pais.nome }}
-                    </p>
-                </div>
+                            <dd class="fw-semibold mb-0">
+                                {{ codigo }}
+                            </dd>
+                        </div>
 
+                        <div class="col-12 col-md-6">
+                            <dt class="small text-secondary fw-normal mb-2">
+                                Região
+                            </dt>
 
-                <div class="col-md-6">
-                    <small class="text-secondary">
-                        Região
-                    </small>
+                            <dd class="fw-semibold text-break mb-0">
+                                {{ pais.regiao }}
+                            </dd>
+                        </div>
 
-                    <p class="fw-bold mb-0">
-                        {{ pais.regiao }}
-                    </p>
-                </div>
+                        <div class="col-12 col-md-6">
+                            <dt class="small text-secondary fw-normal mb-2">
+                                Operadora local
+                            </dt>
 
+                            <dd class="fw-semibold text-break mb-0">
+                                {{ pais.operadora }}
+                            </dd>
+                        </div>
 
-                <div class="col-md-6">
-                    <small class="text-secondary">
-                        Operadora
-                    </small>
+                    </dl>
 
-                    <p class="fw-bold mb-0">
-                        {{ pais.operadora }}
-                    </p>
-                </div>
+                    <!-- Tecnologia -->
+                    <div class="admin-cadastro-tecnologia">
 
+                        <div class="admin-cadastro-secao-titulo mb-2">
+                            <span
+                                class="admin-cadastro-barra"
+                                aria-hidden="true"
+                            ></span>
 
-                <div class="col-md-6">
-                    <small class="text-secondary">
-                        Tecnologia
-                    </small>
+                            <h2>Tecnologia disponível</h2>
+                        </div>
 
-                    <p class="mb-0">
-                        <span class="badge text-bg-success">
+                        <p class="admin-cadastro-ajuda">
+                            Tecnologia de rede informada para este destino.
+                        </p>
+
+                        <span
+                            class="d-inline-flex align-items-center gap-2
+                                   bg-primary-subtle text-primary-emphasis
+                                   rounded-3 px-3 py-2 fw-semibold"
+                        >
+                            <i class="bi bi-wifi" aria-hidden="true"></i>
                             {{ pais.tecnologia }}
                         </span>
-                    </p>
+
+                    </div>
+
+                    <!-- Ações -->
+                    <div class="admin-cadastro-acoes">
+
+                        <a
+                            href="{{ url_for('admin_paises') }}"
+                            class="btn btn-outline-primary admin-cadastro-botao"
+                        >
+                            <i
+                                class="bi bi-arrow-left me-2"
+                                aria-hidden="true"
+                            ></i>
+                            Voltar
+                        </a>
+
+                        <a
+                            href="{{ url_for('admin_editar_pais', codigo=codigo) }}"
+                            class="btn btn-primary admin-cadastro-botao"
+                        >
+                            <i
+                                class="bi bi-pencil me-2"
+                                aria-hidden="true"
+                            ></i>
+                            Editar país
+                        </a>
+
+                    </div>
+
                 </div>
-
             </div>
+        </div>
 
+        <!-- Orientações -->
+        <div class="col-12 col-xl-4">
+            <aside class="card admin-cadastro-info">
+                <div class="card-body">
 
-            <div class="d-flex gap-2 mt-4">
+                    <div class="admin-cadastro-info-titulo">
+                        <i
+                            class="bi bi-info-circle"
+                            aria-hidden="true"
+                        ></i>
 
-                <a
-                    href="{{ url_for(
-                        'admin_editar_pais',
-                        codigo=codigo
-                    ) }}"
-                    class="btn btn-primary"
-                >
-                    <i class="bi bi-pencil me-2"></i>
-                    Editar
-                </a>
+                        <h2>Sobre este cadastro</h2>
+                    </div>
 
-                <a
-                    href="{{ url_for('admin_paises') }}"
-                    class="btn btn-outline-secondary"
-                >
-                    Voltar
-                </a>
+                    <p class="admin-cadastro-info-descricao">
+                        Confira os dados do país e a tecnologia de rede
+                        disponível no destino.
+                    </p>
 
-            </div>
+                    <div class="mb-4">
+                        <h3 class="h6">Atualização dos dados</h3>
 
+                        <p class="text-secondary mb-0">
+                            Para atualizar as informações, utilize
+                            o botão “Editar país”.
+                        </p>
+                    </div>
+
+                    <div class="bg-primary-subtle rounded-3 p-3">
+                        <p class="small mb-0">
+                            <i
+                                class="bi bi-lock me-1"
+                                aria-hidden="true"
+                            ></i>
+                            O código ISO identifica o registro e permanece
+                            fixo durante a edição.
+                        </p>
+                    </div>
+
+                </div>
+            </aside>
         </div>
 
     </div>

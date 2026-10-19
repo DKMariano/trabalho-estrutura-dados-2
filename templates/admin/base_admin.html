@@ -14,7 +14,10 @@
     ====================================== -->
     <header class="admin-topo">
 
-        <nav class="navbar admin-navbar">
+        <nav
+            class="navbar admin-navbar flex-wrap gap-2"
+            aria-label="Cabeçalho administrativo"
+        >
 
             <!-- Identidade visual -->
             <a
@@ -42,29 +45,57 @@
          CORPO DA ÁREA ADMINISTRATIVA
     ====================================== -->
     <div class="admin-corpo">
+        
+        <!-- Menu para telas pequenas -->
+        <div class="d-md-none bg-white border-bottom p-3">
+            <button
+                class="btn btn-outline-primary d-inline-flex align-items-center gap-2"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menuAdministrativo"
+                aria-expanded="false"
+                aria-controls="menuAdministrativo"
+            >
+                <i class="bi bi-list fs-5" aria-hidden="true"></i>
+                Menu administrativo
+            </button>
+        </div>
 
         <!-- Menu lateral -->
-        <aside class="admin-menu">
+        <aside
+            class="admin-menu collapse d-md-block"
+            id="menuAdministrativo"
+        >
 
             <nav class="nav flex-column admin-menu-nav">
 
                 <a
-                    class="nav-link"
+                    class="nav-link {{ 'active' if request.endpoint == 'admin' else '' }}"
                     href="{{ url_for('admin') }}"
+                    {% if request.endpoint == 'admin' %}
+                        aria-current="page"
+                    {% endif %}
                 >
-                    <i class="bi bi-house-fill"></i>
+                    <i class="bi bi-house-fill" aria-hidden="true"></i>
                     Dashboard
                 </a>
 
-                <a
-                    class="nav-link"
-                    href="{{ url_for('admin_paises') }}"
-                >
-                    <i class="bi bi-globe-americas"></i>
+                {% set paginas_paises = [
+                    'admin_paises',
+                    'admin_cadastrar_pais',
+                    'admin_editar_pais',
+                    'admin_visualizar_pais'
+                ] %}
 
-                    <span>
-                        Países
-                    </span>
+                <a
+                    class="nav-link {{ 'active' if request.endpoint in paginas_paises else '' }}"
+                    href="{{ url_for('admin_paises') }}"
+                    {% if request.endpoint == 'admin_paises' %}
+                        aria-current="page"
+                    {% endif %}
+                >
+                    <i class="bi bi-globe-americas" aria-hidden="true"></i>
+                    <span>Países</span>
                 </a>
 
                 <!-- <a class="nav-link" href="#">

@@ -8,7 +8,7 @@
     "BR": {
         "nome": "Brasil",
         "regiao": "América",
-        "operadora": "Operadora BR",
+        "operadora": "Vivo",
         "tecnologia": "5G"
     },
     "PT": {
@@ -20,19 +20,19 @@
     "FR": {
         "nome": "França",
         "regiao": "Europa",
-        "operadora": "Operadora FR",
-        "tecnologia": "5G"
-    },
-    "US": {
-        "nome": "Estados Unidos",
-        "regiao": "América",
-        "operadora": "Operadora US",
+        "operadora": "PR",
         "tecnologia": "5G"
     },
     "JP": {
         "nome": "Japão",
         "regiao": "Ásia",
         "operadora": "Operadora JP",
+        "tecnologia": "5G"
+    },
+    "CL": {
+        "nome": "Chile",
+        "regiao": "América",
+        "operadora": "CHI",
         "tecnologia": "5G"
     }
 }

@@ -1356,33 +1356,52 @@ body {
 
 .admin-dashboard {
     width: 100%;
+    max-width: 1200px;
 }
+
+/* Mapa decorativo do cabeçalho */
+.admin-dashboard-mapa {
+    display: block;
+    max-height: 180px;
+    object-fit: contain;
+    object-position: right center;
+}
+
+/* Cabeçalhos das tabelas */
+.admin-historico .table thead th,
+.admin-instrumentacao .table thead th {
+    padding: 12px;
+
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: none;
+}
+
+/* Dados das tabelas */
+.admin-historico .table tbody td,
+.admin-instrumentacao .table tbody td,
+.admin-instrumentacao .table tbody th {
+    padding: 12px;
+
+    color: var(--texto-principal);
+
+    font-size: 13px;
+}
+
+/* Nome das operações */
+.admin-instrumentacao .table tbody th {
+    font-weight: 600;
+    text-transform: none;
+}
+
 
 /* ========================================
    HERO DO DASHBOARD
 ======================================== */
 
-/*
-    O mapa é utilizado apenas como elemento visual do dashboard.
-    Por isso, permanece como imagem de fundo e não interfere
-    semanticamente no conteúdo da página.
-*/
-
-.admin-dashboard-hero {
-    min-height: 330px;
-
-    padding: 8px 0 32px;
-
-    background-image: url("../img/admin/mapa-mundi.png");
-    background-repeat: no-repeat;
-    background-position: right top;
-    background-size: auto 300px;
-}
 
 .admin-dashboard-apresentacao {
     max-width: 680px;
-
-    margin-bottom: 28px;
 }
 
 .admin-dashboard-destaque {
@@ -1784,6 +1803,19 @@ body {
     max-width: 590px;
 }
 
+.admin-paises-layout {
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Mapa decorativo da página de países */
+.admin-paises-mapa {
+    display: block;
+    max-height: 180px;
+    object-fit: contain;
+    object-position: right center;
+}
+
 /* ========================================
    BUSCA E FILTROS
 ======================================== */
@@ -2173,6 +2205,18 @@ body {
     text-align: right;
 }
 
+/* Foco de teclado no menu administrativo */
+.admin-menu-nav .nav-link:focus-visible {
+    outline: 3px solid var(--azul-principal);
+    outline-offset: 2px;
+}
+
+/* Evita que textos longos ultrapassem os cards */
+.admin-cadastro-info,
+.admin-dashboard-descricao {
+    overflow-wrap: anywhere;
+}
+
 /* ========================================
    RESPONSIVIDADE
 ======================================== */
@@ -2202,6 +2246,19 @@ body {
         text-align: left;
     }
 
+        .admin-navbar {
+        padding: 12px 16px;
+    }
+
+    .admin-logo {
+        width: 150px;
+        max-width: 100%;
+    }
+
+    .admin-usuario {
+        font-size: 13px;
+    }
+
 }
 
 /* ========================================
@@ -2212,10 +2269,6 @@ body {
 
     .admin-conteudo {
         padding: 32px 24px;
-    }
-
-    .admin-dashboard-hero {
-        background-size: auto 220px;
     }
 
     .admin-dashboard-titulo {
@@ -2239,12 +2292,6 @@ body {
 
     .admin-conteudo {
         padding: 28px 18px;
-    }
-
-    .admin-dashboard-hero {
-        min-height: auto;
-
-        background-image: none;
     }
 
     .admin-dashboard-titulo {
@@ -2281,7 +2328,7 @@ body {
         display: none;
     }
 
-.hero-linha {
+    .hero-linha {
         min-height: 440px;
     }
 
