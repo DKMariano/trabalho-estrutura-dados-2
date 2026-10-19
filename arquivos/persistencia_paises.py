@@ -32,6 +32,10 @@ def carregar_paises():
                 pais["tecnologia"]
             )
 
+        # A carga inicial do JSON não conta como uso da aplicação:
+        # os contadores começam a valer a partir daqui.
+        tabela.zerar_metricas()
+
         # A devolução da tabela preenchida
         return tabela
 

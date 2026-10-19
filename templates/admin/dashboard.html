@@ -142,7 +142,7 @@
                 <!-- Cadastrar país -->
                 <div class="col-12 col-lg-4">
 
-                    <a href="#" class="admin-acao">
+                    <a href="{{ url_for('admin_cadastrar_pais') }}" class="admin-acao">
 
                         <div class="admin-acao-icone">
                             <i class="bi bi-plus-circle"></i>
@@ -171,7 +171,7 @@
                 <!-- Gerenciar países -->
                 <div class="col-12 col-lg-4">
 
-                    <a href="#" class="admin-acao">
+                    <a href="{{ url_for('admin_paises') }}" class="admin-acao">
 
                         <div class="admin-acao-icone">
                             <i class="bi bi-list-ul"></i>
@@ -225,6 +225,207 @@
                         <i class="bi bi-arrow-right admin-acao-seta"></i>
 
                     </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         INSTRUMENTAÇÃO DA TABELA HASH
+
+         Contadores e tempos registrados pela própria
+         TabelaHash durante o uso da aplicação.
+    ====================================== -->
+    <section class="card admin-dashboard-card mb-4">
+
+        <div
+            class="card-header bg-white
+                   d-flex justify-content-between
+                   align-items-center"
+        >
+
+            <div class="d-flex align-items-center gap-3">
+
+                <i class="bi bi-speedometer2 admin-secao-icone"></i>
+
+                <div>
+
+                    <h2 class="admin-dashboard-subtitulo">
+                        Instrumentação da Tabela Hash
+                    </h2>
+
+                    <p class="admin-dashboard-card-descricao">
+                        Operações realizadas desde que o servidor foi iniciado.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <span class="badge text-bg-primary">
+                {{ metricas.total_chamadas }} operações
+            </span>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <!-- Contadores e tempos por operação -->
+                <div class="col-12 col-xl-7">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+                                    <th scope="col">Operação</th>
+                                    <th scope="col" class="text-end">Chamadas</th>
+                                    <th scope="col" class="text-end">Sucessos</th>
+                                    <th scope="col" class="text-end">Falhas</th>
+                                    <th scope="col" class="text-end">Tempo médio</th>
+                                    <th scope="col" class="text-end">Tempo máximo</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for op in metricas.operacoes %}
+
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            {{ op.operacao | capitalize }}
+                                        </strong>
+                                    </td>
+
+                                    <td class="text-end">{{ op.chamadas }}</td>
+
+                                    <td class="text-end">{{ op.sucessos }}</td>
+
+                                    <td class="text-end">{{ op.falhas }}</td>
+
+                                    <td class="text-end">
+                                        {% if op.chamadas %}
+                                            {{ "%.2f" | format(op.tempo_medio_us) }} µs
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-end">
+                                        {% if op.chamadas %}
+                                            {{ "%.2f" | format(op.tempo_max_us) }} µs
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <p class="small text-secondary mt-3 mb-0">
+                        Falha: inserção, alteração ou remoção recusada pelas
+                        validações, ou busca sem resultado. Os contadores ficam
+                        em memória e voltam a zero quando o servidor é
+                        reiniciado. Os tempos incluem o custo da própria medição.
+                    </p>
+
+                </div>
+
+
+                <!-- Últimas operações -->
+                <div class="col-12 col-xl-5">
+
+                    <h3 class="h6 mb-3">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Últimas operações
+                    </h3>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-sm align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+                                    <th scope="col">Hora</th>
+                                    <th scope="col">Operação</th>
+                                    <th scope="col">Código</th>
+                                    <th scope="col">Resultado</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for evento in metricas.eventos %}
+
+                                <tr>
+
+                                    <td>{{ evento.hora }}</td>
+
+                                    <td>{{ evento.operacao | capitalize }}</td>
+
+                                    <td>
+                                        <strong>{{ evento.codigo }}</strong>
+                                    </td>
+
+                                    <td>
+
+                                        <span
+                                            class="badge
+                                                   {% if evento.sucesso %}
+                                                       text-bg-success
+                                                   {% else %}
+                                                       text-bg-danger
+                                                   {% endif %}"
+                                        >
+                                            {{ evento.resultado }}
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                                {% else %}
+
+                                <tr>
+
+                                    <td
+                                        colspan="4"
+                                        class="text-center text-secondary py-4"
+                                    >
+                                        Nenhuma operação registrada ainda.
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
 
                 </div>
 
@@ -297,7 +498,7 @@
 
                             <tbody>
 
-                                {% for codigo, pais in paises.items() %}
+                                {% for codigo, pais in paises %}
 
                                 <tr>
 

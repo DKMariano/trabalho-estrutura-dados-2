@@ -55,7 +55,7 @@
                                         required
                                     >
 
-                                        {% for codigo, pais in paises.items() %}
+                                        {% for codigo, pais in paises %}
 
                                             <option
                                                 value="{{ codigo }}"
@@ -99,6 +99,22 @@
         </div>
 
     </section>
+
+    {% if nao_encontrado %}
+    <section class="pt-4">
+        <div class="container">
+            <div class="alert alert-warning mb-0" role="alert">
+                <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
+                {% if codigo_selecionado %}
+                    Nenhuma cobertura encontrada para o código
+                    <strong>{{ codigo_selecionado }}</strong>.
+                {% else %}
+                    Selecione um destino para consultar a cobertura.
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <!-- =====================================
          RESULTADO DA CONSULTA

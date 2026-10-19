@@ -6,7 +6,7 @@ Disciplina: Estrutura de Dados 2
 Equipe: Bruno Barreto, Dimitrius Khouri e Guilherme Lopes
 """
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 
 #ATENÇÃO!!!! CONFIRMAR SE PODEMOS MANTER ESSA IMPORTAÇÃO
 from  dados_site.dados_inicio import (BENEFICIOS, DEPOIMENTOS, ITENS_CARROSSEL, PASSOS, PLANOS)
@@ -16,14 +16,16 @@ from dados_site.dados_usuario import USUARIOS
 
 # Carrega os países do arquivo JSON na TabelaHash.
 from arquivos.persistencia_paises import carregar_paises
+from arquivos.persistencia_paises import salvar_paises
 
 app = Flask(__name__)
+app.secret_key = "dgb-sim-chave-de-desenvolvimento"
 
 # Carrega os registros persistidos na estrutura em memória.
 tabela_paises = carregar_paises()
 
 # Referência temporária para preservar as rotas ainda não adaptadas.
-PAISES = tabela_paises.paises
+# PAISES = tabela_paises.paises
 
 
 
@@ -48,7 +50,8 @@ def paises():
     # Começa sem resultado, pois o usuário pode apenas abrir a página.
     resultado = None
     codigo_selecionado = None
-    
+    nao_encontrado = False
+
     if request.method == "POST":
         # Obtém o código, remove espaços e converte para maiúsculas.
         codigo_selecionado = request.form.get("destino", "").strip().upper()     
@@ -56,12 +59,15 @@ def paises():
         # Busca o país na TabelaHash; retorna None se não encontrar.   
         resultado = tabela_paises.buscar(codigo_selecionado)
 
+        nao_encontrado = resultado is None
+
     # Envia os países, o resultado e a seleção ao template.
     return render_template(
         "paises.html",
-        paises=tabela_paises.paises,
+        paises=sorted(tabela_paises.listar(), key=lambda item: item[1]["nome"]),
         resultado=resultado,
-        codigo_selecionado=codigo_selecionado
+        codigo_selecionado=codigo_selecionado,
+        nao_encontrado=nao_encontrado   
     )
 
 
@@ -105,16 +111,25 @@ def login():
 def admin():
 
     # Pendente: integrar esta operação à classe TabelaHash.
-    total_paises = len(PAISES)
-    total_coberturas = len(PAISES)
+    # total_paises = len(PAISES)
+    # total_coberturas = len(PAISES)
+    total_paises = tabela_paises.tam()
+    total_coberturas = tabela_paises.tam()
 
-    return render_template("admin/dashboard.html", paises=PAISES, total_paises=total_paises, total_coberturas=total_coberturas)
+    return render_template(
+        "admin/dashboard.html",
+        paises=sorted(tabela_paises.listar(), key=lambda item: item[1]["nome"]),
+        total_paises=total_paises,
+        total_coberturas=total_coberturas,
+        metricas=tabela_paises.metricas()
+    )
 
 
 @app.route("/admin/paises")
 def admin_paises():
     # Pendente: integrar esta operação à classe TabelaHash.
-
+    # Feito
+    
     busca = request.args.get("busca", "").strip().lower()
     regiao = request.args.get("regiao", "").strip()
 
@@ -122,7 +137,8 @@ def admin_paises():
 
     por_pagina = 5
 
-    paises_filtrados = list(PAISES.items())
+    # paises_filtrados = list(PAISES.items())
+    paises_filtrados = sorted(tabela_paises.listar(), key=lambda item: item[1]["nome"])
 
     # =====================================
     # BUSCA POR NOME OU CÓDIGO
@@ -153,7 +169,7 @@ def admin_paises():
 
     regioes = sorted({
         pais["regiao"]
-        for pais in PAISES.values()
+        for _, pais in tabela_paises.listar()
     })
 
     # =====================================
@@ -181,7 +197,7 @@ def admin_paises():
     return render_template(
         "admin/paises.html",
         paises=paises_pagina,
-        total_paises=len(PAISES),
+        total_paises=tabela_paises.tam(),
         total_filtrados=total_filtrados,
         regioes=regioes,
         busca=busca,
@@ -194,20 +210,22 @@ def admin_paises():
 @app.route("/admin/paises/cadastrar", methods=["GET", "POST"])
 def admin_cadastrar_pais():
     # Pendente: integrar esta operação à classe TabelaHash.
-    regioes = [
-        "África",
-        "América",
-        "Ásia",
-        "Europa",
-        "Oceania"
-    ]
+    #Feito
 
-    tecnologias = [
-        "2G",
-        "3G",
-        "4G",
-        "5G"
-    ]
+    # regioes = [
+    #     "África",
+    #     "América",
+    #     "Ásia",
+    #     "Europa",
+    #     "Oceania"
+    # ]
+
+    # tecnologias = [
+    #     "2G",
+    #     "3G",
+    #     "4G",
+    #     "5G"
+    # ]
 
     mensagem = None
     dados_formulario = {}
@@ -229,31 +247,39 @@ def admin_cadastrar_pais():
         }
 
         # Validação dos campos obrigatórios.
-        if not nome or not codigo or not regiao or not operadora or not tecnologia:
-            mensagem = "Preencha todos os campos obrigatórios."
+        # if not nome or not codigo or not regiao or not operadora or not tecnologia:
+        #     mensagem = "Preencha todos os campos obrigatórios."
 
-        # O código utilizado como chave deve possuir duas letras.
-        elif len(codigo) != 2 or not codigo.isalpha():
-            mensagem = "O código do país deve possuir exatamente 2 letras."
+        # # O código utilizado como chave deve possuir duas letras.
+        # elif len(codigo) != 2 or not codigo.isalpha():
+        #     mensagem = "O código do país deve possuir exatamente 2 letras."
 
-        # Impede que uma chave já existente seja sobrescrita.
-        elif codigo in PAISES:
-            mensagem = "Já existe um país cadastrado com esse código."
+        # # Impede que uma chave já existente seja sobrescrita.
+        # #elif codigo in PAISES:
+        # elif tabela_paises.buscar(codigo) is not None:
+        #     mensagem = "Já existe um país cadastrado com esse código."
 
-        else:
-            PAISES[codigo] = {
-                "nome": nome,
-                "regiao": regiao,
-                "operadora": operadora,
-                "tecnologia": tecnologia
-            }
+        # else:
+            # PAISES[codigo] = {
+            #     "nome": nome,
+            #     "regiao": regiao,
+            #     "operadora": operadora,
+            #     "tecnologia": tecnologia
+            # }
+
+        try:
+            tabela_paises.inserir(codigo, nome, regiao, operadora, tecnologia)
+            salvar_paises(tabela_paises)
+            flash("Cadastro realizado com sucesso!", "sucesso")
 
             return redirect(url_for("admin_paises"))
+        except ValueError as erro:
+            mensagem = str(erro)
 
     return render_template(
         "admin/cadastrar_pais.html",
-        regioes=regioes,
-        tecnologias=tecnologias,
+        regioes=tabela_paises.REGIOES,
+        tecnologias=tabela_paises.TECNOLOGIAS,
         dados_formulario=dados_formulario,
         mensagem=mensagem,
         pagina_ativa="paises"
@@ -263,12 +289,14 @@ def admin_cadastrar_pais():
 @app.route("/admin/paises/<codigo>")
 def admin_visualizar_pais(codigo):
     # Pendente: integrar esta operação à classe TabelaHash.
+    # Feito
 
     codigo = codigo.upper()
 
-    pais = PAISES.get(codigo)
+    pais = tabela_paises.buscar(codigo)
 
     if pais is None:
+        flash("País não encontrado.", "erro")
         return redirect(url_for("admin_paises"))
 
     return render_template(
@@ -282,27 +310,53 @@ def admin_visualizar_pais(codigo):
     methods=["GET", "POST"]
 )
 def admin_editar_pais(codigo):
-    # Pendente: integrar esta operação à classe TabelaHash.
+    # Pendente: integrar esta operação à classe TabelaHash. 
+    # Feito
+
     codigo = codigo.upper()
 
-    pais = PAISES.get(codigo)
+    pais = tabela_paises.buscar(codigo)
 
     if pais is None:
+        flash("País não encontrado.", "erro")
         return redirect(url_for("admin_paises"))
+
+    mensagem = None
+    dados = pais
 
     if request.method == "POST":
 
-        pais["nome"] = request.form.get("nome", "").strip()
-        pais["regiao"] = request.form.get("regiao", "").strip()
-        pais["operadora"] = request.form.get("operadora", "").strip()
-        pais["tecnologia"] = request.form.get("tecnologia", "").strip()
+        # pais["nome"] = request.form.get("nome", "").strip()
+        # pais["regiao"] = request.form.get("regiao", "").strip()
+        # pais["operadora"] = request.form.get("operadora", "").strip()
+        # pais["tecnologia"] = request.form.get("tecnologia", "").strip()
 
-        return redirect(url_for("admin_paises"))
+        nome = request.form.get("nome", "").strip()
+        regiao = request.form.get("regiao", "").strip()
+        operadora = request.form.get("operadora", "").strip()
+        tecnologia = request.form.get("tecnologia", "").strip()
+
+        try:
+            tabela_paises.alterar(codigo, nome, regiao, operadora, tecnologia)
+            salvar_paises(tabela_paises)
+            flash("Alteração realizada com sucesso!", "sucesso")
+            return redirect(url_for("admin_paises"))
+        except ValueError as erro:
+            mensagem = str(erro)
+            dados = {"nome": nome, "regiao": regiao,
+                "operadora": operadora, "tecnologia": tecnologia}
+
+
+        
 
     return render_template(
         "admin/editar_pais.html",
         codigo=codigo,
-        pais=pais
+        pais=pais,
+        dados=dados,
+        regioes=tabela_paises.REGIOES,
+        tecnologias=tabela_paises.TECNOLOGIAS,
+        mensagem=mensagem
     )
 
 @app.route(
@@ -310,13 +364,17 @@ def admin_editar_pais(codigo):
     methods=["POST"]
 )
 def admin_excluir_pais(codigo):
-    """
-    Remove um país do dicionário utilizado pelo MVP.
-    """
+    """Remove um país da TabelaHash e persiste a alteração no JSON."""
 
     codigo = codigo.upper()
 
-    if codigo in PAISES:
-        del PAISES[codigo]
+    # if codigo in PAISES:
+    #     del PAISES[codigo]
+    try:
+        tabela_paises.remover(codigo)
+        salvar_paises(tabela_paises)
+        flash("País excluido com sucesso!", "sucesso")
+    except ValueError as erro:
+        flash(str(erro), "erro")
 
     return redirect(url_for("admin_paises"))

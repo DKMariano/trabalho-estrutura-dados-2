@@ -35,6 +35,16 @@
                         <h2>Informações do país</h2>
                     </div>
 
+                    {% if mensagem %}
+                    <div
+                        class="alert alert-danger"
+                        role="alert"
+                    >
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        {{ mensagem }}
+                    </div>
+                    {% endif %}
+
                     <form method="POST">
                         <div class="row g-4">
 
@@ -44,7 +54,7 @@
                                 </label>
                                 <input type="text" class="form-control"
                                        id="nome" name="nome"
-                                       value="{{ pais.nome }}" required>
+                                       value="{{ dados.nome }}" required>
                             </div>
 
                             <div class="col-12 col-md-6">
@@ -65,9 +75,16 @@
                                 <label for="regiao" class="form-label">
                                     Região <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control"
+                                <!-- <input type="text" class="form-control"
                                        id="regiao" name="regiao"
-                                       value="{{ pais.regiao }}" required>
+                                       value="{{ pais.regiao }}" required> -->
+                                <select class="form-select" id="regiao" name="regiao" required>
+                                    {% for r in regioes %}
+                                    <option value="{{ r }}" {% if dados.regiao == r %}selected{% endif %}>
+                                        {{ r }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
                             </div>
 
                             <div class="col-12 col-md-6">
@@ -76,7 +93,7 @@
                                 </label>
                                 <input type="text" class="form-control"
                                        id="operadora" name="operadora"
-                                       value="{{ pais.operadora }}" required>
+                                       value="{{ dados.operadora }}" required>
                             </div>
 
                         </div>
@@ -96,20 +113,16 @@
                             </p>
                             <div class="row">
                                 <div class="col-12 col-md-6">
-                                    <select class="form-select" id="tecnologia"
-                                            name="tecnologia"
+                                    
+                                    <select class="form-select" id="tecnologia" name="tecnologia"
                                             aria-describedby="tecnologia-ajuda" required>
-                                        <option value="4G"
-                                            {% if pais.tecnologia == "4G" %}
-                                                selected
-                                            {% endif %}
-                                        >4G</option>
-                                        <option value="5G"
-                                            {% if pais.tecnologia == "5G" %}
-                                                selected
-                                            {% endif %}
-                                        >5G</option>
+                                        {% for t in tecnologias %}
+                                        <option value="{{ t }}" {% if dados.tecnologia == t %}selected{% endif %}>
+                                            {{ t }}
+                                        </option>
+                                        {% endfor %}
                                     </select>
+                                    
                                 </div>
                             </div>
                         </div>

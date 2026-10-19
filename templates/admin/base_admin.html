@@ -92,6 +92,15 @@
         ====================================== -->
         <main class="admin-conteudo">
 
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria, texto in mensagens %}
+            <div class="alert alert-{{ 'danger' if categoria == 'erro' else 'success' }} alert-dismissible fade show" role="alert">
+                {{ texto }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+            {% endfor %}
+            {% endwith %}
+
             {% block admin_content %}
             {% endblock %}
 
