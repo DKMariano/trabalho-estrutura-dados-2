@@ -1,5 +1,8 @@
 # DGB SIM
 
+**Etapa 01 — Tabela Hash e Aplicação Web**  
+**Entrega prevista no enunciado:** 20/10/2026.
+
 Sistema Web desenvolvido como trabalho prático da disciplina de **Estruturas de Dados II**, utilizando **Python, Flask, HTML, CSS, Bootstrap e Jinja**.
 
 O projeto simula uma plataforma de uma empresa fictícia de **eSIM para internet móvel internacional**, permitindo consultar a cobertura disponível em diferentes países e, progressivamente, aplicar estruturas de dados estudadas na disciplina.
@@ -74,13 +77,15 @@ A Tabela Hash da Etapa 01 (`estruturas/tabela_hash.py`) foi implementada como um
 
 Operações disponíveis: `inserir`, `buscar`, `alterar`, `remover`, `listar` e `tam`.
 
-Todas as rotas passam pelos métodos da classe `TabelaHash`. A lógica da estrutura fica separada das rotas Flask, e a leitura e gravação do JSON ficam em `arquivos/persistencia_paises.py`.
+O `dict` fornece o mecanismo nativo de hashing e gerencia as colisões internamente. A equipe implementa a classe, suas operações, validações e instrumentação; não há função hash ou tratamento manual de colisões. A busca pública consulta diretamente a chave; a busca administrativa por trecho de nome ou código percorre a listagem.
+
+As rotas de gerenciamento e consulta de países utilizam os métodos da classe `TabelaHash`. A lógica da estrutura fica separada das rotas Flask, e a leitura e gravação do JSON ficam em `arquivos/persistencia_paises.py`.
 
 ### Validações
 
 As validações ficam na `TabelaHash`, e as telas de cadastro e edição exibem as mensagens de erro:
 
-- código com exatamente 2 letras ASCII e sem repetição;
+- código com exatamente 2 letras ASCII e sem repetição (a validação não consulta uma base oficial de códigos ISO);
 - nome e operadora obrigatórios;
 - região: África, América, Ásia, Europa ou Oceania;
 - tecnologia: 2G, 3G, 4G ou 5G.
@@ -101,25 +106,26 @@ O arquivo precisa existir e conter um JSON válido: se ele estiver ausente, o se
 
 ### Instrumentação
 
-A `TabelaHash` registra o próprio uso por meio do decorador `_medir`, aplicado a `inserir`, `buscar`, `alterar`, `remover` e `listar`. Para cada operação são guardados:
+O decorador `_medir` instrumenta `inserir`, `buscar`, `alterar`, `remover` e `listar`, utilizando `time.perf_counter_ns()`. São registrados chamadas, sucessos, falhas, tempo acumulado e tempo máximo. O resumo calcula o tempo médio e converte os tempos para microssegundos.
 
-- número de chamadas;
-- sucessos e falhas (falha: inserção, alteração ou remoção recusada pelas validações, ou busca sem resultado);
-- tempo médio e tempo máximo, medidos com `time.perf_counter_ns()`;
-- as 8 operações mais recentes, com código, resultado e duração.
+O dashboard (`/admin`) apresenta os contadores e os tempos médio e máximo por operação. Também mostra até oito eventos recentes com hora, operação, código e resultado. A duração individual é armazenada no evento, mas não aparece nessa tabela.
 
-Os dados aparecem no card **Instrumentação da Tabela Hash** do dashboard (`/admin`) e podem ser lidos por `tabela_paises.metricas()`.
+- Busca sem resultado conta como falha; exceções nos métodos também são registradas como falhas.
+- `listar()` entra nos contadores, mas não nos eventos recentes.
+- A carga inicial do JSON é excluída dos contadores.
+- As métricas ficam em memória e são reiniciadas com o servidor.
+- São contadas chamadas de métodos, não cliques: abrir páginas pode gerar listagens e buscas auxiliares. Abrir o dashboard também conta uma listagem.
+- Os tempos abrangem o método e suas validações, com o custo do mecanismo de medição; não incluem salvamento do JSON, renderização ou toda a requisição Web.
+- Não são expostos buckets, índices ou colisões internos do `dict`.
+- O histórico recente de operações da estrutura é distinto do histórico de roteamentos proposto como diferencial.
 
-Observações:
+Os tempos observados não substituem a análise de complexidade. O acesso por chave tem custo médio esperado constante em relação à quantidade de países, considerando campos de tamanho limitado. Listar todos os registros e gravar o JSON completo dependem do volume de dados; ordenar a listagem acrescenta custo de ordenação.
 
-- a carga inicial do `paises.json` não é contada como uso;
-- os contadores ficam em memória e voltam a zero quando o servidor é reiniciado;
-- como a estrutura é um dicionário de dicionários, não há índices, buckets nem colisões a exibir: as métricas descrevem o uso da estrutura, não seu funcionamento interno;
-- os tempos incluem o custo da própria medição, e as buscas feitas pelas rotas de visualização e edição também são contadas.
+### Situação da entrega
 
-### Pendências da Etapa 01
+O código contém o CRUD de países integrado à estrutura, a persistência e a instrumentação. A descrição inicial do diferencial e sua integração planejada constam neste README. Árvore B, Grafos e roteamento permanecem como desenvolvimento futuro.
 
-- **Descrição inicial do diferencial:** exigida na entrega, ainda não registrada neste repositório. O diferencial precisa ser aprovado pela professora (ver seção "Diferencial do projeto").
+A aprovação formal do diferencial deve ser confirmada com a professora. A documentação não substitui a validação da aplicação em execução.
 
 ---
 
@@ -153,6 +159,7 @@ O administrador possui acesso às funcionalidades de gerenciamento, incluindo:
 - As credenciais de teste ficam em `dados_site/dados_usuario.py`, em texto simples.
 - A `secret_key` do Flask está fixa no código. Fora do contexto acadêmico, ela seria lida de uma variável de ambiente.
 - O conteúdo da página inicial (carrossel, benefícios, planos e depoimentos) vem de dados estáticos em `dados_site/dados_inicio.py`.
+- Falhas de leitura ou escrita do JSON não têm tratamento específico. Uma falha de gravação pode deixar o estado em memória diferente do arquivo, pois a alteração ocorre antes do salvamento.
 - A busca administrativa diferencia acentos: pesquisar "mexico" não encontra "México".
 
 Essas soluções são simplificadas de propósito, pois o foco acadêmico do projeto está nas estruturas de dados.
@@ -301,26 +308,44 @@ Rota
 
 ---
 
-## Diferencial do projeto
+## Diferencial proposto — roteamento multicritério com histórico
 
-O trabalho exige que cada equipe proponha pelo menos um diferencial funcional ou algorítmico, submetido à aprovação da professora.
+**Situação na Etapa 01:** proposta documentada para aprovação e implementação futura na etapa de Grafos. Não é uma funcionalidade operacional desta versão.
 
-A proposta atual é o **roteamento utilizando diferentes critérios**, permitindo comparar rotas da rede internacional de acordo com pesos distintos.
+### Problema e objetivo
 
-Entre os critérios planejados estão:
+A rota de menor latência já faz parte do escopo comum do trabalho. O diferencial acrescentará a escolha por **menor custo operacional simulado** e um histórico persistente dos roteamentos realizados.
 
-- menor latência;
-- menor custo operacional simulado.
+### Funcionamento planejado
 
-Também está previsto o registro de um **histórico de consultas**, permitindo acompanhar as operações realizadas no sistema.
+Cada conexão do Grafo terá dois atributos não negativos: latência simulada em milissegundos e custo operacional simulado, em unidade a ser definida pela equipe.
 
-> **Situação:** proposta ainda não aprovada formalmente pela professora. A descrição inicial e a forma de integração ao projeto devem ser registradas para a entrega da Etapa 01.
+O usuário informará origem, destino e critério. Dijkstra utilizará o peso correspondente ao critério escolhido e calculará **uma rota por consulta**. O resultado apresentará a sequência de países, o critério utilizado, a latência total e o custo total desse caminho.
+
+Exibir os dois totais não significa otimização simultânea nem cálculo automático de duas alternativas. Neste projeto, “multicritério” significa disponibilizar diferentes critérios para escolha do usuário.
+
+### Integração planejada
+
+1. Localizar o cliente pelo ID na Árvore B.
+2. Verificar o país de destino na Tabela Hash e identificar o pacote associado ao cliente.
+3. Localizar origem e destino no Grafo.
+4. Aplicar Dijkstra ao atributo escolhido: latência ou custo.
+5. Apresentar a rota e os dois totais do caminho encontrado.
+6. Persistir a consulta no histórico JSON para visualização posterior.
+
+O histórico deverá guardar origem, destino, critério, rota, latência total e custo operacional total.
+
+### Condições de cálculo
+
+A implementação deverá rejeitar pesos negativos ou ausentes antes do cálculo e informar localidades indisponíveis ou inexistência de caminho. Latências e custos serão identificados como simulados.
+
+O detalhamento segue o material de proposta fornecido pela equipe. As estruturas, rotas e persistência desse diferencial ainda não estão implementadas no código analisado.
 
 ---
 
 ## Como executar o projeto
 
-Testado com Python 3.12 e Flask 3.1.
+Ambiente informado pela equipe: Python 3.12 e Flask 3.1. O projeto não possui arquivo de dependências com versões fixadas.
 
 ### 1. Clone o repositório
 
@@ -376,7 +401,7 @@ Por esse motivo, algumas soluções relacionadas à autenticação, persistênci
 
 🚧 **Em desenvolvimento**
 
-### Etapa 01
+### Etapa 01 — Implementada, pendente de validação final
 
 - [x] Interface Web inicial
 - [x] Página de consulta de cobertura
@@ -391,9 +416,10 @@ Por esse motivo, algumas soluções relacionadas à autenticação, persistênci
 - [x] Integração das operações com a Tabela Hash
 - [x] Persistência dos países em JSON
 - [x] Validações e mensagens de erro nos formulários
-- [x] Testes das rotas e das validações
+- [x] Confirmar, no ambiente de apresentação, rotas, validações e persistência após reinício
 - [x] Instrumentação básica da estrutura (contadores e tempos no dashboard)
-- [ ] Descrição inicial do diferencial
+- [x] Descrição inicial do diferencial e integração planejada
+- [ ] Confirmar aprovação formal do diferencial com a professora
 
 ### Próximas etapas
 
