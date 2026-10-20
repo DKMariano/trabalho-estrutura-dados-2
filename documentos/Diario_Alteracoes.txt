@@ -318,3 +318,29 @@
 * Em `persistencia_paises.py`, zerei as métricas após `carregar_paises()`, para que a carga inicial do JSON não conte como uso.
 * Enviei `metricas` ao dashboard em `app.py` e criei o card "Instrumentação da Tabela Hash" em `dashboard.html`.
 * Como a estrutura é um dicionário, não exibi índices, buckets nem colisões. As métricas ficam em memória e zeram quando o servidor reinicia.
+
+## 19/10/2026
+### ANÁLISE E CONSOLIDAÇÃO DO ESCOPO DA ETAPA 1 — BRUNO
+* Analisei os documentos do trabalho, as pendências registradas e as informações disponíveis sobre o repositório do DGB SIM.
+* Consolidei o entendimento de que o projeto deve equilibrar a demonstração do sistema, a apresentação do código e a explicação dos conceitos de Estruturas de Dados II, evitando tratar a entrega apenas como uma aplicação web.
+* Identifiquei a necessidade de apresentar cada funcionalidade relacionando três pontos: ação realizada pelo usuário, trecho de código responsável e conceito de estrutura de dados demonstrado.
+
+### CONSOLIDAÇÃO DO DIFERENCIAL — BRUNO
+* Consolidei a proposta de diferencial como roteamento por critério selecionado, permitindo ao usuário optar entre menor latência e menor custo operacional simulado.
+* Defini que cada conexão do grafo deverá possuir dois pesos não negativos: latência simulada e custo operacional simulado.
+* Organizei a proposta para que o algoritmo de Dijkstra utilize somente o peso correspondente ao critério escolhido em cada consulta.
+* Registrei que o resultado deverá apresentar a sequência de países da rota, o critério utilizado, a latência total e o custo operacional total.
+* Esclareci que a exibição dos dois totais não representa otimização simultânea. A rota será otimizada exclusivamente pelo critério selecionado pelo usuário.
+* Acrescentei à proposta um histórico de consultas persistido em JSON, contendo origem, destino, critério, rota encontrada, latência total e custo operacional total.
+* Planejei a integração futura do diferencial com a consulta do cliente na Árvore B, a verificação dos países na Tabela Hash e o cálculo da rota no grafo ponderado.
+* Registrei os tratamentos esperados para origem ou destino indisponível, inexistência de caminho e rejeição de pesos negativos ou ausentes.
+* Diferenciei o requisito comum de menor latência do diferencial efetivo da equipe, composto pela escolha de menor custo operacional simulado e pelo histórico de consultas.
+* Mantive a proposta como planejamento para aprovação e implementação na etapa de grafos, sem apresentá-la como funcionalidade concluída na Etapa 1.
+
+### PREPARAÇÃO DO CONTEÚDO DA APRESENTAÇÃO — BRUNO
+* Estruturei a abordagem da apresentação com a sequência conceito, código real e resultado no sistema, mantendo o foco acadêmico da disciplina de Estruturas de Dados II.
+* Organizei os blocos essenciais da apresentação: problema, escolha da estrutura, representação dos dados, código da classe, integração com Flask, persistência, demonstração das operações, análise conceitual e evolução futura.
+* Preparei texto curto para a lâmina “Como a consulta atravessa o sistema”, descrevendo o fluxo: código informado, rota Flask, busca na Tabela Hash e resultado na interface, com o JSON responsável pela persistência.
+* Orientei que o JSON seja representado no diagrama como apoio à Tabela Hash, e não como uma etapa entre toda busca e a exibição do resultado.
+* Revisei a proposta da lâmina “O problema e a escolha da estrutura” para manter textos curtos, legíveis e relacionados diretamente à consulta de cobertura pelo código do país.
+* Mantive o conteúdo dos slides voltado a demonstrar por que a estrutura foi escolhida, como ela aparece no código e como participa das funcionalidades visíveis no sistema.
