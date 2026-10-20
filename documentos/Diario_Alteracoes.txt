@@ -270,3 +270,51 @@
 * Confirmei o funcionamento da consulta e da listagem administrativa após essa integração.
 * Atualizei os comentários desatualizados de `app.py` e preservei as importações dos dados de apresentação e dos usuários provisórios.
 
+## 18/10/2026
+### IMPLEMENTAÇÃO DA TABELA HASH COMO DICIONÁRIO DE DICIONÁRIOS — GUILHERME
+* Implementei a classe `TabelaHash` nas rotas. 
+* Centralizei as validações na própria classe:
+  * código com exatamente 2 letras, usando `isalpha()` e `isascii()` para recusar letras acentuadas, como `Ç`;
+  * recusa de código duplicado na inserção;
+  * nome e operadora obrigatórios;
+  * região e tecnologia conferidas contra as listas `REGIOES` e `TECNOLOGIAS`.
+* Defini `REGIOES` e `TECNOLOGIAS` no nível da classe, para que a estrutura e os formulários usem sempre as mesmas opções.
+* Criei o método privado `_validar_dados`, compartilhado por `inserir` e `alterar`.
+* Fiz `inserir`, `alterar` e `remover` lançarem `ValueError` com mensagem clara quando a operação não pode ser realizada.
+* Deixei de usar a referência `PAISES` em `app.py` e passei todas as rotas a usar os métodos da `TabelaHash`: `listar()` e `tam()` no dashboard e na listagem, `buscar()` em visualizar e editar, `inserir()` no cadastro, `alterar()` na edição e `remover()` na exclusão.
+* Chamei `salvar_paises(tabela_paises)` depois de cadastrar, editar e excluir, para gravar cada alteração em `arquivos/paises.json`.
+* Removi as validações duplicadas da rota de cadastro, que passou a depender das regras da classe, e tratei `ValueError` com `try/except` no cadastro, na edição e na exclusão.
+* No cadastro e na edição, os erros são exibidos no formulário, que mantém os dados digitados.
+* A exclusão de um código inexistente deixou de gerar erro 500.
+* Na edição, mantive `pais` com os dados gravados, usados no painel lateral, e `dados` com o que foi digitado. Corrigi o nome do parâmetro `dados` enviado ao template.
+* Passei `regioes` e `tecnologias` da `TabelaHash` para os formulários de cadastro e edição.
+
+### AVISOS AO USUÁRIO E CÓDIGO NÃO ENCONTRADO — GUILHERME
+* Na rota `/paises`, calculei `nao_encontrado` quando a busca na `TabelaHash` não retorna país.
+* Em `templates/paises.html`, acrescentei um alerta que informa o código sem cobertura ou pede a seleção de um destino.
+* Importei `flash` e defini `app.secret_key` em `app.py`.
+* Acrescentei avisos de erro ao visualizar, editar ou excluir um país inexistente e mensagens de confirmação após cadastrar, editar e excluir.
+* Em `templates/admin/base_admin.html`, incluí o bloco com `get_flashed_messages(with_categories=true)`, que exibe alertas vermelhos para erro e verdes para sucesso, com botão de fechar.
+
+### CORREÇÕES NOS TEMPLATES — GUILHERME
+* `templates/admin/dashboard.html`: troquei `paises.items()` por `for codigo, pais in paises`, porque `listar()` retorna uma lista de pares. Os atalhos "Cadastrar país" e "Gerenciar países" passaram a usar `url_for`, no lugar de `href="#"`.
+* `templates/admin/editar_pais.html`:
+  * a região passou de campo de texto para `select`, montado com `regioes`;
+  * a tecnologia passou a montar as opções com `tecnologias`; antes havia só 4G e 5G, e países com 2G ou 3G perdiam a seleção;
+  * acrescentei o alerta de erro;
+  * os campos passaram a usar `dados`;
+  * removi o `select` de tecnologia que ficou duplicado.
+
+### ATUALIZAÇÃO DO README — GUILHERME
+* Reescrevi a seção "Estado atual" para descrever a Tabela Hash como dicionário de dicionários, com validações, persistência e tratamento de erros.
+* Atualizei a estrutura de pastas (`estruturas/`, `arquivos/` e `documentos/`) e removi as referências a `dados_paises.py` e à página da Tabela Hash.
+* Documentei as limitações conhecidas (login sem sessão, credenciais em texto simples e `secret_key` fixa).
+* Corrigi o comando de execução para `python -m flask --app app run --debug`, pois `python app.py` não inicia o servidor.
+* Atualizei a URL do repositório, a licença (MIT), a equipe e o checklist da Etapa 01, deixando como pendência a descrição do diferencial.
+
+### INSTRUMENTAÇÃO BÁSICA DA TABELA HASH — GUILHERME
+* Criei o decorador `_medir` e o apliquei a `inserir`, `buscar`, `alterar`, `remover` e `listar`. Ele registra chamadas, sucessos e falhas (operação recusada ou busca sem resultado), tempo médio e máximo (`time.perf_counter_ns()`) e as 8 operações mais recentes.
+* Criei `metricas()` e `zerar_metricas()` na classe.
+* Em `persistencia_paises.py`, zerei as métricas após `carregar_paises()`, para que a carga inicial do JSON não conte como uso.
+* Enviei `metricas` ao dashboard em `app.py` e criei o card "Instrumentação da Tabela Hash" em `dashboard.html`.
+* Como a estrutura é um dicionário, não exibi índices, buckets nem colisões. As métricas ficam em memória e zeram quando o servidor reinicia.
