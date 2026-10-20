@@ -271,7 +271,7 @@
 * Atualizei os comentários desatualizados de `app.py` e preservei as importações dos dados de apresentação e dos usuários provisórios.
 
 ## 18/10/2026
-### IMPLEMENTAÇÃO DA TABELA HASH COMO DICIONÁRIO DE DICIONÁRIOS — GUILHERME
+### IMPLEMENTAÇÃO DA TABELA HASH nas Rotas — GUILHERME
 * Implementei a classe `TabelaHash` nas rotas. 
 * Centralizei as validações na própria classe:
   * código com exatamente 2 letras, usando `isalpha()` e `isascii()` para recusar letras acentuadas, como `Ç`;
