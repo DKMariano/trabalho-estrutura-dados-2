@@ -6,21 +6,15 @@
         "tecnologia": "5G"
     },
     "BR": {
-        "nome": "Brasil",
-        "regiao": "América",
-        "operadora": "Vivo",
-        "tecnologia": "5G"
+        "nome": "Uruguai",
+        "regiao": "Europa",
+        "operadora": "Morto",
+        "tecnologia": "2G"
     },
     "PT": {
         "nome": "Portugal",
         "regiao": "Europa",
         "operadora": "Operadora PT",
-        "tecnologia": "5G"
-    },
-    "FR": {
-        "nome": "França",
-        "regiao": "Europa",
-        "operadora": "PR",
         "tecnologia": "5G"
     },
     "JP": {
@@ -33,6 +27,12 @@
         "nome": "Chile",
         "regiao": "América",
         "operadora": "CHI",
+        "tecnologia": "5G"
+    },
+    "TE": {
+        "nome": "Teste",
+        "regiao": "Ásia",
+        "operadora": "TEste",
         "tecnologia": "5G"
     }
 }
