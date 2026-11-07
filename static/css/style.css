@@ -58,7 +58,7 @@ body {
 /* Navegação */
 
 .cabecalho .navbar-nav {
-    gap: 32px;
+    gap: 20px;
 }
 
 .cabecalho .nav-link {
@@ -526,6 +526,909 @@ body {
 .modal-plano-dados strong {
     color: var(--texto-principal);
 }
+
+
+/* =========================================
+   PÁGINA PÚBLICA — PLANOS ESIM
+========================================= */
+
+.pagina-planos {
+    background: #f8fbff;
+    min-height: 70vh;
+}
+
+/* =========================================
+   BANNER SUPERIOR
+========================================= */
+
+.planos-hero {
+    min-height: 210px;
+    background-color: #063763;
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+}
+
+.planos-hero-conteudo {
+    padding-top: 12px;
+    padding-bottom: 14px;
+}
+
+.planos-hero-etiqueta {
+    color: #20c5ff;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.planos-hero h1 {
+    color: #ffffff;
+    font-size: 42px;
+    line-height: 1.1;
+    font-weight: 800;
+    margin: 4px 0;
+}
+
+.planos-hero h1 span {
+    color: #16bfff;
+}
+
+.planos-hero-descricao {
+    max-width: 440px;
+    font-size: 17px;
+    line-height: 1.3;
+    margin-bottom: 12px;
+}
+
+.planos-hero-beneficio {
+    padding: 0 20px;
+    border-right: 1px solid rgba(255,255,255,0.5);
+}
+
+.planos-hero-beneficio:first-child {
+    padding-left: 0;
+}
+
+.planos-hero-beneficio:last-child {
+    border-right: none;
+}
+
+.planos-hero-beneficio > i {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ffffff;
+    border-radius: 50%;
+    font-size: 23px;
+    flex-shrink: 0;
+}
+
+.planos-hero-beneficio strong {
+    font-size: 13px;
+}
+
+.planos-hero-beneficio span {
+    font-size: 12px;
+}
+
+/* =========================================
+   CATÁLOGO
+========================================= */
+
+.planos-catalogo {
+    padding: 12px 0 18px;
+}
+
+.planos-secao-etiqueta {
+    color: #0067d8;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.planos-catalogo-cabecalho {
+    margin-bottom: 18px;
+}
+
+.planos-catalogo-cabecalho h2 {
+    color: #061a52;
+    font-size: 29px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.planos-catalogo-cabecalho p {
+    color: #061a52;
+    font-size: 15px;
+    margin: 2px 0 0;
+}
+
+/* =========================================
+   CARDS
+========================================= */
+
+.pagina-planos .plano-card {
+    --cor-plano: #006bff;
+    --fundo-plano: #dceeff;
+
+    background: #ffffff;
+    border: 1px solid #e3ebf5;
+    border-radius: 16px;
+    box-shadow: 0 5px 12px rgba(6, 35, 70, 0.12);
+    text-align: left;
+}
+
+.pagina-planos .plano-card-cabecalho {
+    min-height: 62px;
+    padding: 8px 20px;
+    background: var(--fundo-plano);
+}
+
+.pagina-planos .plano-card-icone {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.45);
+    flex-shrink: 0;
+}
+
+.pagina-planos .plano-card-icone i {
+    font-size: 35px;
+    color: var(--cor-plano);
+}
+
+.pagina-planos .plano-card-identificacao h3 {
+    color: #061a52;
+    font-size: 20px;
+    font-weight: 800;
+    min-height: 0;
+    margin: 0;
+}
+
+.pagina-planos .plano-card-identificacao p {
+    color: #061a52;
+    font-size: 13px;
+    line-height: 1.25;
+    margin: 2px 0 0;
+}
+
+.pagina-planos .plano-card .plano-card-corpo {
+    padding: 14px 20px 12px;
+    flex: 1;
+}
+
+.pagina-planos .plano-card-informacoes {
+    display: grid;
+    grid-template-columns: minmax(0, 36%) minmax(0, 1fr);
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.pagina-planos .plano-card-franquia {
+    padding-right: 12px;
+    border-right: 1px solid #d6e3f2;
+}
+
+.pagina-planos .plano-card-franquia strong {
+    color: #061a52;
+    font-size: 31px;
+    line-height: 1.1;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.pagina-planos .plano-card-franquia span {
+    color: #315987;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.pagina-planos .plano-card-beneficios {
+    padding-left: 20px;
+    min-width: 0;
+}
+
+.pagina-planos .plano-card-beneficios li {
+    color: #061a52;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.pagina-planos .plano-card-beneficios i {
+    color: #006bff;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.pagina-planos .plano-card-botao {
+    padding: 7px 12px;
+    border: 1.5px solid var(--cor-plano);
+    border-radius: 12px;
+    background: #ffffff;
+    color: var(--cor-plano);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.pagina-planos .plano-card-botao:hover {
+    background: var(--cor-plano);
+    color: #ffffff;
+}
+
+/* =========================================
+   CORES DOS PACOTES
+========================================= */
+
+.pagina-planos .plano-europa-basic {
+    --cor-plano: #006bff;
+    --fundo-plano: #d8efff;
+}
+
+.pagina-planos .plano-europa-plus {
+    --cor-plano: #008b2c;
+    --fundo-plano: #d5f8e8;
+}
+
+.pagina-planos .plano-america-basic {
+    --cor-plano: #eb8500;
+    --fundo-plano: #fff0d5;
+}
+
+.pagina-planos .plano-america-plus {
+    --cor-plano: #f02038;
+    --fundo-plano: #ffe0e8;
+}
+
+.pagina-planos .plano-global {
+    --cor-plano: #7413d9;
+    --fundo-plano: #eae2ff;
+}
+
+/* =========================================
+   BANNER INFERIOR
+========================================= */
+
+.planos-banner-conectividade {
+    padding: 0 0 16px;
+}
+
+.planos-banner-conteudo {
+    min-height: 120px;
+    background-color: #dceeff;
+    background-size: cover;
+    background-position: center;
+    border-radius: 16px;
+    padding: 18px 28px;
+}
+
+.planos-banner-conteudo .row {
+    width: 100%;
+}
+
+.planos-banner-etiqueta {
+    color: #006bff;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.planos-banner-conteudo h2 {
+    color: #061a52;
+    font-size: 24px;
+    font-weight: 800;
+    margin: 2px 0;
+}
+
+.planos-banner-conteudo p {
+    color: #061a52;
+    font-size: 14px;
+    margin: 0;
+}
+
+.planos-banner-botao {
+    background: #006bff;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 13px 20px;
+    border-radius: 9px;
+}
+
+.planos-banner-botao:hover {
+    background: #0056cc;
+    color: #ffffff;
+}
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+
+@media (max-width: 991.98px) {
+
+    .planos-hero {
+        min-height: 250px;
+    }
+
+    .planos-hero h1 {
+        font-size: 36px;
+    }
+
+    .planos-banner-conteudo {
+        background-position: left center;
+    }
+
+    .planos-banner-conteudo .row {
+        background: rgba(220, 238, 255, 0.88);
+        border-radius: 10px;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    .planos-hero {
+        min-height: 330px;
+        background-position: 60% center;
+    }
+
+    .planos-hero h1 {
+        font-size: 32px;
+    }
+
+    .planos-hero-descricao {
+        font-size: 15px;
+    }
+
+    .planos-hero-beneficios {
+        gap: 12px;
+    }
+
+    .planos-hero-beneficio {
+        padding: 0;
+        border-right: none;
+    }
+
+    .planos-catalogo-cabecalho h2 {
+        font-size: 25px;
+    }
+
+    .pagina-planos .plano-card-informacoes {
+        grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
+    }
+
+    .pagina-planos .plano-card .plano-card-corpo {
+        padding: 16px;
+    }
+
+    .pagina-planos .plano-card-beneficios {
+        padding-left: 12px;
+    }
+
+    .planos-banner-conteudo {
+        padding: 22px;
+        text-align: center;
+    }
+
+    .planos-banner-botao {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pagina-planos .plano-card {
+        transition: none;
+    }
+}
+
+
+/* ==========================================
+   DGB SIM — MINHA CONECTIVIDADE
+   Etapas 02 e 03 — Interface demonstrativa
+
+   Todos os estilos estão limitados à classe
+   .pagina-conectividade para evitar conflitos
+   com as demais páginas do projeto.
+========================================== */
+
+
+/* ==========================================
+   1. ESTRUTURA GERAL
+========================================== */
+
+.pagina-conectividade {
+    --con-azul: #0067b8;
+    --con-azul-escuro: #062f5b;
+    --con-ciano: #54c8ff;
+    --con-texto: #102a43;
+    --con-borda: #dfe8f1;
+
+    background-color: #f4f8fc;
+    color: var(--con-texto);
+    min-height: 100vh;
+}
+
+.pagina-conectividade *,
+.pagina-conectividade *::before,
+.pagina-conectividade *::after {
+    box-sizing: border-box;
+}
+
+
+/* ==========================================
+   2. BANNER PRINCIPAL
+========================================== */
+
+
+.pagina-conectividade .conectividade-banner {
+    position: relative;
+    overflow: hidden;
+
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(5, 35, 69, 0.98) 0%,
+            rgba(5, 35, 69, 0.90) 28%,
+            rgba(5, 35, 69, 0.68) 48%,
+            rgba(5, 35, 69, 0.15) 75%,
+            rgba(5, 35, 69, 0.02) 100%
+        ),
+        url("../img/conectividade/banner-conectividade.png");
+
+    background-size: cover;
+    background-position: center 48%;
+    background-repeat: no-repeat;
+
+    color: #ffffff;
+}
+
+
+.pagina-conectividade .conectividade-banner .container {
+    position: relative;
+    z-index: 1;
+}
+
+.pagina-conectividade .conectividade-banner h1 {
+    color: #ffffff;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+}
+
+.pagina-conectividade .conectividade-destaque {
+    color: var(--con-ciano);
+}
+
+.pagina-conectividade .conectividade-banner h2 {
+    color: #ffffff;
+    font-size: clamp(1rem, 1.4vw, 1.2rem);
+    line-height: 1.5;
+}
+
+.pagina-conectividade .conectividade-banner p {
+    color: #d7e9f9;
+    font-size: 0.94rem;
+    line-height: 1.65;
+    max-width: 760px;
+}
+
+
+/* ==========================================
+   3. PAINEL DE CONSULTA
+========================================== */
+
+.pagina-conectividade .conectividade-painel {
+    border: 1px solid var(--con-borda);
+    border-radius: 14px;
+    background: #ffffff;
+
+    box-shadow: 0 3px 14px rgba(6, 47, 91, 0.045);
+}
+
+.pagina-conectividade .conectividade-painel h2 {
+    color: var(--con-azul-escuro);
+    font-size: 1.15rem;
+}
+
+.pagina-conectividade .conectividade-painel h2 i {
+    color: var(--con-azul);
+}
+
+.pagina-conectividade .conectividade-painel .form-label {
+    color: #253d53;
+    font-size: 0.86rem;
+    margin-bottom: 0.45rem;
+}
+
+.pagina-conectividade .conectividade-painel .form-control,
+.pagina-conectividade .conectividade-painel .form-select {
+    min-height: 43px;
+    border: 1px solid #cfdbe7;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--con-texto);
+    font-size: 0.88rem;
+}
+
+.pagina-conectividade .conectividade-painel .form-control::placeholder {
+    color: #8294a7;
+}
+
+.pagina-conectividade .conectividade-painel .form-control:focus,
+.pagina-conectividade .conectividade-painel .form-select:focus {
+    border-color: var(--con-azul);
+    box-shadow: 0 0 0 3px rgba(0, 103, 184, 0.13);
+}
+
+.pagina-conectividade .conectividade-painel .btn-primary {
+    min-height: 43px;
+    border: 1px solid var(--con-azul);
+    border-radius: 8px;
+
+    background-color: var(--con-azul);
+    color: #ffffff;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.pagina-conectividade .conectividade-painel .btn-primary:hover {
+    background-color: #00518f;
+    border-color: #00518f;
+    box-shadow: 0 4px 12px rgba(0, 103, 184, 0.15);
+}
+
+.pagina-conectividade .conectividade-painel .btn-primary:focus-visible {
+    outline: 3px solid #73bfff;
+    outline-offset: 2px;
+}
+
+
+/* ==========================================
+   4. AVISOS INFORMATIVOS
+========================================== */
+
+.pagina-conectividade .alert-info {
+    background-color: #eaf4ff;
+    border: 1px solid #cde3fa;
+    border-radius: 9px;
+    color: #164b78;
+}
+
+.pagina-conectividade .alert-warning {
+    background-color: #fff8e6;
+    border: 1px solid #f3dba0;
+    border-radius: 9px;
+    color: #755311;
+}
+
+.pagina-conectividade .alert i {
+    vertical-align: -1px;
+}
+
+
+/* ==========================================
+   5. ÁREA DE RESULTADOS
+========================================== */
+
+.pagina-conectividade .conectividade-resultados > div:first-child h2 {
+    color: var(--con-azul-escuro);
+}
+
+.pagina-conectividade .conectividade-resultados .card {
+    border: 1px solid var(--con-borda);
+    border-radius: 13px;
+    background: #ffffff;
+
+    box-shadow: 0 2px 10px rgba(6, 47, 91, 0.035);
+    overflow: hidden;
+}
+
+.pagina-conectividade .conectividade-resultados .card-body {
+    padding: 1.3rem;
+}
+
+.pagina-conectividade .conectividade-resultados .card h3 {
+    color: var(--con-azul-escuro);
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.pagina-conectividade .conectividade-resultados .card h3 i {
+    color: var(--con-azul);
+}
+
+
+/* ==========================================
+   6. CARDS DE CLIENTE, ESIM E COBERTURA
+========================================== */
+
+.pagina-conectividade .conectividade-card-cliente {
+    background: #eaf4ff !important;
+    border-color: #cfe5fc !important;
+}
+
+.pagina-conectividade .conectividade-card-esim {
+    background: #f0ecff !important;
+    border-color: #dfd6ff !important;
+}
+
+.pagina-conectividade .conectividade-card-cobertura {
+    background: #e8f7ee !important;
+    border-color: #ccebd8 !important;
+}
+
+.pagina-conectividade .conectividade-card-cliente h3 i {
+    color: #0067b8 !important;
+}
+
+.pagina-conectividade .conectividade-card-esim h3 i {
+    color: #7552bb !important;
+}
+
+.pagina-conectividade .conectividade-card-cobertura h3 i {
+    color: #218654 !important;
+}
+
+
+/* ==========================================
+   7. INFORMAÇÕES DOS CARDS
+========================================== */
+
+.pagina-conectividade .conectividade-resultados dl {
+    margin-bottom: 0;
+}
+
+.pagina-conectividade .conectividade-resultados dt {
+    color: #536a7d;
+    font-size: 0.78rem;
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+}
+
+.pagina-conectividade .conectividade-resultados dd {
+    color: #102a43;
+    font-size: 0.91rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    overflow-wrap: anywhere;
+}
+
+.pagina-conectividade .conectividade-resultados dd:last-child {
+    margin-bottom: 0;
+}
+
+.pagina-conectividade .conectividade-resultados .badge {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+
+/* ==========================================
+   8. ROTA RECOMENDADA
+========================================== */
+
+.pagina-conectividade .conectividade-caminho {
+    padding: 0.9rem 0.4rem;
+    min-height: 70px;
+}
+
+.pagina-conectividade .conectividade-caminho .badge {
+    background-color: #e6f2ff !important;
+    color: #075a9b !important;
+
+    border: 2px solid #91c7f3;
+    font-size: 0.84rem;
+    font-weight: 700;
+
+    min-width: 43px;
+    min-height: 36px;
+
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagina-conectividade .conectividade-caminho > i {
+    color: #0067b8;
+    font-size: 1rem;
+}
+
+.pagina-conectividade .conectividade-resultados .list-group {
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+.pagina-conectividade .conectividade-resultados .list-group-item {
+    border-color: #e6edf4;
+    background-color: #f9fbfe;
+    color: #29465e;
+    font-size: 0.86rem;
+    padding: 0.7rem 0.9rem;
+}
+
+.pagina-conectividade .conectividade-resultados .list-group-item strong {
+    color: #075a9b;
+}
+
+
+/* ==========================================
+   9. GRAFO INTERNACIONAL
+========================================== */
+
+.pagina-conectividade .conectividade-grafo {
+    width: 100%;
+    min-height: 260px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 0.7rem;
+    background:
+        linear-gradient(
+            180deg,
+            #f8fbff 0%,
+            #eef6fd 100%
+        );
+
+    border: 1px solid #dce9f5;
+    border-radius: 11px;
+    overflow: hidden;
+}
+
+.pagina-conectividade .conectividade-grafo svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 340px;
+}
+
+.pagina-conectividade .conectividade-grafo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 340px;
+    object-fit: contain;
+}
+
+/*
+   O seletor de imagem já está preparado para
+   uma futura visualização gerada com Cairo.
+*/
+
+
+/* ==========================================
+   10. EXPLORAÇÃO DO GRAFO — BFS E DFS
+========================================== */
+
+.pagina-conectividade .conectividade-algoritmo-bfs {
+    background-color: #eaf4ff;
+    border-color: #cbe4fc !important;
+    border-radius: 10px !important;
+}
+
+.pagina-conectividade .conectividade-algoritmo-dfs {
+    background-color: #f1edff;
+    border-color: #ded5ff !important;
+    border-radius: 10px !important;
+}
+
+.pagina-conectividade .conectividade-algoritmo-bfs h4 {
+    color: #075a9b;
+}
+
+.pagina-conectividade .conectividade-algoritmo-dfs h4 {
+    color: #6544aa;
+}
+
+.pagina-conectividade .conectividade-algoritmo-bfs p,
+.pagina-conectividade .conectividade-algoritmo-dfs p {
+    color: #43596d;
+    font-size: 0.9rem;
+}
+
+.pagina-conectividade .conectividade-algoritmo-bfs .badge,
+.pagina-conectividade .conectividade-algoritmo-dfs .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+
+/* ==========================================
+   11. RESPONSIVIDADE — TABLETS
+========================================== */
+
+@media (max-width: 991.98px) {
+
+    .pagina-conectividade .conectividade-banner h1 {
+        font-size: 2rem;
+    }
+
+    .pagina-conectividade .conectividade-resultados .card-body {
+        padding: 1.15rem;
+    }
+
+    .pagina-conectividade .conectividade-grafo {
+        min-height: 240px;
+    }
+}
+
+
+/* ==========================================
+   12. RESPONSIVIDADE — CELULARES
+========================================== */
+
+@media (max-width: 575.98px) {
+    .pagina-conectividade .conectividade-banner {
+        background-position: 62% center;
+
+        background-image:
+            linear-gradient(
+                90deg,
+                rgba(5, 35, 69, 0.96),
+                rgba(5, 35, 69, 0.76)
+            ),
+            url("../img/banner-conectividade.png");
+    }
+
+    .pagina-conectividade .conectividade-banner h1 {
+        font-size: 1.75rem;
+    }
+
+    .pagina-conectividade .conectividade-banner h2 {
+        font-size: 1rem;
+    }
+
+    .pagina-conectividade .conectividade-banner p {
+        font-size: 0.85rem;
+    }
+
+    .pagina-conectividade .conectividade-painel {
+        border-radius: 11px;
+    }
+
+    .pagina-conectividade .conectividade-painel .card-body {
+        padding: 1rem !important;
+    }
+
+    .pagina-conectividade .conectividade-resultados .card-body {
+        padding: 1rem;
+    }
+
+    .pagina-conectividade .conectividade-caminho {
+        gap: 0.35rem !important;
+    }
+
+    .pagina-conectividade .conectividade-caminho .badge {
+        min-width: 37px;
+        min-height: 33px;
+        font-size: 0.77rem;
+        padding: 0.35rem 0.6rem !important;
+    }
+
+    .pagina-conectividade .conectividade-grafo {
+        min-height: 190px;
+        padding: 0.35rem;
+    }
+
+    .pagina-conectividade .conectividade-resultados .list-group-item {
+        font-size: 0.82rem;
+    }
+    
+}
+
+
+/* ==========================================
+   13. ACESSIBILIDADE
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .pagina-conectividade .conectividade-painel .btn-primary {
+        transition: none;
+    }
+}
+
 
 /* ========================================
    PÁGINA DE COBERTURA

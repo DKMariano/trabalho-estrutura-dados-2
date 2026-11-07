@@ -82,48 +82,55 @@
                     id="menuPrincipal"
                 >
 
-                    <!-- Navegação principal -->
+                    <!-- Navegação principal -->                 
                     <ul class="navbar-nav mx-auto">
 
-                        <!--
-                            A classe "ativo" é aplicada dinamicamente
-                            conforme o endpoint atual do Flask.
-                        -->
+                        <!-- Início -->
                         <li class="nav-item">
-
                             <a
                                 class="nav-link {% if request.endpoint == 'inicio' %}ativo{% endif %}"
                                 href="{{ url_for('inicio') }}"
+                                {% if request.endpoint == 'inicio' %}aria-current="page"{% endif %}
                             >
-                                Início
+                                <i class="bi bi-house-door me-2" aria-hidden="true"></i>Início
                             </a>
-
                         </li>
 
-
+                        <!-- Cobertura -->
                         <li class="nav-item">
-
                             <a
                                 class="nav-link {% if request.endpoint == 'paises' %}ativo{% endif %}"
                                 href="{{ url_for('paises') }}"
+                                {% if request.endpoint == 'paises' %}aria-current="page"{% endif %}
                             >
-                                Cobertura
+                                <i class="bi bi-globe-americas me-2" aria-hidden="true"></i>Cobertura
                             </a>
-
                         </li>
 
-                        <!-- <li class="nav-item">
-
+                        <!-- Planos -->
+                        <li class="nav-item">
                             <a
-                                class="nav-link nav-estatico"
-                                href="#"
+                                class="nav-link {% if request.endpoint == 'planos' %}ativo{% endif %}"
+                                href="{{ url_for('planos') }}"
+                                {% if request.endpoint == 'planos' %}aria-current="page"{% endif %}
                             >
-                                Planos
+                                <i class="bi bi-tags me-2" aria-hidden="true"></i>Planos
                             </a>
+                        </li>
 
-                        </li> -->
+                        <!-- Minha conectividade -->
+                        <li class="nav-item">
+                            <a
+                                class="nav-link {% if request.endpoint == 'minha_conectividade' %}ativo{% endif %}"
+                                href="{{ url_for('minha_conectividade') }}"
+                                {% if request.endpoint == 'minha_conectividade' %}aria-current="page"{% endif %}
+                            >
+                                <i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>Minha conectividade
+                            </a>
+                        </li>
 
                     </ul>
+
                     <!--
                         Acesso à área de autenticação.
                     -->

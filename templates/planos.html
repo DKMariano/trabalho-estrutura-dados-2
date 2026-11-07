@@ -1,0 +1,349 @@
+
+{% extends "base.html" %}
+
+{% block title %}Planos eSIM | DGB SIM{% endblock %}
+
+{% block content %}
+
+{% set apresentacao = {
+    '101': {
+        'descricao': 'Ideal para viagens pela Europa',
+        'regiao': 'Conexão na Europa',
+        'beneficio': 'Ativação rápida',
+        'icone': 'bi-globe-europe-africa',
+        'tema': 'europa-basic'
+    },
+    '102': {
+        'descricao': 'Mais dados para sua viagem europeia',
+        'regiao': 'Conexão na Europa',
+        'beneficio': 'Suporte prioritário',
+        'icone': 'bi-globe-europe-africa',
+        'tema': 'europa-plus'
+    },
+    '201': {
+        'descricao': 'Conexão para a América',
+        'regiao': 'Conexão nas Américas',
+        'beneficio': 'Ativação rápida',
+        'icone': 'bi-globe-americas',
+        'tema': 'america-basic'
+    },
+    '202': {
+        'descricao': 'Mais internet para suas viagens',
+        'regiao': 'Conexão nas Américas',
+        'beneficio': 'Suporte prioritário',
+        'icone': 'bi-globe-americas',
+        'tema': 'america-plus'
+    },
+    '301': {
+        'descricao': 'Conexão em vários continentes',
+        'regiao': 'Cobertura global',
+        'beneficio': 'Suporte 24/7',
+        'icone': 'bi-globe2',
+        'tema': 'global'
+    }
+} %}
+
+<main class="pagina-planos">
+
+    <!-- BANNER SUPERIOR -->
+    <section
+        class="planos-hero d-flex align-items-center"
+        style="background-image:
+            linear-gradient(
+                90deg,
+                rgba(3, 35, 78, 0.85) 0%,
+                rgba(3, 35, 78, 0.55) 35%,
+                rgba(3, 35, 78, 0.05) 75%
+            ),
+            url('{{ url_for('static', filename='img/planos/banner-planos.png') }}');"
+    >
+        <div class="container planos-hero-conteudo">
+
+            <span class="planos-hero-etiqueta">
+                PLANOS DE SERVIÇO
+            </span>
+
+            <h1>
+                Planos <span>eSIM</span>
+            </h1>
+
+            <p class="planos-hero-descricao">
+                Escolha o plano ideal para sua viagem e tenha
+                conexão estável em diversos destinos, com
+                eSIM digital, sem chip físico.
+            </p>
+
+            <div class="d-flex flex-wrap align-items-center planos-hero-beneficios">
+
+                <div class="d-flex align-items-center gap-2 planos-hero-beneficio">
+                    <i class="bi bi-phone d-flex align-items-center justify-content-center"
+                       aria-hidden="true"></i>
+
+                    <div class="d-flex flex-column">
+                        <strong>eSIM digital</strong>
+                        <span>Ativação rápida</span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 planos-hero-beneficio">
+                    <i class="bi bi-globe2 d-flex align-items-center justify-content-center"
+                       aria-hidden="true"></i>
+
+                    <div class="d-flex flex-column">
+                        <strong>Cobertura internacional</strong>
+                        <span>Pacotes regionais e global</span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 planos-hero-beneficio">
+                    <i class="bi bi-shield-check d-flex align-items-center justify-content-center"
+                       aria-hidden="true"></i>
+
+                    <div class="d-flex flex-column">
+                        <strong>Conexão segura</strong>
+                        <span>Serviço demonstrativo</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- CATÁLOGO -->
+    <section class="planos-catalogo">
+
+        <div class="container">
+
+            <header class="planos-catalogo-cabecalho">
+
+                <span class="planos-secao-etiqueta">
+                    NOSSOS PLANOS
+                </span>
+
+                <h2>
+                    Encontre o plano ideal para o seu destino
+                </h2>
+
+                <p>
+                    Todos os planos incluem eSIM digital
+                    e cobertura internacional.
+                    Escolha a opção que melhor se adapta
+                    ao seu perfil de viagem.
+                </p>
+
+            </header>
+
+            <div class="row g-4 justify-content-center">
+
+                {% for codigo, pacote in pacotes.items() %}
+                {% set visual = apresentacao.get(codigo) %}
+
+                {% if visual %}
+
+                <div class="col-12 col-md-6 col-lg-4">
+
+                    <article class="card plano-card plano-{{ visual.tema }} h-100">
+
+                        <!-- CABEÇALHO DO CARD -->
+                        <div class="plano-card-cabecalho d-flex align-items-center gap-3">
+
+                            <div class="plano-card-icone d-flex align-items-center justify-content-center">
+                                <i class="bi {{ visual.icone }}"
+                                   aria-hidden="true"></i>
+                            </div>
+
+                            <div class="plano-card-identificacao">
+
+                                <h3>{{ pacote.nome }}</h3>
+
+                                <p>{{ visual.descricao }}</p>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CORPO DO CARD -->
+                        <div class="card-body plano-card-corpo d-flex flex-column">
+
+                            <div class="plano-card-informacoes">
+
+                                <div class="plano-card-franquia d-flex flex-column align-items-center">
+
+                                    <strong>{{ pacote.dados_gb }} GB</strong>
+
+                                    <span>{{ pacote.validade_dias }} dias</span>
+
+                                </div>
+
+                                <ul class="list-unstyled mb-0 plano-card-beneficios">
+
+                                    <li class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-check-circle-fill"
+                                           aria-hidden="true"></i>
+                                        {{ visual.regiao }}
+                                    </li>
+
+                                    <li class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-check-circle-fill"
+                                           aria-hidden="true"></i>
+                                        eSIM digital
+                                    </li>
+
+                                    <li class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-check-circle-fill"
+                                           aria-hidden="true"></i>
+                                        {{ visual.beneficio }}
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn w-100 mt-auto plano-card-botao"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalPacote{{ codigo }}"
+                            >
+                                Ver detalhes
+                                <i class="bi bi-arrow-right ms-1"
+                                   aria-hidden="true"></i>
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+                {% endif %}
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- BANNER INFERIOR -->
+    <section class="planos-banner-conectividade">
+
+        <div
+            class="container planos-banner-conteudo d-flex align-items-center"
+            style="background-image: url('{{ url_for('static', filename='img/planos/banner-conectividade.png') }}');"
+        >
+
+            <div class="row align-items-center g-3">
+
+                <div class="col-lg-3 d-none d-lg-block"></div>
+
+                <div class="col-lg-5">
+
+                    <span class="planos-banner-etiqueta">
+                        JÁ TEM UM eSIM?
+                    </span>
+
+                    <h2>Consulte sua conectividade</h2>
+
+                    <p>
+                        Verifique sua rota internacional,
+                        latência e demais informações
+                        do seu plano informando seu ID de cliente.
+                    </p>
+
+                </div>
+
+                <div class="col-lg-4 text-lg-end">
+
+                    <a
+                        href="{{ url_for('minha_conectividade') }}"
+                        class="btn planos-banner-botao"
+                    >
+                        <i class="bi bi-reception-4 me-2"
+                           aria-hidden="true"></i>
+
+                        Minha conectividade
+
+                        <i class="bi bi-arrow-right ms-2"
+                           aria-hidden="true"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<!-- MODAIS -->
+{% for codigo, pacote in pacotes.items() %}
+{% set visual = apresentacao.get(codigo) %}
+
+{% if visual %}
+
+<div
+    class="modal fade"
+    id="modalPacote{{ codigo }}"
+    tabindex="-1"
+    aria-labelledby="tituloPacote{{ codigo }}"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 class="modal-title fs-5"
+                    id="tituloPacote{{ codigo }}">
+                    {{ pacote.nome }}
+                </h2>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fechar"
+                ></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p><strong>Código:</strong> {{ codigo }}</p>
+
+                <p><strong>Pacote:</strong> {{ pacote.nome }}</p>
+
+                <p><strong>Franquia:</strong> {{ pacote.dados_gb }} GB</p>
+
+                <p><strong>Validade:</strong> {{ pacote.validade_dias }} dias</p>
+
+                <p><strong>Abrangência:</strong> {{ visual.regiao }}</p>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                >
+                    Fechar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endif %}
+{% endfor %}
+
+{% endblock %}

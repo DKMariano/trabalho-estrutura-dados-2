@@ -8,15 +8,23 @@ Equipe: Bruno Barreto, Dimitrius Khouri e Guilherme Lopes
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 
-#ATENÇÃO!!!! CONFIRMAR SE PODEMOS MANTER ESSA IMPORTAÇÃO
 from  dados_site.dados_inicio import (BENEFICIOS, DEPOIMENTOS, ITENS_CARROSSEL, PASSOS, PLANOS)
 
-#ATENÇÃO!!!! CONFIRMAR SEP ODEMOS MANTER ESSA IMPORTAÇÃO
 from dados_site.dados_usuario import USUARIOS
 
 # Carrega os países do arquivo JSON na TabelaHash.
 from arquivos.persistencia_paises import carregar_paises
 from arquivos.persistencia_paises import salvar_paises
+
+#ATENÇÃO!!!!  CONFIRMAR COM A PROFESSORA SE OS ARQUIVOS JSON  DOS PACPOTYES DEVEM SER CARREGADOS na TabelaHash.
+from arquivos.persistencia_pacotes import carregar_pacotes
+
+#ATENÇÃO!!!!  CONFIRMAR COM A PROFESSORA SE DEVEMOS MANTER OS ARQUIVOS ASSIM
+from dados_site.servico_conectividade import consultar_conectividade
+
+#ATENÇÃO!!!! APAGAR ESSE IMPORT QUANDO CRIAR A ARVORE B
+from dados_site.dados_etapa02 import CLIENTES_DEMONSTRACAO
+
 
 app = Flask(__name__)
 app.secret_key = "dgb-sim-chave-de-desenvolvimento"
@@ -71,21 +79,114 @@ def paises():
     )
 
 
+@app.route("/planos")
+def planos():
+    pacotes = carregar_pacotes()
+
+    return render_template(
+        "planos.html",
+        pacotes = pacotes
+    )
+
+@app.route("/minha-conectividade", methods=["GET", "POST"])
+def minha_conectividade():
+    """
+    Página pública de consulta de conectividade.
+
+    Integra:
+    - Etapa 01: Tabela Hash de países.
+    - Etapa 02: clientes e eSIMs demonstrativos.
+    - Etapa 03: rotas e grafos demonstrativos.
+    """
+
+    # Resultado inicialmente vazio.
+    resposta = None
+    resultado = None
+    mensagem = None
+
+    # Valores iniciais do formulário.
+    formulario = {
+        "cliente_id": "",
+        "origem": "BR",
+        "destino": "PT",
+        "criterio": "menor_latencia"
+    }
+
+    # Países disponíveis no cadastro oficial.
+    paises_disponiveis = sorted(
+        tabela_paises.listar(),
+        key=lambda item: item[1]["nome"]
+    )
+
+    # Processa o formulário somente após o envio.
+    if request.method == "POST":
+
+        formulario = {
+            "cliente_id": request.form.get(
+                "cliente_id", ""
+            ).strip(),
+
+            "origem": request.form.get(
+                "origem", ""
+            ).strip().upper(),
+
+            "destino": request.form.get(
+                "destino", ""
+            ).strip().upper(),
+
+            "criterio": request.form.get(
+                "criterio", ""
+            ).strip()
+        }
+
+        # Carrega o catálogo oficial de pacotes.
+        pacotes = carregar_pacotes()
+
+        # Executa a consulta demonstrativa.
+        resposta = consultar_conectividade(
+            cliente_id=formulario["cliente_id"],
+            origem=formulario["origem"],
+            destino=formulario["destino"],
+            criterio=formulario["criterio"],
+            tabela_paises=tabela_paises,
+            pacotes=pacotes
+        )
+
+        mensagem = resposta["mensagem"]
+
+        if resposta["sucesso"]:
+            resultado = resposta["dados"]
+
+    # Envia os dados ao template.
+    return render_template(
+        "minha_conectividade.html",
+        paises=paises_disponiveis,
+        formulario=formulario,
+        resposta=resposta,
+        resultado=resultado,
+        mensagem=mensagem
+    )
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
     mensagem = None
 
-    # ATENÇÃO!!!! CONFIRMAR SE PODEMOS MANTER ESSE TRECHO
     if request.method == "POST":
         tipo_acesso = request.form.get("tipo_acesso")
-        usuario = request.form.get("usuario")
-        senha = request.form.get("senha")
+        usuario = request.form.get("usuario", "").strip()
+        senha = request.form.get("senha", "")
 
         if tipo_acesso == "cliente":
-            mensagem = (
-                "O acesso de clientes não está disponível na Etapa 1 do projeto."
-            )
+
+            cliente = CLIENTES_DEMONSTRACAO.get(usuario)
+
+            if cliente and cliente["senha"] == senha:
+                return redirect(url_for("minha_conectividade"))
+
+            else:
+                mensagem = "Usuário ou senha incorretos."
 
         else:
             dados_usuario = USUARIOS.get(usuario)
