@@ -1,0 +1,330 @@
+[
+    {
+        "id": 1,
+        "cliente_id": 1001,
+        "data": "2026-11-08T09:00:00",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 2,
+        "cliente_id": 1001,
+        "data": "2026-11-08T09:10:00",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor custo",
+        "caminho": [
+            "BR",
+            "IT"
+        ],
+        "latencia_total_ms": 220,
+        "custo_total_usd": 12.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 3,
+        "cliente_id": 1001,
+        "data": "2026-11-08T09:20:00",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 4,
+        "cliente_id": 1001,
+        "data": "2026-11-08T09:30:00",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor custo",
+        "caminho": [
+            "BR",
+            "IT"
+        ],
+        "latencia_total_ms": 220,
+        "custo_total_usd": 12.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 5,
+        "cliente_id": 1001,
+        "data": "2026-11-08T09:40:00",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 6,
+        "cliente_id": 1001,
+        "data": "2026-11-08T09:50:00",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor custo",
+        "caminho": [
+            "BR",
+            "IT"
+        ],
+        "latencia_total_ms": 220,
+        "custo_total_usd": 12.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 7,
+        "cliente_id": 1001,
+        "data": "2026-11-08T10:00:00",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 8,
+        "cliente_id": 1001,
+        "data": "2026-11-08T10:10:00",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor custo",
+        "caminho": [
+            "BR",
+            "IT"
+        ],
+        "latencia_total_ms": 220,
+        "custo_total_usd": 12.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 9,
+        "cliente_id": 1001,
+        "data": "2026-11-08T11:55:55",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 10,
+        "cliente_id": 1001,
+        "data": "2026-11-08T11:56:17",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 11,
+        "cliente_id": 1001,
+        "data": "2026-11-08T11:56:22",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor custo",
+        "caminho": [
+            "BR",
+            "IT"
+        ],
+        "latencia_total_ms": 220,
+        "custo_total_usd": 12.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 12,
+        "cliente_id": 1001,
+        "data": "2026-11-08T11:57:02",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor custo",
+        "caminho": [
+            "BR",
+            "IT"
+        ],
+        "latencia_total_ms": 220,
+        "custo_total_usd": 12.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 13,
+        "cliente_id": 1001,
+        "data": "2026-11-08T12:53:04",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 14,
+        "cliente_id": 1001,
+        "data": "2026-11-08T13:01:51",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 15,
+        "cliente_id": 1001,
+        "data": "2026-11-08T15:12:53",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 16,
+        "cliente_id": 1001,
+        "data": "2026-11-08T16:44:56",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 17,
+        "cliente_id": 1001,
+        "data": "2026-11-08T16:44:59",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor custo",
+        "caminho": [
+            "BR",
+            "IT"
+        ],
+        "latencia_total_ms": 220,
+        "custo_total_usd": 12.0,
+        "demonstrativo": true
+    },
+    {
+        "id": 18,
+        "cliente_id": 1001,
+        "data": "2026-11-08T16:46:39",
+        "origem": "BR",
+        "origem_nome": "Brasil",
+        "destino": "IT",
+        "destino_nome": "Itália",
+        "criterio": "Menor latência",
+        "caminho": [
+            "BR",
+            "PT",
+            "FR",
+            "IT"
+        ],
+        "latencia_total_ms": 185,
+        "custo_total_usd": 22.0,
+        "demonstrativo": true
+    }
+]

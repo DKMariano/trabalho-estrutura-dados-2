@@ -1,144 +1,112 @@
 {% extends "base.html" %}
 
+{% block estilos_pagina %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
 {% block header %}{% endblock %}
 
 {% block content %}
 
-<!-- =====================================
-     ÁREA ADMINISTRATIVA
-====================================== -->
+{# rota (None = desabilitado), ícone, texto, etapa, endpoints que marcam o item como ativo #}
+{% set menu = [
+    {"rota": "admin", "icone": "bi-house-fill", "texto": "Dashboard", "etapa": None,
+     "ativas": ["admin"]},
+    {"rota": "admin_paises", "icone": "bi-globe-americas", "texto": "Países", "etapa": 1,
+     "ativas": ["admin_paises", "admin_cadastrar_pais", "admin_editar_pais", "admin_visualizar_pais"]},
+    {"rota": "admin_tabela_hash", "icone": "bi-speedometer2", "texto": "Tabela Hash", "etapa": 1,
+     "ativas": ["admin_tabela_hash"]},
+    {"rota": "admin_clientes", "icone": "bi-people-fill", "texto": "Clientes", "etapa": 2,
+     "ativas": ["admin_clientes", "admin_cadastrar_cliente", "admin_editar_cliente", "admin_visualizar_cliente"]},
+    {"rota": "admin_arvore_b", "icone": "bi-diagram-2", "texto": "Árvore B", "etapa": 2,
+     "ativas": ["admin_arvore_b"]},
+    {"rota": "admin_rede", "icone": "bi-diagram-3", "texto": "Rede internacional", "etapa": 3,
+     "ativas": ["admin_rede"]},
+    {"rota": "admin_grafo", "icone": "bi-share", "texto": "Grafo", "etapa": 3,
+     "ativas": ["admin_grafo"]},
+] %}
+
+{% set cores_etapa = {
+    1: "bg-primary-subtle text-primary-emphasis",
+    2: "bg-success-subtle text-success-emphasis",
+    3: "badge-roxo"
+} %}
+
 <div class="admin-layout">
 
-    <!-- =====================================
-         CABEÇALHO ADMINISTRATIVO
-    ====================================== -->
     <header class="admin-topo">
-
-        <nav
-            class="navbar admin-navbar flex-wrap gap-2"
-            aria-label="Cabeçalho administrativo"
-        >
-
-            <!-- Identidade visual -->
-            <a
-                class="navbar-brand"
-                href="{{ url_for('admin') }}"
-            >
-                <img
-                    src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
-                    alt="DGB SIM"
-                    class="admin-logo"
-                >
+        <nav class="navbar admin-navbar flex-wrap gap-2" aria-label="Cabeçalho administrativo">
+            <a class="navbar-brand" href="{{ url_for('admin') }}">
+                <img src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
+                     alt="DGB SIM" class="admin-logo">
             </a>
 
-            <!-- Identificação do usuário -->
-            <div class="admin-usuario ms-auto">
-                Administrador
-            </div>
-
+            <div class="admin-usuario ms-auto">Administrador</div>
         </nav>
-
     </header>
 
-
-    <!-- =====================================
-         CORPO DA ÁREA ADMINISTRATIVA
-    ====================================== -->
     <div class="admin-corpo">
-        
-        <!-- Menu para telas pequenas -->
+
         <div class="d-md-none bg-white border-bottom p-3">
-            <button
-                class="btn btn-outline-primary d-inline-flex align-items-center gap-2"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#menuAdministrativo"
-                aria-expanded="false"
-                aria-controls="menuAdministrativo"
-            >
+            <button class="btn btn-outline-primary d-inline-flex align-items-center gap-2"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#menuAdministrativo"
+                    aria-expanded="false"
+                    aria-controls="menuAdministrativo">
                 <i class="bi bi-list fs-5" aria-hidden="true"></i>
                 Menu administrativo
             </button>
         </div>
 
-        <!-- Menu lateral -->
-        <aside
-            class="admin-menu collapse d-md-block"
-            id="menuAdministrativo"
-        >
-
+        <aside class="admin-menu collapse d-md-block" id="menuAdministrativo">
             <nav class="nav flex-column admin-menu-nav">
 
-                <a
-                    class="nav-link {{ 'active' if request.endpoint == 'admin' else '' }}"
-                    href="{{ url_for('admin') }}"
-                    {% if request.endpoint == 'admin' %}
-                        aria-current="page"
+                {% for item in menu %}
+                {% set ativo = request.endpoint in item.ativas %}
+                <a class="nav-link {% if ativo %}active{% endif %} {% if not item.rota %}disabled{% endif %}"
+                   href="{{ url_for(item.rota) if item.rota else '#' }}"
+                   {% if ativo %}aria-current="page"{% endif %}
+                   {% if not item.rota %}aria-disabled="true" tabindex="-1"{% endif %}>
+                    <i class="bi {{ item.icone }}" aria-hidden="true"></i>
+                    <span>{{ item.texto }}</span>
+                    {% if item.etapa %}
+                    <span class="badge rounded-pill ms-auto text-nowrap {{ cores_etapa[item.etapa] }}">
+                        Etapa {{ item.etapa }}
+                    </span>
                     {% endif %}
-                >
-                    <i class="bi bi-house-fill" aria-hidden="true"></i>
-                    Dashboard
                 </a>
-
-                {% set paginas_paises = [
-                    'admin_paises',
-                    'admin_cadastrar_pais',
-                    'admin_editar_pais',
-                    'admin_visualizar_pais'
-                ] %}
-
-                <a
-                    class="nav-link {{ 'active' if request.endpoint in paginas_paises else '' }}"
-                    href="{{ url_for('admin_paises') }}"
-                    {% if request.endpoint == 'admin_paises' %}
-                        aria-current="page"
-                    {% endif %}
-                >
-                    <i class="bi bi-globe-americas" aria-hidden="true"></i>
-                    <span>Países</span>
-                </a>
-
-                <!-- <a class="nav-link" href="#">
-                    <i class="bi bi-wifi"></i>
-                    Cobertura
-                </a> -->
+                {% endfor %}
 
                 <hr>
 
-                <a
-                    class="nav-link"
-                    href="{{ url_for('login') }}"
-                >
-                    <i class="bi bi-box-arrow-right"></i>
-                    Sair
+                <a class="nav-link" href="{{ url_for('login') }}">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                    <span>Sair</span>
                 </a>
 
             </nav>
-
         </aside>
 
-
-        <!-- =====================================
-             CONTEÚDO ESPECÍFICO DE CADA PÁGINA
-        ====================================== -->
         <main class="admin-conteudo">
+            <div class="container-xxl px-0">
 
-            {% with mensagens = get_flashed_messages(with_categories=true) %}
-            {% for categoria, texto in mensagens %}
-            <div class="alert alert-{{ 'danger' if categoria == 'erro' else 'success' }} alert-dismissible fade show" role="alert">
-                {{ texto }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                {% set tipos_alerta = {"erro": "danger", "danger": "danger", "sucesso": "success", "success": "success"} %}
+                {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% for categoria, texto in mensagens %}
+                <div class="alert alert-{{ tipos_alerta.get(categoria, 'info') }} alert-dismissible fade show" role="alert">
+                    {{ texto }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+                {% endfor %}
+                {% endwith %}
+
+                {% block admin_content %}{% endblock %}
+
             </div>
-            {% endfor %}
-            {% endwith %}
-
-            {% block admin_content %}
-            {% endblock %}
-
         </main>
 
     </div>
-
 </div>
 
 {% endblock %}

@@ -1,0 +1,126 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Detalhes do cliente | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner, breadcrumb, secao %}
+
+{{ breadcrumb("Clientes", url_for('admin_clientes'), "Detalhes do cliente") }}
+{{ banner("Detalhes do cliente", "Consulte os dados cadastrais, o eSIM e o pacote associado.") }}
+
+<div class="row g-4 align-items-stretch">
+
+    <!-- Dados do cliente -->
+    <div class="col-12 col-xl-8">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4 d-flex flex-column">
+
+                {{ secao("Dados do cliente", "success") }}
+
+                <dl class="row g-4 mb-0">
+                    <div class="col-12 col-md-6">
+                        <dt class="small text-secondary fw-normal">ID do cliente</dt>
+                        <dd class="fs-5 fw-semibold mb-0">{{ cliente.id }}</dd>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <dt class="small text-secondary fw-normal">Nome completo</dt>
+                        <dd class="fs-5 fw-semibold text-break mb-0">{{ cliente.nome }}</dd>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <dt class="small text-secondary fw-normal">E-mail</dt>
+                        <dd class="fs-5 fw-semibold text-break mb-0">{{ cliente.email }}</dd>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <dt class="small text-secondary fw-normal">Status</dt>
+                        <dd class="mb-0">
+                            {% if cliente.status == "ativo" %}
+                            <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-6">
+                                Ativo
+                            </span>
+                            {% else %}
+                            <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis fs-6">
+                                {{ cliente.status|capitalize }}
+                            </span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                </dl>
+
+                <hr class="my-4">
+
+                {{ secao("eSIM associado", "success") }}
+
+                <span class="small text-secondary">Identificador do eSIM</span>
+                <strong class="fs-4">{{ cliente.esim }}</strong>
+
+                <hr class="my-4 mt-auto">
+
+                <div class="d-flex flex-wrap justify-content-between gap-3">
+                    <a href="{{ url_for('admin_clientes') }}" class="btn btn-outline-success">
+                        <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Voltar
+                    </a>
+                    <a href="{{ url_for('admin_editar_cliente', cliente_id=cliente.id) }}"
+                       class="btn btn-success">
+                        <i class="bi bi-pencil me-2" aria-hidden="true"></i>Editar cliente
+                    </a>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- Pacote associado -->
+    <div class="col-12 col-xl-4">
+        <aside class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4 d-flex flex-column">
+
+                <h2 class="h5 fw-bold mb-3">
+                    <i class="bi bi-sim text-success me-2" aria-hidden="true"></i>
+                    Pacote associado
+                </h2>
+
+                {% if pacote %}
+                <table class="table mb-4">
+                    <tbody>
+                        <tr>
+                            <td>Código do pacote</td>
+                            <th class="text-end">{{ cliente.pacote }}</th>
+                        </tr>
+                        <tr>
+                            <td>Nome</td>
+                            <th class="text-end">{{ pacote.nome }}</th>
+                        </tr>
+                        <tr>
+                            <td>Franquia de dados</td>
+                            <th class="text-end">{{ pacote.dados_gb }} GB</th>
+                        </tr>
+                        <tr>
+                            <td>Validade do pacote</td>
+                            <th class="text-end">{{ pacote.validade_dias }} dias</th>
+                        </tr>
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-secondary">Informações do pacote indisponíveis.</p>
+                {% endif %}
+
+                <div class="mt-auto">
+                    <p class="border-top pt-3 mb-3">
+                        Consulte a cobertura e a rota para o destino do cliente.
+                    </p>
+
+                    <a href="{{ url_for('admin_rede') }}"
+                       class="btn btn-outline-roxo w-100">
+                        <i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>
+                        Visualizar rede internacional
+                    </a>
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+</div>
+
+{% endblock %}

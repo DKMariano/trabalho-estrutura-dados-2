@@ -1,0 +1,87 @@
+/* ==========================================
+   ÁREA DO CLIENTE
+========================================== */
+
+.admin-conteudo {
+    background: linear-gradient(160deg, #f4f8fc 0%, #e3f0ff 100%);
+}
+
+/* Mesmo arredondamento em todos os cards da área do cliente */
+.admin-conteudo .card {
+    --bs-card-border-radius: 0.75rem;
+}
+
+/* Banner */
+.cliente-banner {
+    background-color: #eaf4ff;
+    background-image: url("../img/cliente/cliente-banner-superior.png");
+    background-position: right center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.cliente-barra {
+    width: 68px;
+    height: 8px;
+}
+
+/* Barra vertical azul dos títulos de seção */
+.cliente-marcador {
+    display: inline-block;
+    width: 6px;
+    height: 24px;
+    margin-right: 10px;
+    vertical-align: middle;
+    border-radius: 4px;
+    background: #0866ee;
+}
+
+/* Roxo (Bootstrap não tem) */
+.badge-roxo {
+    background-color: #f0e6ff;
+    color: #5b1a9c;
+}
+
+.card-roxo {
+    --bs-card-bg: #f6efff;
+    --bs-card-border-color: #d9c4f5;
+}
+
+.text-roxo {
+    color: #5b1a9c;
+}
+
+.btn-roxo {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #4b0f87;
+    --bs-btn-border-color: #4b0f87;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #3b0c6b;
+    --bs-btn-hover-border-color: #3b0c6b;
+}
+
+/* Menu da área do cliente: compacto para caber as etiquetas */
+.admin-menu-nav .nav-link {
+    gap: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+.admin-menu-nav .nav-link .badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* Desktop: menu mais largo */
+@media (min-width: 768px) {
+    .admin-menu {
+        width: 280px;
+    }
+}
+
+/* Celular */
+@media (max-width: 767.98px) {
+    .cliente-banner {
+        background-image: none;
+    }
+}

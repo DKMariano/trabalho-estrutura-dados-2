@@ -1,0 +1,158 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Cadastrar cliente | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner, breadcrumb, secao %}
+
+{{ breadcrumb("Clientes", url_for('admin_clientes'), "Cadastrar cliente") }}
+{{ banner("Cadastrar cliente", "Informe os dados do cliente e associe seu eSIM e pacote.") }}
+
+<div class="row g-4 align-items-stretch">
+
+    <!-- Formulário -->
+    <div class="col-12 col-xl-8">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <form method="POST" action="{{ url_for('admin_cadastrar_cliente') }}">
+
+                    {{ secao("Dados do cliente", "success") }}
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+                            <label for="id" class="form-label fw-semibold">ID do cliente</label>
+                            <input type="number" class="form-control" id="id" name="id"
+                                   min="1" step="1" placeholder="Ex.: 58372"
+                                   value="{{ formulario.get('id', '') }}" required>
+                            <div class="form-text">
+                                Identificador único. Não poderá ser alterado após o cadastro.
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="nome" class="form-label fw-semibold">Nome completo</label>
+                            <input type="text" class="form-control" id="nome" name="nome"
+                                   maxlength="120" placeholder="Ex.: Maria Silva"
+                                   value="{{ formulario.get('nome', '') }}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="email" class="form-label fw-semibold">E-mail</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="Ex.: maria@email.com"
+                                   value="{{ formulario.get('email', '') }}" required>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    {{ secao("eSIM e pacote", "success") }}
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+                            <label for="esim" class="form-label fw-semibold">
+                                Identificador do eSIM
+                            </label>
+                            <input type="text" class="form-control" id="esim" name="esim"
+                                   placeholder="Ex.: ESIM-83921"
+                                   value="{{ formulario.get('esim', '') }}" required>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="pacote" class="form-label fw-semibold">Pacote</label>
+                            <select class="form-select" id="pacote" name="pacote" required>
+                                <option value="">Selecione um pacote</option>
+                                {% for codigo, pacote in pacotes.items() %}
+                                <option value="{{ codigo }}"
+                                    {% if formulario.get('pacote', '')|string == codigo|string %}selected{% endif %}>
+                                    {{ codigo }} — {{ pacote.nome }}
+                                    ({{ pacote.dados_gb }} GB, {{ pacote.validade_dias }} dias)
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">
+                                Código, nome, franquia e validade na seleção.
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="status" class="form-label fw-semibold">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="ativo"
+                                    {% if formulario.get('status', 'ativo') == 'ativo' %}selected{% endif %}>
+                                    Ativo
+                                </option>
+                                <option value="inativo"
+                                    {% if formulario.get('status') == 'inativo' %}selected{% endif %}>
+                                    Inativo
+                                </option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex flex-wrap justify-content-between gap-3">
+                        <a href="{{ url_for('admin_clientes') }}" class="btn btn-outline-success">
+                            <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-floppy me-2" aria-hidden="true"></i>Salvar cliente
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- Orientações -->
+    <div class="col-12 col-xl-4">
+        <aside class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <h2 class="h5 fw-bold mb-4">
+                    <i class="bi bi-info-circle text-success me-2" aria-hidden="true"></i>
+                    Como preencher
+                </h2>
+
+                <div class="mb-4">
+                    <strong>ID do cliente</strong>
+                    <p class="text-secondary mb-0">
+                        Use um identificador único para a busca na Árvore B.
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <strong>eSIM</strong>
+                    <p class="text-secondary mb-0">
+                        Informe o identificador associado ao cliente.
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <strong>Pacote</strong>
+                    <p class="text-secondary mb-0">
+                        Selecione uma opção do catálogo existente.
+                    </p>
+                </div>
+
+                <div class="alert alert-primary small mb-0" role="note">
+                    <strong>Exemplo do enunciado:</strong>
+                    pacote 102 — Europa Plus, 10 GB, 30 dias.
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+</div>
+
+{% endblock %}

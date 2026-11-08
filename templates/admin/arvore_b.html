@@ -1,0 +1,198 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Árvore B | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner, breadcrumb, indicador %}
+
+{# Dados demonstrativos: nenhum valor é calculado aqui #}
+{% set operacoes = arvore.operacoes %}
+{% set eventos = arvore.eventos %}
+{% set reg = arvore.registro %}
+
+<!-- Linhas reutilizadas nas tabelas do histórico -->
+{% macro linhas_eventos(lista) %}
+    {% for evento in lista %}
+    <tr>
+        <td class="text-nowrap">{{ evento.hora }}</td>
+        <td>{{ evento.operacao | capitalize }}</td>
+        <td><strong>{{ evento.id }}</strong></td>
+        <td>
+            <span class="badge {{ 'text-bg-success' if evento.sucesso else 'text-bg-danger' }}">
+                {{ evento.resultado }}
+            </span>
+        </td>
+        <td class="text-end">{{ evento.nos }}</td>
+        <td class="text-end">
+            {% if evento.posicao %}registro {{ evento.posicao }}{% else %}—{% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+{% endmacro %}
+
+{{ breadcrumb("Clientes", url_for('admin_clientes'), "Árvore B") }}
+{{ banner("Árvore B", "Índice que localiza cada cliente pelo ID. Os dados ficam no arquivo.") }}
+
+<div class="alert alert-warning d-flex align-items-start gap-2" role="status">
+    <i class="bi bi-hourglass-split fs-5" aria-hidden="true"></i>
+    <div>
+        <strong>Layout demonstrativo.</strong> A Árvore B ainda não foi
+        implementada: os valores desta página simulam o funcionamento esperado.
+    </div>
+</div>
+
+<!-- INDICADORES -->
+<div class="row g-3 mb-2">
+    <div class="col-12 col-sm-6 col-xl-3">
+        {{ indicador("bi-people-fill", '{:,}'.format(arvore.clientes).replace(',', '.'), "Clientes indexados", "success") }}
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        {{ indicador("bi-arrows-collapse", arvore.altura, "Altura da árvore", "success") }}
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        {{ indicador("bi-diagram-2", arvore.nos, "Nós da árvore", "success") }}
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        {{ indicador("bi-search", arvore.media_nos_visitados|string|replace('.', ','), "Nós visitados por busca", "success") }}
+    </div>
+</div>
+<p class="small text-secondary mb-4">
+    Grau mínimo {{ arvore.grau }} (até {{ 2 * arvore.grau - 1 }} chaves por nó)
+    · {{ arvore.divisoes }} divisões de nó na carga. Altura contada em arestas,
+    com a raiz no nível 0.
+</p>
+
+<!-- INSTRUMENTAÇÃO -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-speedometer2 text-success fs-3" aria-hidden="true"></i>
+                <div>
+                    <h2 class="h4 fw-bold mb-0">Instrumentação da Árvore B</h2>
+                    <p class="small text-secondary mb-0">
+                        Operações que percorrem a árvore.
+                    </p>
+                </div>
+            </div>
+            <span class="badge text-bg-success fs-6">
+                {{ operacoes | sum(attribute='chamadas') }} operações
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0"
+                   aria-label="Contadores e tempos das operações da Árvore B">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Operação</th>
+                        <th scope="col" class="text-end">Chamadas</th>
+                        <th scope="col" class="text-end">Sucessos</th>
+                        <th scope="col" class="text-end">Falhas</th>
+                        <th scope="col" class="text-end">Nós visitados (média)</th>
+                        <th scope="col" class="text-end">Tempo médio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for op in operacoes %}
+                    <tr>
+                        <th scope="row" class="fw-normal">{{ op.operacao | capitalize }}</th>
+                        <td class="text-end">{{ op.chamadas }}</td>
+                        <td class="text-end">{{ op.sucessos }}</td>
+                        <td class="text-end">{{ op.falhas }}</td>
+                        <td class="text-end">{{ op.nos_media|string|replace('.', ',') }}</td>
+                        <td class="text-end text-nowrap">{{ "%.2f" | format(op.tempo_us) }} µs</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p class="small text-secondary mt-3 mb-0">
+            Falha: busca sem resultado ou operação recusada pelas validações.
+            Cada busca visita no máximo {{ arvore.altura + 1 }} nós
+            (altura {{ arvore.altura }} + 1). A listagem percorre a árvore em
+            ordem de ID. Tempos em microssegundos (µs).
+        </p>
+
+    </div>
+</section>
+
+<!-- ÚLTIMAS OPERAÇÕES -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
+
+        <h2 class="h4 fw-bold mb-1">
+            <i class="bi bi-clock-history text-success me-2" aria-hidden="true"></i>
+            Últimas operações
+        </h2>
+        <p class="small text-secondary mb-3">Operações sobre clientes.</p>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0"
+                   aria-label="Até cinco operações recentes">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Hora</th>
+                        <th scope="col">Operação</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Resultado</th>
+                        <th scope="col" class="text-end">Nós visitados</th>
+                        <th scope="col" class="text-end">Posição no arquivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if eventos %}
+                        {{ linhas_eventos(eventos[:5]) }}
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-secondary py-4">
+                            Nenhuma operação registrada ainda.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if eventos | length > 5 %}
+        <div class="collapse mt-3" id="operacoesAdicionais">
+            <h3 class="h6 mb-3">Demais operações registradas</h3>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0"
+                       aria-label="Demais operações mantidas no histórico">
+                    <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Hora</th>
+                        <th scope="col">Operação</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Resultado</th>
+                        <th scope="col" class="text-end">Nós visitados</th>
+                        <th scope="col" class="text-end">Posição no arquivo</th>
+                    </tr>
+                </thead>
+                    <tbody>{{ linhas_eventos(eventos[5:]) }}</tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-outline-success mt-3" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#operacoesAdicionais"
+                    aria-expanded="false" aria-controls="operacoesAdicionais">
+                Mostrar/ocultar demais operações ({{ eventos | length - 5 }})
+            </button>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<div class="d-flex flex-wrap justify-content-end gap-3 mt-4">
+    <a href="{{ url_for('admin') }}" class="btn btn-outline-success">Voltar ao dashboard</a>
+    <a href="{{ url_for('admin_clientes') }}" class="btn btn-outline-success">Gerenciar clientes</a>
+</div>
+
+{% endblock %}

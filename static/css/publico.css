@@ -1,0 +1,85 @@
+/* DGB SIM — páginas públicas (início, cobertura, planos e acesso).
+
+   Tudo o que o Bootstrap já faz é feito no HTML, com as classes do
+   Bootstrap. Este arquivo tem apenas o que ele não oferece. */
+
+/* Azul-escuro da marca (cabeçalho). */
+.bg-azul-escuro {
+    background-color: var(--azul-escuro) !important;
+}
+
+/* Imagem de fundo com degradê por cima, para o texto ficar legível.
+   A imagem vem do HTML, pela variável --imagem:
+   style="--imagem: url('...')". */
+.fundo-imagem {
+    background-image: var(--degrade, none), var(--imagem);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.fundo-imagem-claro {
+    --degrade: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.98) 0%,
+        rgba(255, 255, 255, 0.9) 35%,
+        rgba(255, 255, 255, 0.2) 65%,
+        rgba(255, 255, 255, 0) 100%
+    );
+}
+
+.fundo-imagem-escuro {
+    --degrade: linear-gradient(
+        90deg,
+        rgba(5, 35, 69, 0.98) 0%,
+        rgba(5, 35, 69, 0.9) 28%,
+        rgba(5, 35, 69, 0.68) 48%,
+        rgba(5, 35, 69, 0.15) 75%,
+        rgba(5, 35, 69, 0.02) 100%
+    );
+}
+
+.fundo-imagem-azul {
+    --degrade: linear-gradient(
+        180deg,
+        rgba(3, 39, 78, 0.88) 0%,
+        rgba(3, 43, 83, 0.72) 45%,
+        rgba(3, 40, 77, 0.9) 100%
+    );
+}
+
+/* Em telas estreitas o texto ocupa a largura toda: degradê uniforme. */
+@media (max-width: 767.98px) {
+    .fundo-imagem-claro {
+        --degrade: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.92) 0%,
+            rgba(255, 255, 255, 0.78) 50%,
+            rgba(255, 255, 255, 0.35) 100%
+        );
+    }
+
+    .fundo-imagem-escuro {
+        --degrade: linear-gradient(
+            90deg,
+            rgba(5, 35, 69, 0.96),
+            rgba(5, 35, 69, 0.76)
+        );
+    }
+}
+
+
+/* Círculo de tamanho fixo (ícones, números e fotos). O Bootstrap não tem
+   largura e altura fixas; cor e alinhamento vêm das classes do Bootstrap. */
+.circulo {
+    width: 3rem;
+    height: 3rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+/* Barra de destaque acima dos títulos. */
+.barra-destaque {
+    width: 4.25rem;
+    height: 0.5rem;
+}

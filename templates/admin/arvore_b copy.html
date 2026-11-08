@@ -1,0 +1,323 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Árvore B | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner, breadcrumb, indicador %}
+
+{# Dados demonstrativos: nenhum valor é calculado aqui #}
+{% set operacoes = arvore.operacoes %}
+{% set eventos = arvore.eventos %}
+{% set reg = arvore.registro %}
+{% set integ = arvore.consulta_integrada %}
+
+{{ breadcrumb("Clientes", url_for('admin_clientes'), "Árvore B") }}
+{{ banner("Árvore B", "Índice que localiza cada cliente pelo ID. Os dados ficam no arquivo.") }}
+
+<div class="alert alert-warning d-flex align-items-start gap-2" role="status">
+    <i class="bi bi-hourglass-split fs-5" aria-hidden="true"></i>
+    <div>
+        <strong>Layout demonstrativo.</strong> A Árvore B ainda não foi
+        implementada: os valores desta página simulam o funcionamento esperado.
+    </div>
+</div>
+
+<!-- INDICADORES -->
+<div class="row g-3 mb-2">
+    <div class="col-12 col-sm-6 col-xl-3">
+        {{ indicador("bi-people-fill", '{:,}'.format(arvore.clientes).replace(',', '.'), "Clientes indexados", "success") }}
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        {{ indicador("bi-arrows-collapse", arvore.altura, "Altura da árvore", "success") }}
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        {{ indicador("bi-diagram-2", arvore.nos, "Nós da árvore", "success") }}
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        {{ indicador("bi-search", arvore.media_nos_visitados|string|replace('.', ','), "Nós visitados por busca", "success") }}
+    </div>
+</div>
+<p class="small text-secondary mb-4">
+    Grau mínimo {{ arvore.grau }} (até {{ 2 * arvore.grau - 1 }} chaves por nó)
+    · {{ arvore.divisoes }} divisões de nó na carga. Altura contada em arestas,
+    com a raiz no nível 0.
+</p>
+
+<!-- ÍNDICE x ARQUIVO -->
+<div class="row g-4 mb-4">
+
+    <div class="col-12 col-lg-6">
+        <section class="card h-100 border-success-subtle shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="h4 fw-bold mb-1">
+                    <i class="bi bi-diagram-2 text-success me-2" aria-hidden="true"></i>
+                    Na Árvore B (índice)
+                </h2>
+                <p class="text-secondary">
+                    Somente a chave e a posição do registro no arquivo.
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0"
+                           aria-label="Exemplo de entradas do índice">
+                        <thead class="table-success">
+                            <tr>
+                                <th scope="col">Chave (ID)</th>
+                                <th scope="col" class="text-end">Posição no arquivo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entrada in arvore.indice %}
+                            <tr>
+                                <td class="fw-bold">{{ entrada.id }}</td>
+                                <td class="text-end">registro {{ entrada.posicao }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="small text-secondary mt-3 mb-0">
+                    Nada além disso fica na árvore: ela é só o índice.
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <section class="card h-100 border-primary-subtle shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="h4 fw-bold mb-1">
+                    <i class="bi bi-file-earmark-text text-primary me-2" aria-hidden="true"></i>
+                    No arquivo (clientes.json)
+                </h2>
+                <p class="text-secondary">
+                    Os dados completos, lidos na posição que a árvore indicou
+                    (registro {{ reg.posicao }}).
+                </p>
+
+                <dl class="row g-2 mb-3">
+                    <dt class="col-4 fw-normal text-secondary">ID</dt>
+                    <dd class="col-8 fw-semibold mb-0">{{ reg.id }}</dd>
+                    <dt class="col-4 fw-normal text-secondary">Nome</dt>
+                    <dd class="col-8 fw-semibold mb-0">{{ reg.nome }}</dd>
+                    <dt class="col-4 fw-normal text-secondary">E-mail</dt>
+                    <dd class="col-8 fw-semibold text-break mb-0">{{ reg.email }}</dd>
+                    <dt class="col-4 fw-normal text-secondary">eSIM</dt>
+                    <dd class="col-8 fw-semibold mb-0">{{ reg.esim }}</dd>
+                    <dt class="col-4 fw-normal text-secondary">Pacote</dt>
+                    <dd class="col-8 fw-semibold mb-0">{{ reg.pacote }}</dd>
+                    <dt class="col-4 fw-normal text-secondary">Status</dt>
+                    <dd class="col-8 mb-0">
+                        <span class="badge bg-success-subtle text-success-emphasis">
+                            {{ reg.status|capitalize }}
+                        </span>
+                    </dd>
+                </dl>
+
+                <p class="small text-secondary mb-0">
+                    Rotas e países visitados ficam em outro arquivo
+                    (historico.json), ligados ao cliente pelo ID.
+                </p>
+            </div>
+        </section>
+    </div>
+
+</div>
+
+<!-- O QUE PODE SER BUSCADO -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
+
+        <h2 class="h4 fw-bold mb-3">
+            <i class="bi bi-search text-success me-2" aria-hidden="true"></i>
+            O que pode ser buscado na Árvore B
+        </h2>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0"
+                   aria-label="Consultas que usam ou não a Árvore B">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Consulta</th>
+                        <th scope="col" class="text-center">Usa a árvore?</th>
+                        <th scope="col">Como funciona</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-bold">Cliente por ID</td>
+                        <td class="text-center"><span class="badge text-bg-success">Sim</span></td>
+                        <td>A busca pela chave devolve a posição; o registro é lido do arquivo.</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Listagem em ordem de ID</td>
+                        <td class="text-center"><span class="badge text-bg-success">Sim</span></td>
+                        <td>Percurso em ordem da árvore; cada posição leva ao registro.</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Faixa de IDs</td>
+                        <td class="text-center"><span class="badge text-bg-success">Sim</span></td>
+                        <td>Busca a primeira chave da faixa e segue em ordem.</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Alteração de cliente</td>
+                        <td class="text-center"><span class="badge text-bg-success">Sim</span></td>
+                        <td>Localiza a posição pela árvore e reescreve o registro no arquivo.</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Nome, e-mail, status ou pacote</td>
+                        <td class="text-center"><span class="badge text-bg-danger">Não</span></td>
+                        <td>Não são chave: exigiriam varrer o arquivo ou outro índice.</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Rota e países visitados</td>
+                        <td class="text-center"><span class="badge text-bg-danger">Não</span></td>
+                        <td>Ficam em arquivo próprio, ligados ao cliente pelo ID.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</section>
+
+<!-- CONSULTA INTEGRADA -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
+
+        <h2 class="h4 fw-bold mb-1">
+            <i class="bi bi-link-45deg text-primary me-2" aria-hidden="true"></i>
+            Consulta integrada: Árvore B e Tabela Hash
+        </h2>
+        <p class="small text-secondary mb-3">
+            Exemplo do enunciado: cliente {{ integ.cliente_id }}, destino {{ integ.destino }}.
+        </p>
+
+        <ol class="list-group list-group-numbered">
+            <li class="list-group-item">
+                <strong>Árvore B:</strong>
+                <code>buscar({{ integ.cliente_id }})</code> →
+                registro {{ reg.posicao }} no arquivo →
+                {{ reg.nome }}, {{ reg.esim }}, pacote {{ reg.pacote }}.
+            </li>
+            <li class="list-group-item">
+                <strong>Tabela Hash:</strong>
+                <code>buscar("{{ integ.destino }}")</code> →
+                {{ integ.pais }}, cobertura disponível, {{ integ.tecnologia }}.
+            </li>
+        </ol>
+
+    </div>
+</section>
+
+<!-- INSTRUMENTAÇÃO -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-speedometer2 text-success fs-3" aria-hidden="true"></i>
+                <div>
+                    <h2 class="h4 fw-bold mb-0">Instrumentação da Árvore B</h2>
+                    <p class="small text-secondary mb-0">
+                        Operações que descem a árvore até a chave.
+                    </p>
+                </div>
+            </div>
+            <span class="badge text-bg-success fs-6">
+                {{ operacoes | sum(attribute='chamadas') }} operações
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0"
+                   aria-label="Contadores e tempos das operações da Árvore B">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Operação</th>
+                        <th scope="col" class="text-end">Chamadas</th>
+                        <th scope="col" class="text-end">Sucessos</th>
+                        <th scope="col" class="text-end">Falhas</th>
+                        <th scope="col" class="text-end">Nós visitados (média)</th>
+                        <th scope="col" class="text-end">Tempo médio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for op in operacoes %}
+                    <tr>
+                        <th scope="row" class="fw-normal">{{ op.operacao | capitalize }}</th>
+                        <td class="text-end">{{ op.chamadas }}</td>
+                        <td class="text-end">{{ op.sucessos }}</td>
+                        <td class="text-end">{{ op.falhas }}</td>
+                        <td class="text-end">{{ op.nos_media|string|replace('.', ',') }}</td>
+                        <td class="text-end text-nowrap">{{ "%.2f" | format(op.tempo_us) }} µs</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p class="small text-secondary mt-3 mb-0">
+            Falha: busca sem resultado ou operação recusada pelas validações.
+            Cada busca visita no máximo {{ arvore.altura + 1 }} nós
+            (altura {{ arvore.altura }} + 1). Tempos em microssegundos (µs).
+        </p>
+
+    </div>
+</section>
+
+<!-- ÚLTIMAS OPERAÇÕES -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
+
+        <h2 class="h4 fw-bold mb-1">
+            <i class="bi bi-clock-history text-success me-2" aria-hidden="true"></i>
+            Últimas operações
+        </h2>
+        <p class="small text-secondary mb-3">Operações sobre clientes.</p>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0"
+                   aria-label="Cinco operações recentes">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Hora</th>
+                        <th scope="col">Operação</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Resultado</th>
+                        <th scope="col" class="text-end">Nós visitados</th>
+                        <th scope="col" class="text-end">Posição no arquivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos %}
+                    <tr>
+                        <td class="text-nowrap">{{ evento.hora }}</td>
+                        <td>{{ evento.operacao | capitalize }}</td>
+                        <td><strong>{{ evento.id }}</strong></td>
+                        <td>
+                            <span class="badge {{ 'text-bg-success' if evento.sucesso else 'text-bg-danger' }}">
+                                {{ evento.resultado }}
+                            </span>
+                        </td>
+                        <td class="text-end">{{ evento.nos }}</td>
+                        <td class="text-end">
+                            {% if evento.posicao %}registro {{ evento.posicao }}{% else %}—{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</section>
+
+<div class="d-flex flex-wrap justify-content-end gap-3 mt-4">
+    <a href="{{ url_for('admin') }}" class="btn btn-outline-primary">Voltar ao dashboard</a>
+    <a href="{{ url_for('admin_clientes') }}" class="btn btn-outline-primary">Gerenciar clientes</a>
+</div>
+
+{% endblock %}

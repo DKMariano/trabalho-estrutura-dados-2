@@ -1,0 +1,163 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Editar cliente | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner, breadcrumb, secao %}
+
+{{ breadcrumb("Clientes", url_for('admin_clientes'), "Editar cliente") }}
+{{ banner("Editar cliente", "Altere as informações do cliente selecionado.") }}
+
+<div class="row g-4 align-items-stretch">
+
+    <!-- Formulário -->
+    <div class="col-12 col-xl-8">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <form method="POST"
+                      action="{{ url_for('admin_editar_cliente', cliente_id=cliente.id) }}">
+
+                    {{ secao("Informações do cliente", "success") }}
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+                            <label for="id_cliente" class="form-label fw-semibold">ID do cliente</label>
+                            <div class="input-group">
+                                <input type="text" id="id_cliente" class="form-control"
+                                       value="{{ cliente.id }}" readonly>
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                            <div class="form-text">O ID do cliente não pode ser alterado.</div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="nome" class="form-label fw-semibold">
+                                Nome completo <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" id="nome" name="nome" class="form-control"
+                                   value="{{ cliente.nome }}" required>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="email" class="form-label fw-semibold">
+                                E-mail <span class="text-danger">*</span>
+                            </label>
+                            <input type="email" id="email" name="email" class="form-control"
+                                   value="{{ cliente.email }}" required>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="status" class="form-label fw-semibold">
+                                Status <span class="text-danger">*</span>
+                            </label>
+                            <select id="status" name="status" class="form-select" required>
+                                <option value="ativo"
+                                    {% if cliente.status == "ativo" %}selected{% endif %}>Ativo</option>
+                                <option value="inativo"
+                                    {% if cliente.status == "inativo" %}selected{% endif %}>Inativo</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    {{ secao("eSIM e pacote", "success") }}
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+                            <label for="esim" class="form-label fw-semibold">
+                                Identificador do eSIM <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" id="esim" name="esim" class="form-control"
+                                   value="{{ cliente.esim }}" required>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="pacote" class="form-label fw-semibold">
+                                Pacote <span class="text-danger">*</span>
+                            </label>
+                            <select id="pacote" name="pacote" class="form-select" required>
+                                {% for codigo, dados in pacotes.items() %}
+                                <option value="{{ codigo }}"
+                                    {% if codigo|string == cliente.pacote|string %}selected{% endif %}>
+                                    {{ codigo }} — {{ dados.nome }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">Selecione o pacote associado ao cliente.</div>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex flex-wrap justify-content-between gap-3">
+                        <a href="{{ url_for('admin_visualizar_cliente', cliente_id=cliente.id) }}"
+                           class="btn btn-outline-success">
+                            <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-floppy me-2" aria-hidden="true"></i>Salvar alterações
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- Registro atual -->
+    <div class="col-12 col-xl-4">
+        <aside class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <h2 class="h5 fw-bold mb-3">
+                    <i class="bi bi-info-circle text-success me-2" aria-hidden="true"></i>
+                    Informações do cliente
+                </h2>
+
+                <p class="text-secondary">
+                    Confira os dados do registro que está sendo editado.
+                </p>
+
+                <table class="table mb-4">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Cliente:</th>
+                            <td class="text-end">{{ cliente.nome }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">ID:</th>
+                            <td class="text-end">{{ cliente.id }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">eSIM:</th>
+                            <td class="text-end">{{ cliente.esim }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Pacote:</th>
+                            <td class="text-end">{{ cliente.pacote }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-primary small mb-0" role="note">
+                    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+                    O ID identifica o cliente e permanece fixo durante a edição.
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+</div>
+
+{% endblock %}

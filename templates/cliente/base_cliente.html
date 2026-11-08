@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block estilos_pagina %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cliente.css') }}">
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+
+{# chave, rota, ícone, texto, etapa (None = sem etiqueta) #}
+{% set menu = [
+    ("dashboard",     "cliente_dashboard",   "bi-house-fill", "Dashboard",     None),
+    ("conta",         "cliente_conta",       "bi-person",     "Minha conta",   2),
+    ("conectividade", "minha_conectividade", "bi-diagram-3",  "Conectividade", 3),
+    ("historico",     "cliente_historico",   "bi-clock",      "Histórico",     3),
+] %}
+
+{% set cores_etapa = {
+    1: "bg-primary-subtle text-primary-emphasis",
+    2: "bg-success-subtle text-success-emphasis",
+    3: "badge-roxo"
+} %}
+<div class="admin-layout">
+
+    <header class="admin-topo">
+        <nav class="navbar admin-navbar">
+            <a class="navbar-brand"
+               href="{{ url_for('cliente_dashboard', cliente_id=cliente['id']) }}">
+                <img src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
+                     alt="DGB SIM" class="admin-logo">
+            </a>
+
+            <div class="ms-auto text-end text-white lh-sm">
+                <div class="fw-bold">{{ cliente["nome"] }}</div>
+                <small class="opacity-75">Cliente</small>
+            </div>
+        </nav>
+    </header>
+
+    <div class="admin-corpo">
+
+        <div class="d-md-none bg-white border-bottom p-3">
+            <button class="btn btn-outline-primary" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#menuCliente"
+                    aria-expanded="false" aria-controls="menuCliente">
+                <i class="bi bi-list"></i> Menu do cliente
+            </button>
+        </div>
+
+        <aside class="admin-menu collapse d-md-block" id="menuCliente">
+            <nav class="nav flex-column admin-menu-nav">
+
+                {% for chave, rota, icone, rotulo, etapa in menu %}
+                <a class="nav-link {% if pagina_ativa == chave %}active{% endif %}"
+                href="{{ url_for(rota, cliente_id=cliente['id']) }}"
+                {% if pagina_ativa == chave %}aria-current="page"{% endif %}>
+                    <i class="bi {{ icone }}"></i>
+                    {{ rotulo }}
+                    {% if etapa %}
+                    <span class="badge rounded-pill ms-auto text-nowrap {{ cores_etapa[etapa] }}">
+                        Etapa {{ etapa }}
+                    </span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+                <hr>
+
+                <a class="nav-link" href="{{ url_for('login') }}">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Sair
+                </a>
+
+            </nav>
+        </aside>
+
+        <main class="admin-conteudo">
+            <div class="container-xxl px-0">
+                {% block cliente_content %}{% endblock %}
+            </div>
+        </main>
+
+    </div>
+</div>
+{% endblock %}

@@ -6,96 +6,62 @@
 
 <main>
 
-    <!-- =====================================
-         CONSULTA DE COBERTURA
-    ====================================== -->
-    <section class="cobertura-hero">
+    <!-- CONSULTA DE COBERTURA -->
+    <section class="fundo-imagem fundo-imagem-claro py-5"
+             style="--imagem: url('{{ url_for('static', filename='img/cobertura/cobertura-paises.jpg') }}')">
 
-        <div class="container">
-
+        <div class="container py-lg-4">
             <div class="row">
-
                 <div class="col-12 col-lg-8">
 
-                    <div class="cobertura-conteudo">
+                    <div class="barra-destaque bg-primary rounded-pill mb-3"></div>
 
-                        <div class="cobertura-destaque"></div>
+                    <h1 class="display-5 fw-bold mb-3">
+                        Consulte a cobertura<br>
+                        no seu destino
+                    </h1>
 
-                        <h1>
-                            Consulte a cobertura<br>
-                            no seu destino
-                        </h1>
+                    <p class="fs-5 mb-4">
+                        Verifique se há cobertura de internet
+                        no país que deseja visitar.
+                    </p>
 
-                        <p>
-                            Verifique se há cobertura de internet
-                            no país que deseja visitar.
-                        </p>
+                    <form action="{{ url_for('paises') }}" method="POST" class="card shadow-sm">
+                        <div class="card-body p-3 p-lg-4">
 
-                        <form
-                            action="{{ url_for('paises') }}"
-                            method="POST"
-                            class="cobertura-formulario"
-                        >
-
-                            <label
-                                for="destino"
-                                class="form-label"
-                            >
-                                Destino
-                            </label>
+                            <label for="destino" class="form-label fw-semibold">Destino</label>
 
                             <div class="row g-3">
 
                                 <div class="col-12 col-md-7">
-
-                                    <select
-                                        id="destino"
-                                        name="destino"
-                                        class="form-select"
-                                        required
-                                    >
-
+                                    <select id="destino" name="destino" class="form-select" required>
                                         {% for codigo, pais in paises %}
-
-                                            <option
-                                                value="{{ codigo }}"
-                                                {% if codigo == codigo_selecionado %}selected{% endif %}
-                                            >
-                                                {{ pais.nome }} ({{ codigo }})
-                                            </option>
-
+                                        <option value="{{ codigo }}"
+                                            {% if codigo == codigo_selecionado %}selected{% endif %}>
+                                            {{ pais.nome }} ({{ codigo }})
+                                        </option>
                                         {% endfor %}
-
                                     </select>
-
                                 </div>
 
                                 <div class="col-12 col-md-5">
-
-                                    <button
-                                        type="submit"
-                                        class="btn btn-primary w-100"
-                                    >
+                                    <button type="submit" class="btn btn-primary w-100">
                                         Consultar cobertura
                                     </button>
-
                                 </div>
 
                             </div>
 
-                            <p class="cobertura-ajuda">
+                            <div class="form-text mt-3">
                                 Selecione o país que deseja verificar
                                 a disponibilidade de internet.
-                            </p>
+                            </div>
 
-                        </form>
-
-                    </div>
+                        </div>
+                    </form>
 
                 </div>
-
             </div>
-
         </div>
 
     </section>
@@ -116,72 +82,57 @@
     </section>
     {% endif %}
 
-    <!-- =====================================
-         RESULTADO DA CONSULTA
-    ====================================== -->
+    <!-- RESULTADO DA CONSULTA -->
     {% if resultado %}
 
-        <section class="resultado-cobertura py-5">
+    <section class="py-5 bg-body-tertiary">
+        <div class="container">
+            <div class="row g-4">
 
-            <div class="container">
+                <!-- Dados de cobertura do país consultado -->
+                <div class="col-12 col-lg-6">
+                    <article class="card h-100 border-success shadow-sm">
+                        <div class="card-body p-4">
 
-                <div class="row g-4">
+                            <div class="d-flex align-items-center gap-3 mb-4">
 
-                    <!-- Dados de cobertura do país consultado. -->
-                    <div class="col-12 col-lg-6">
-
-                        <article class="resultado-card resultado-disponivel h-100">
-
-                            <div class="resultado-status">
-
-                                <div
-                                    class="resultado-status-icone"
-                                    aria-hidden="true"
-                                >
-                                    ✓
-                                </div>
+                                <span class="circulo d-inline-flex align-items-center justify-content-center
+                                             bg-success-subtle text-success fs-4" aria-hidden="true">
+                                    <i class="bi bi-check-lg"></i>
+                                </span>
 
                                 <div>
-
-                                    <h2>
-                                        Cobertura disponível!
-                                    </h2>
-
-                                    <p>
-                                        O DGB SIM possui cobertura
-                                        para este destino.
+                                    <h2 class="h4 fw-bold text-success mb-1">Cobertura disponível!</h2>
+                                    <p class="small text-secondary mb-0">
+                                        O DGB SIM possui cobertura para este destino.
                                     </p>
-
                                 </div>
 
                             </div>
 
-                            <dl class="resultado-dados">
+                            <dl class="mb-0">
 
-                                <div>
-                                    <dt>País</dt>
-
-                                    <dd>
-                                        {{ resultado.nome }}
-                                        ({{ codigo_selecionado }})
+                                <div class="d-flex justify-content-between border-bottom py-3">
+                                    <dt class="fw-normal text-secondary">País</dt>
+                                    <dd class="fw-bold mb-0">
+                                        {{ resultado.nome }} ({{ codigo_selecionado }})
                                     </dd>
                                 </div>
 
-                                <div>
-                                    <dt>Região</dt>
-                                    <dd>{{ resultado.regiao }}</dd>
+                                <div class="d-flex justify-content-between border-bottom py-3">
+                                    <dt class="fw-normal text-secondary">Região</dt>
+                                    <dd class="fw-bold mb-0">{{ resultado.regiao }}</dd>
                                 </div>
 
-                                <div>
-                                    <dt>Operadora</dt>
-                                    <dd>{{ resultado.operadora }}</dd>
+                                <div class="d-flex justify-content-between border-bottom py-3">
+                                    <dt class="fw-normal text-secondary">Operadora</dt>
+                                    <dd class="fw-bold mb-0">{{ resultado.operadora }}</dd>
                                 </div>
 
-                                <div>
-                                    <dt>Tecnologia</dt>
-
-                                    <dd>
-                                        <span class="tecnologia-badge">
+                                <div class="d-flex justify-content-between pt-3">
+                                    <dt class="fw-normal text-secondary">Tecnologia</dt>
+                                    <dd class="mb-0">
+                                        <span class="badge bg-success-subtle text-success-emphasis">
                                             {{ resultado.tecnologia }}
                                         </span>
                                     </dd>
@@ -189,206 +140,88 @@
 
                             </dl>
 
-                        </article>
+                        </div>
+                    </article>
+                </div>
 
-                    </div>
-
-                    <!-- Apresentação dos planos, sem associação automática ao destino. -->
-                    <div class="col-12 col-lg-6">
-
-                        <article
-                            class="resultado-card h-100 d-flex flex-column border-top border-primary border-4"
-                        >
+                <!-- Apresentação dos planos, sem associação automática ao destino -->
+                <div class="col-12 col-lg-6">
+                    <article class="card h-100 border-primary shadow-sm">
+                        <div class="card-body d-flex flex-column p-4">
 
                             <div class="d-flex align-items-start gap-3 mb-4">
 
-                                <span
-                                    class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary p-3"
-                                    aria-hidden="true"
-                                >
-                                    <i class="bi bi-sim fs-4"></i>
+                                <span class="circulo d-inline-flex align-items-center justify-content-center
+                                             bg-primary-subtle text-primary fs-4" aria-hidden="true">
+                                    <i class="bi bi-sim"></i>
                                 </span>
 
                                 <div>
-
-                                    <span class="proximo-passo-etapa">
+                                    <span class="d-block text-primary text-uppercase small fw-bold">
                                         Próximo passo
                                     </span>
-
-                                    <h2 class="h4 mb-2">
-                                        Internet para sua viagem
-                                    </h2>
-
+                                    <h2 class="h4 fw-bold mb-2">Internet para sua viagem</h2>
                                     <p class="text-secondary mb-0">
-                                        Conheça as opções de planos
-                                        de internet móvel da DGB SIM.
+                                        Conheça as opções de planos de internet móvel da DGB SIM.
                                     </p>
-
                                 </div>
 
                             </div>
 
                             <div class="bg-light border rounded-3 p-3 mb-4">
-
-                                <h3 class="h6 mb-2">
-                                    Confira os planos
-                                </h3>
-
+                                <h3 class="h6 mb-2">Confira os planos</h3>
                                 <p class="text-secondary mb-0">
-                                    Consulte as informações de franquia de
-                                    dados e validade para planejar sua conexão
-                                    durante a viagem.
+                                    Consulte as informações de franquia de dados e validade
+                                    para planejar sua conexão durante a viagem.
                                 </p>
-
                             </div>
 
-                            <div class="mt-auto">
+                            <a href="{{ url_for('planos') }}" class="btn btn-primary w-100 mt-auto">
+                                Ver planos disponíveis
+                                <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+                            </a>
 
-                                <button
-                                    type="button"
-                                    class="btn btn-primary w-100"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalPlanosIndisponiveis"
-                                >
-                                    Ver planos disponíveis
-                                    <i
-                                        class="bi bi-arrow-right ms-2"
-                                        aria-hidden="true"
-                                    ></i>
-                                </button>
-
-                                <p class="small text-secondary text-center mt-3 mb-0">
-                                    A consulta de planos estará disponível
-                                    em uma próxima etapa.
-                                </p>
-
-                            </div>
-
-                        </article>
-
-                    </div>
-
+                        </div>
+                    </article>
                 </div>
 
             </div>
+        </div>
+    </section>
 
-        </section>
+    {% else %}
 
-    {% endif %}
-
-    <!-- Exibe a chamada inicial para planos enquanto não houver resultado. -->
-    {% if not resultado %}
-
-        <section class="cobertura-proximo-passo py-5">
-
-            <div class="container">
-
-                <div class="proximo-passo-card">
-
+    <!-- Chamada inicial para planos enquanto não houver resultado -->
+    <section class="py-5 bg-body-tertiary">
+        <div class="container">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
                     <div class="row align-items-center g-4">
 
                         <div class="col-12 col-md">
-
-                            <span class="proximo-passo-etapa">
+                            <span class="d-block text-primary text-uppercase small fw-bold">
                                 Próximo passo
                             </span>
-
-                            <h2>
-                                Confira os planos disponíveis
-                            </h2>
-
-                            <p>
-                                Conheça as opções de internet móvel
-                                para sua viagem.
+                            <h2 class="h3 fw-bold">Confira os planos disponíveis</h2>
+                            <p class="text-secondary mb-0">
+                                Conheça as opções de internet móvel para sua viagem.
                             </p>
-
                         </div>
 
                         <div class="col-12 col-md-auto">
-
-                            <button
-                                type="button"
-                                class="btn btn-primary proximo-passo-botao"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalPlanosIndisponiveis"
-                            >
+                            <a href="{{ url_for('planos') }}" class="btn btn-primary btn-lg">
                                 Ver planos disponíveis
-                                <i
-                                    class="bi bi-arrow-right"
-                                    aria-hidden="true"
-                                ></i>
-                            </button>
-
+                                <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+                            </a>
                         </div>
 
                     </div>
-
                 </div>
-
             </div>
-
-        </section>
+        </div>
+    </section>
 
     {% endif %}
-
-    <!-- =====================================
-         AVISO DE RECURSO EM DESENVOLVIMENTO
-    ====================================== -->
-    <div
-        class="modal fade"
-        id="modalPlanosIndisponiveis"
-        tabindex="-1"
-        aria-labelledby="modalPlanosIndisponiveisTitulo"
-        aria-hidden="true"
-    >
-
-        <div class="modal-dialog modal-dialog-centered">
-
-            <div class="modal-content bg-danger text-white">
-
-                <div class="modal-header">
-
-                    <h2
-                        class="modal-title fs-5"
-                        id="modalPlanosIndisponiveisTitulo"
-                    >
-                        <i
-                            class="bi bi-info-circle me-2"
-                            aria-hidden="true"
-                        ></i>
-                        Recurso em desenvolvimento
-                    </h2>
-
-                    <button
-                        type="button"
-                        class="btn-close btn-close-white"
-                        data-bs-dismiss="modal"
-                        aria-label="Fechar"
-                    ></button>
-
-                </div>
-
-                <div class="modal-body">
-                    A consulta de planos não faz parte da Etapa 01 do projeto.
-                </div>
-
-                <div class="modal-footer">
-
-                    <button
-                        type="button"
-                        class="btn btn-light"
-                        data-bs-dismiss="modal"
-                    >
-                        Entendi
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
 
 </main>
 

@@ -1,0 +1,320 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Clientes | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner %}
+
+{{ banner("Clientes", "Gerencie os clientes, seus eSIMs e pacotes associados.") }}
+
+{% set filtrando = request.args.get('busca', '')|trim or request.args.get('status', '') or request.args.get('pacote', '') %}
+
+<!-- BUSCA E FILTROS -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
+
+        <form action="{{ url_for('admin_clientes') }}" method="GET"
+              class="row g-3 align-items-end">
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="busca" class="form-label fw-semibold">
+                    Buscar cliente
+                </label>
+                <input type="search" id="busca" name="busca" class="form-control"
+                       placeholder="Nome ou ID do cliente" value="{{ busca }}">
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-2">
+                <label for="status" class="form-label fw-semibold">Status</label>
+                <select id="status" name="status" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="ativo"
+                        {% if status_selecionado == 'ativo' %}selected{% endif %}>Ativo</option>
+                    <option value="inativo"
+                        {% if status_selecionado == 'inativo' %}selected{% endif %}>Inativo</option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="pacote" class="form-label fw-semibold">Filtrar por pacote</label>
+                <select id="pacote" name="pacote" class="form-select">
+                    <option value="">Todos</option>
+                    {% for codigo, dados in pacotes.items() %}
+                    <option value="{{ codigo }}"
+                        {% if pacote_selecionado == codigo|string %}selected{% endif %}>
+                        {{ codigo }} — {{ dados.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 col-lg-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success flex-fill">
+                    <i class="bi bi-funnel me-2" aria-hidden="true"></i>Filtrar
+                </button>
+
+                <a href="{{ url_for('admin_cadastrar_cliente') }}"
+                   class="btn btn-outline-success flex-fill">
+                    <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Cadastrar cliente
+                </a>
+            </div>
+
+            <div class="col-12">
+                <small class="text-secondary">
+                    Busque pelo ID completo (consulta na Árvore B, após sua
+                    implementação) ou por parte do nome.
+                </small>
+            </div>
+
+            {% if filtrando %}
+            <div class="col-12">
+                <a href="{{ url_for('admin_clientes') }}"
+                   class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-circle me-2" aria-hidden="true"></i>Limpar filtros
+                </a>
+            </div>
+            {% endif %}
+
+        </form>
+
+    </div>
+</section>
+
+<!-- LISTAGEM -->
+<section class="card border-0 shadow-sm">
+    <div class="card-body p-3 p-lg-4">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+
+            <h2 class="h4 fw-bold mb-0 d-flex flex-wrap align-items-center gap-2">
+                Clientes cadastrados
+                <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-6">
+                    {% if filtrando %}
+                        {{ total_filtrado }} de {{ total_clientes }} clientes
+                    {% else %}
+                        {{ total_clientes }} clientes
+                    {% endif %}
+                </span>
+            </h2>
+
+            <a href="{{ url_for('admin_arvore_b') }}" class="btn btn-outline-success">
+                <i class="bi bi-diagram-2 me-2" aria-hidden="true"></i>Ver Árvore B
+            </a>
+
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0"
+                   aria-label="Clientes cadastrados">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">E-mail</th>
+                        <th scope="col">eSIM</th>
+                        <th scope="col">Pacote</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <td>{{ cliente.id }}</td>
+                        <td class="fw-bold">{{ cliente.nome }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.esim }}</td>
+                        <td>
+                            <strong>{{ cliente.pacote }}</strong>
+                            <small class="d-block text-secondary">
+                                {{ nomes_pacotes.get(cliente.pacote|string, "Pacote não encontrado") }}
+                            </small>
+                        </td>
+                        <td>
+                            {% if cliente.status == "ativo" %}
+                            <span class="badge bg-success-subtle text-success-emphasis">Ativo</span>
+                            {% else %}
+                            <span class="badge bg-danger-subtle text-danger-emphasis">
+                                {{ cliente.status|capitalize }}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center text-nowrap">
+
+                            <a href="{{ url_for('admin_visualizar_cliente', cliente_id=cliente.id) }}"
+                               class="btn btn-sm btn-outline-success"
+                               title="Visualizar cliente"
+                               aria-label="Visualizar {{ cliente.nome }}">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </a>
+
+                            <a href="{{ url_for('admin_editar_cliente', cliente_id=cliente.id) }}"
+                               class="btn btn-sm btn-outline-success"
+                               title="Editar cliente"
+                               aria-label="Editar {{ cliente.nome }}">
+                                <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+                            </a>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    title="Remover cliente"
+                                    aria-label="Remover {{ cliente.nome }}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalExcluirCliente{{ cliente.id }}">
+                                <i class="bi bi-trash" aria-hidden="true"></i>
+                            </button>
+
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-secondary py-5">
+                            <i class="bi bi-search d-block fs-3 mb-2" aria-hidden="true"></i>
+                            Nenhum cliente encontrado.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Rodapé e paginação -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3">
+
+            <span class="small text-secondary">
+                {% if total_filtrado > 0 %}
+                    Mostrando {{ inicio }} a {{ fim }} de {{ total_filtrado }} clientes
+                {% else %}
+                    Nenhum cliente para exibir
+                {% endif %}
+            </span>
+
+            {% if total_paginas > 1 %}
+            <nav aria-label="Paginação de clientes">
+                <ul class="pagination mb-0">
+
+                    <li class="page-item {% if pagina == 1 %}disabled{% endif %}">
+                        <a class="page-link" aria-label="Página anterior"
+                           href="{{ url_for('admin_clientes', pagina=pagina - 1, busca=busca, status=status_selecionado, pacote=pacote_selecionado) }}">
+                            &laquo;
+                        </a>
+                    </li>
+
+                    {% for numero in paginas_visiveis %}
+                        {% if numero is none %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item {% if numero == pagina %}active{% endif %}">
+                            <a class="page-link"
+                               href="{{ url_for('admin_clientes', pagina=numero, busca=busca, status=status_selecionado, pacote=pacote_selecionado) }}">
+                                {{ numero }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    <li class="page-item {% if pagina == total_paginas %}disabled{% endif %}">
+                        <a class="page-link" aria-label="Próxima página"
+                           href="{{ url_for('admin_clientes', pagina=pagina + 1, busca=busca, status=status_selecionado, pacote=pacote_selecionado) }}">
+                            &raquo;
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+            {% endif %}
+
+        </div>
+
+    </div>
+</section>
+
+<!-- CONFIRMAÇÃO DE EXCLUSÃO -->
+{% for cliente in clientes %}
+<div class="modal fade" id="modalExcluirCliente{{ cliente.id }}" tabindex="-1"
+     aria-labelledby="modalExcluirClienteLabel{{ cliente.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-3"
+                    id="modalExcluirClienteLabel{{ cliente.id }}">
+                    <span class="d-inline-flex align-items-center justify-content-center
+                                 rounded-circle bg-danger-subtle text-danger p-3">
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                    </span>
+                    Confirmar remoção
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body">
+                <p class="mb-1">Tem certeza que deseja remover este cliente da base de dados?</p>
+                <p class="text-secondary mb-4">
+                    Esta ação removerá o cliente dos dados utilizados pela aplicação.
+                </p>
+
+                <div class="bg-light border rounded p-3">
+                    <dl class="row g-3 mb-0">
+                        <div class="col-12 col-sm-6">
+                            <dt class="small text-secondary fw-normal">Cliente</dt>
+                            <dd class="fw-semibold text-break mb-0">{{ cliente.nome }}</dd>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <dt class="small text-secondary fw-normal">ID</dt>
+                            <dd class="fw-semibold mb-0">{{ cliente.id }}</dd>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <dt class="small text-secondary fw-normal">E-mail</dt>
+                            <dd class="fw-semibold text-break mb-0">{{ cliente.email }}</dd>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <dt class="small text-secondary fw-normal">eSIM</dt>
+                            <dd class="fw-semibold text-break mb-0">{{ cliente.esim }}</dd>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <dt class="small text-secondary fw-normal">Pacote</dt>
+                            <dd class="fw-semibold mb-0">
+                                {{ cliente.pacote }} —
+                                {{ nomes_pacotes.get(cliente.pacote|string, "Pacote não encontrado") }}
+                            </dd>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <dt class="small text-secondary fw-normal">Status</dt>
+                            <dd class="mb-0">
+                                {% if cliente.status == "ativo" %}
+                                <span class="badge bg-success-subtle text-success-emphasis">Ativo</span>
+                                {% else %}
+                                <span class="badge bg-danger-subtle text-danger-emphasis">
+                                    {{ cliente.status|capitalize }}
+                                </span>
+                                {% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal">Cancelar</button>
+
+                <form action="{{ url_for('admin_excluir_cliente', cliente_id=cliente.id) }}"
+                      method="POST" class="m-0">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-2" aria-hidden="true"></i>Remover cliente
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

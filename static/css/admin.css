@@ -1,0 +1,965 @@
+/* DGB SIM — Estilos exclusivos da area administrativa.
+   Etapa 04 / Parte 01: separacao preliminar; ainda nao ativar nos templates. */
+
+.admin-dashboard-mapa {
+    display: block;
+    max-height: 180px;
+    object-fit: contain;
+    object-position: right center;
+}
+
+.admin-historico .table thead th,
+.admin-instrumentacao .table thead th {
+    padding: 12px;
+
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: none;
+}
+
+.admin-historico .table tbody td,
+.admin-instrumentacao .table tbody td,
+.admin-instrumentacao .table tbody th {
+    padding: 12px;
+
+    color: var(--texto-principal);
+
+    font-size: 13px;
+}
+
+.admin-instrumentacao .table tbody th {
+    font-weight: 600;
+    text-transform: none;
+}
+
+.admin-dashboard-apresentacao {
+    max-width: 680px;
+}
+
+.admin-dashboard-destaque {
+    width: 48px;
+    height: 4px;
+
+    margin-bottom: 16px;
+
+    background-color: var(--azul-destaque);
+
+    border-radius: 4px;
+}
+
+.admin-indicadores {
+    max-width: 780px;
+}
+
+.admin-indicador-card {
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+
+    background-color: rgba(255, 255, 255, 0.96);
+
+    box-shadow: 0 4px 14px rgba(16, 42, 67, 0.05);
+}
+
+.admin-indicador-card .card-body {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    min-height: 130px;
+
+    padding: 20px;
+}
+
+.admin-indicador-icone {
+    width: 60px;
+    height: 60px;
+
+    flex: 0 0 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--azul-principal);
+    background-color: var(--azul-claro);
+
+    border-radius: 50%;
+
+    font-size: 28px;
+}
+
+.admin-indicador-conteudo {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-indicador-valor {
+    color: var(--texto-principal);
+
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.admin-indicador-label {
+    margin-top: 5px;
+
+    color: var(--texto-principal);
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.admin-indicador-detalhe {
+    margin-top: 3px;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+}
+
+.admin-acoes-card .card-header {
+    padding: 16px 20px;
+
+    border-bottom: 1px solid var(--borda);
+}
+
+.admin-acoes-card .card-body {
+    padding: 14px;
+}
+
+.admin-acao {
+    min-height: 110px;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 18px;
+
+    color: var(--texto-principal);
+    background-color: var(--branco);
+
+    border: 1px solid var(--borda);
+    border-radius: 9px;
+
+    text-decoration: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.admin-acao:hover {
+    color: var(--texto-principal);
+
+    border-color: var(--azul-destaque);
+
+    box-shadow: 0 5px 15px rgba(16, 42, 67, 0.08);
+
+    transform: translateY(-2px);
+}
+
+.admin-acao-icone {
+    width: 54px;
+    height: 54px;
+
+    flex: 0 0 54px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--azul-principal);
+    background-color: var(--azul-claro);
+
+    border-radius: 50%;
+
+    font-size: 26px;
+}
+
+.admin-acao-conteudo {
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-acao-conteudo strong {
+    margin-bottom: 3px;
+
+    color: var(--texto-principal);
+
+    font-size: 15px;
+}
+
+.admin-acao-conteudo span {
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.admin-acao-seta {
+    flex-shrink: 0;
+
+    color: var(--azul-principal);
+
+    font-size: 22px;
+}
+
+.admin-sobre-texto {
+    margin-bottom: 22px;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.admin-sobre-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+
+    margin-bottom: 18px;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.admin-sobre-item:last-child {
+    margin-bottom: 0;
+}
+
+.admin-sobre-item i {
+    width: 22px;
+
+    flex-shrink: 0;
+
+    color: var(--azul-principal);
+
+    font-size: 20px;
+
+    text-align: center;
+}
+
+.admin-paises {
+    width: 100%;
+}
+
+.admin-paises-hero {
+    min-height: 320px;
+
+    padding: 8px 0 28px;
+
+    background-image: url("../img/admin/mapa-mundi.png");
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: auto 290px;
+}
+
+.admin-paises-hero .admin-dashboard-descricao {
+    max-width: 700px;
+}
+
+.admin-paises-indicador {
+    max-width: 590px;
+}
+
+.admin-paises-layout {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.admin-paises-mapa {
+    display: block;
+    max-height: 180px;
+    object-fit: contain;
+    object-position: right center;
+}
+
+.admin-paises-filtros {
+    overflow: hidden;
+
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+
+    background-color: var(--branco);
+
+    box-shadow: 0 4px 14px rgba(16, 42, 67, 0.04);
+}
+
+.admin-paises-filtros .card-body {
+    padding: 18px;
+}
+
+.admin-paises-filtros .form-label {
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 14px;
+}
+
+.admin-paises-filtros .form-label i {
+    color: var(--azul-principal);
+}
+
+.admin-paises-filtros .form-control,
+.admin-paises-filtros .form-select,
+.admin-paises-filtros .input-group-text,
+.admin-paises-filtros .btn {
+    min-height: 42px;
+}
+
+.admin-paises .table th {
+    white-space: nowrap;
+}
+
+.admin-paises .table td {
+    vertical-align: middle;
+}
+
+.admin-paises .table td:last-child {
+    white-space: nowrap;
+}
+
+.admin-paises .table .btn-sm {
+    min-width: 38px;
+}
+
+.admin-paises .page-item.active .page-link {
+    color: var(--branco);
+
+    background-color: var(--azul-principal);
+    border-color: var(--azul-principal);
+}
+
+.admin-paises .page-item.disabled .page-link {
+    color: var(--texto-secundario);
+}
+
+@media (max-width: 991.98px) {
+.admin-paises-hero {
+        min-height: 280px;
+
+        background-size: auto 220px;
+    }
+}
+
+@media (max-width: 767.98px) {
+.admin-paises-hero {
+        min-height: auto;
+
+        background-image: none;
+    }
+.admin-paises-indicador {
+        max-width: none;
+    }
+.admin-paises-filtros .card-body {
+        padding: 16px;
+    }
+.admin-paises .table {
+        min-width: 850px;
+    }
+.admin-paises .admin-dashboard-card .card-footer {
+        align-items: flex-start !important;
+    }
+.admin-paises .pagination {
+        flex-wrap: wrap;
+    }
+}
+
+.admin-cadastrar-pais {
+    width: 100%;
+}
+
+.admin-cadastro-cabecalho {
+    margin-bottom: 24px;
+}
+
+.admin-breadcrumb {
+    margin-bottom: 12px;
+}
+
+.admin-breadcrumb a {
+    color: var(--azul-principal);
+
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.admin-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.admin-cadastro-card,
+.admin-cadastro-info {
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+
+    background-color: var(--branco);
+
+    box-shadow:
+        0 4px 16px rgba(16, 42, 67, 0.05);
+}
+
+.admin-cadastro-card .card-body {
+    padding: 28px;
+}
+
+.admin-cadastro-info .card-body {
+    padding: 26px;
+}
+
+.admin-cadastro-secao-titulo,
+.admin-cadastro-info-titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 22px;
+}
+
+.admin-cadastro-barra {
+    width: 5px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    background-color: var(--azul-destaque);
+
+    border-radius: 999px;
+}
+
+.admin-cadastro-secao-titulo h2,
+.admin-cadastro-info-titulo h2 {
+    margin: 0;
+
+    color: var(--texto-principal);
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.admin-cadastro-card .form-label {
+    margin-bottom: 8px;
+
+    color: var(--texto-principal);
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-cadastro-card .form-control,
+.admin-cadastro-card .form-select {
+    min-height: 48px;
+
+    color: var(--texto-principal);
+
+    border-color: var(--borda);
+    border-radius: 7px;
+}
+
+.admin-cadastro-card .form-control:focus,
+.admin-cadastro-card .form-select:focus {
+    border-color: var(--azul-principal);
+
+    box-shadow:
+        0 0 0 0.2rem rgba(0, 103, 184, 0.12);
+}
+
+.admin-cadastro-card .form-control::placeholder {
+    color: #829ab1;
+}
+
+.admin-cadastro-card .form-text {
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+}
+
+.admin-cadastro-tecnologia {
+    margin-top: 32px;
+    padding-top: 26px;
+
+    border-top: 1px solid var(--borda);
+}
+
+.admin-cadastro-ajuda {
+    margin-bottom: 18px;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+}
+
+.admin-cadastro-acoes {
+    margin-top: 36px;
+    padding-top: 24px;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+
+    border-top: 1px solid var(--borda);
+}
+
+.admin-cadastro-botao {
+    min-width: 190px;
+    min-height: 48px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 600;
+}
+
+.admin-cadastro-info-titulo i {
+    color: var(--azul-principal);
+
+    font-size: 27px;
+}
+
+.admin-cadastro-info-descricao {
+    margin-bottom: 22px;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.admin-cadastro-info-dados {
+    margin-bottom: 20px;
+    padding: 16px;
+
+    background-color: var(--fundo-claro);
+
+    border-radius: 8px;
+}
+
+.admin-cadastro-info-dados > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 8px 0;
+}
+
+.admin-cadastro-info-dados strong {
+    color: var(--texto-principal);
+
+    font-size: 13px;
+}
+
+.admin-cadastro-info-dados span {
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+    text-align: right;
+}
+
+.admin-menu-nav .nav-link:focus-visible {
+    outline: 3px solid var(--azul-principal);
+    outline-offset: 2px;
+}
+
+.admin-cadastro-info,
+.admin-dashboard-descricao {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 767.98px) {
+.admin-cadastro-card .card-body,
+    .admin-cadastro-info .card-body {
+        padding: 20px;
+    }
+.admin-cadastro-acoes {
+        flex-direction: column-reverse;
+    }
+.admin-cadastro-botao {
+        width: 100%;
+        min-width: 0;
+    }
+.admin-cadastro-info-dados > div {
+        flex-direction: column;
+        gap: 3px;
+    }
+.admin-cadastro-info-dados span {
+        text-align: left;
+    }
+.admin-navbar {
+        padding: 12px 16px;
+    }
+.admin-logo {
+        width: 150px;
+        max-width: 100%;
+    }
+.admin-usuario {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 991.98px) {
+.cabecalho .navbar {
+        padding: 12px 0;
+    }
+.cabecalho .navbar-nav {
+        gap: 0;
+        padding: 16px 0;
+    }
+.cabecalho .nav-link {
+        min-height: auto;
+        padding: 10px 0;
+    }
+.cabecalho .nav-link.ativo::after {
+        display: none;
+    }
+.hero-linha {
+        min-height: 440px;
+    }
+.hero-conteudo h1 {
+        font-size: 40px;
+    }
+}
+
+.admin-clientes {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-clientes-hero {
+    min-height: 190px;
+    display: flex;
+    align-items: center;
+
+    background-color: #ffffff;
+    background-image: url("../img/admin/mapa-mundi.png");
+    background-repeat: no-repeat;
+    background-position: right 24px center;
+    background-size: auto 165px;
+}
+
+.admin-clientes-hero .card-body {
+    padding: 24px;
+}
+
+.admin-clientes-hero .admin-dashboard-descricao {
+    max-width: 550px;
+}
+
+.admin-clientes .admin-dashboard-card {
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 14px rgba(16, 42, 67, 0.05);
+    overflow: hidden;
+}
+
+.admin-clientes .form-control,
+.admin-clientes .btn {
+    min-height: 40px;
+}
+
+.admin-clientes .form-control {
+    border-color: var(--borda);
+}
+
+.admin-clientes .btn-primary {
+    background-color: #0067d8;
+    border-color: #0067d8;
+}
+
+.admin-clientes .table th {
+    padding: 12px 18px;
+    color: #526c88;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.admin-clientes .table td {
+    padding: 10px 18px;
+    color: var(--texto-principal);
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.admin-clientes .table td:last-child {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.admin-clientes .table td:last-child .btn {
+    min-height: auto;
+    margin-left: 2px;
+}
+
+.admin-clientes .badge {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.admin-clientes .pagination {
+    gap: 4px;
+}
+
+.admin-clientes .page-link {
+    min-width: 36px;
+    text-align: center;
+    border-radius: 6px;
+}
+
+.admin-clientes .page-item.active .page-link {
+    background-color: #0067d8;
+    border-color: #0067d8;
+    color: #ffffff;
+}
+
+@media (max-width: 767.98px) {
+.admin-clientes-hero {
+        min-height: 160px;
+        background-image: none;
+    }
+.admin-clientes .table {
+        min-width: 950px;
+    }
+.admin-clientes .card-footer {
+        align-items: flex-start !important;
+    }
+.admin-clientes .pagination {
+        flex-wrap: wrap;
+    }
+}
+
+.admin-cliente-form {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.admin-cliente-form .breadcrumb a {
+    color: #0067d8;
+    text-decoration: none;
+}
+
+.admin-cliente-form .breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.admin-cliente-form .admin-dashboard-card {
+    border: 1px solid #e1e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 5px 15px rgba(16, 42, 67, 0.08);
+}
+
+.admin-cliente-form .admin-cliente-secao {
+    position: relative;
+    padding-left: 17px;
+    margin-bottom: 22px;
+    color: #102a43;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.admin-cliente-form .admin-cliente-secao::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 6px;
+    height: 26px;
+    border-radius: 4px;
+    background-color: #0067ff;
+}
+
+.admin-cliente-form .form-label {
+    color: #102a43;
+}
+
+.admin-cliente-form .form-control,
+.admin-cliente-form .form-select {
+    min-height: 42px;
+    border-color: #c7d5e5;
+    border-radius: 6px;
+}
+
+.admin-cliente-form .form-control:focus,
+.admin-cliente-form .form-select:focus {
+    border-color: #0067ff;
+    box-shadow: 0 0 0 3px rgba(0, 103, 255, 0.12);
+}
+
+.admin-cliente-form .form-text {
+    color: #627d98;
+    font-size: 13px;
+}
+
+.admin-cliente-form hr {
+    border-color: #dce6f2;
+    opacity: 1;
+}
+
+.admin-cliente-form .admin-cliente-aviso {
+    padding: 14px;
+    border-radius: 8px;
+    background-color: #eaf4ff;
+    color: #073b91;
+    line-height: 1.5;
+}
+
+.admin-cliente-form .btn {
+    min-height: 42px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+@media (max-width: 767.98px) {
+.admin-cliente-form .card-body {
+        padding: 20px !important;
+    }
+.admin-cliente-form .admin-cliente-secao {
+        font-size: 19px;
+    }
+}
+
+
+/* ==========================================
+   DETALHES DO CLIENTE
+   ========================================== */
+
+.admin-cliente-detalhes {
+    width: 100%;
+}
+
+.admin-cliente-detalhes-card {
+    border-radius: 12px;
+}
+
+.admin-cliente-detalhes-card > .card-body {
+    padding: 24px;
+}
+
+.admin-cliente-detalhes-secao {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #071b47;
+    border-left: 5px solid #0066ff;
+    padding-left: 12px;
+    margin-bottom: 18px;
+}
+
+.admin-cliente-detalhes-label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #425779;
+    margin-bottom: 5px;
+}
+
+.admin-cliente-detalhes-valor {
+    font-size: 1.35rem;
+    color: #101522;
+    overflow-wrap: anywhere;
+}
+
+.admin-cliente-detalhes-esim {
+    border-top: 1px solid #dce6f3;
+    padding-top: 20px;
+    margin-top: 60px;
+}
+
+.admin-cliente-detalhes-acoes {
+    border-top: 1px solid #dce6f3;
+    padding-top: 18px;
+    margin-top: 28px;
+}
+
+.admin-cliente-detalhes-pacote-titulo {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #071b47;
+    margin-bottom: 28px;
+}
+
+.admin-cliente-detalhes-campo {
+    margin-bottom: 20px;
+}
+
+.admin-cliente-detalhes-conectividade {
+    border-top: 1px solid #dce6f3;
+    padding-top: 18px;
+    margin-top: 20px;
+}
+
+.admin-cliente-detalhes-conectividade p {
+    color: #425779;
+    line-height: 1.5;
+}
+
+@media (max-width: 767.98px) {
+    .admin-cliente-detalhes-card > .card-body {
+        padding: 18px;
+    }
+
+    .admin-cliente-detalhes-valor {
+        font-size: 1.15rem;
+    }
+
+    .admin-cliente-detalhes-esim {
+        margin-top: 30px;
+    }
+
+    .admin-cliente-detalhes-acoes {
+        margin-top: 24px;
+    }
+}
+
+
+/* ==========================================
+   EDITAR CLIENTE 
+   ========================================== */
+
+.admin-editar-cliente {
+    width: 100%;
+}
+
+.admin-editar-cliente .form-control,
+.admin-editar-cliente .form-select {
+    min-height: 38px;
+    border-radius: 6px;
+}
+
+.admin-editar-cliente .form-control[readonly] {
+    background-color: #e9ecef;
+    color: #425779;
+}
+
+.admin-editar-cliente .input-group-text {
+    background-color: #e9ecef;
+    color: #425779;
+}
+
+.admin-editar-cliente .form-label {
+    font-size: 0.9rem;
+    color: #071b47;
+}
+
+.admin-editar-cliente .card-body {
+    padding: 24px;
+}
+
+@media (max-width: 767.98px) {
+    .admin-editar-cliente .card-body {
+        padding: 18px;
+    }
+}

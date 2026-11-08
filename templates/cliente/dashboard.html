@@ -1,0 +1,97 @@
+{% extends "cliente/base_cliente.html" %}
+
+{% block title %}Área do Cliente | DGB SIM{% endblock %}
+
+{% block cliente_content %}
+
+{% from "cliente/_componentes.html" import banner %}
+
+{{ banner("Olá, " ~ cliente["nome"].split()[0] ~ "!",
+          "Acesse sua conta e consulte a conectividade para sua viagem.") }}
+
+<div class="row g-4">
+
+        <!-- Minha conta -->
+        <div class="col-12 col-lg-4">
+            <div class="card h-100 bg-success-subtle border-success-subtle shadow-sm">
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="d-flex gap-3 mb-3">
+                        <i class="bi bi-sim fs-1 text-success"></i>
+                        <div>
+                            <h2 class="h3 fw-bold mb-0">Minha conta</h2>
+                            <p class="mb-0">Seu eSIM e pacote.</p>
+                        </div>
+                    </div>
+
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item bg-transparent border-success-subtle px-0">
+                            eSIM: <strong>{{ cliente["esim"] }}</strong>
+                        </li>
+                        <li class="list-group-item bg-transparent border-success-subtle px-0">
+                            Pacote: <strong>{{ pacote["nome"] }}</strong>
+                        </li>
+                        <li class="list-group-item bg-transparent border-success-subtle px-0">
+                            Franquia e validade:
+                            <strong>{{ pacote["dados_gb"] }} GB • {{ pacote["validade_dias"] }} dias</strong>
+                        </li>
+                    </ul>
+
+                    <a href="{{ url_for('cliente_conta', cliente_id=cliente['id']) }}"
+                    class="btn btn-success fw-bold mt-auto">
+                        Ver minha conta
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Conectividade -->
+        <div class="col-12 col-lg-4">
+            <div class="card card-roxo h-100 shadow-sm">
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="d-flex gap-3 mb-3">
+                        <i class="bi bi-diagram-3 fs-1 text-roxo"></i>
+                        <div>
+                            <h2 class="h3 fw-bold mb-0">Conectividade</h2>
+                            <p class="mb-0">Escolha origem, destino e critério para calcular sua rota.</p>
+                        </div>
+                    </div>
+
+                    <p class="border-top pt-3">Critérios disponíveis.</p>
+                    <p class="mb-4">Menor latência ou menor custo operacional.</p>
+
+                    <a href="{{ url_for('minha_conectividade', cliente_id=cliente['id']) }}"
+                       class="btn btn-roxo fw-bold mt-auto">
+                        Consultar conectividade
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Histórico -->
+        <div class="col-12 col-lg-4">
+            <div class="card card-roxo h-100 shadow-sm">
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="d-flex gap-3 mb-3">
+                        <i class="bi bi-clock fs-1 text-roxo"></i>
+                        <div>
+                            <h2 class="h3 fw-bold mb-0">Histórico</h2>
+                            <p class="mb-0">Consulte os roteamentos realizados e os resultados de cada consulta.</p>
+                        </div>
+                    </div>
+
+                    <p class="border-top pt-3 mb-4">
+                        Origem, destino, critério, rota, latência e custo.
+                    </p>
+
+                    <a href="{{ url_for('cliente_historico', cliente_id=cliente.id) }}"
+                       class="btn btn-roxo fw-bold mt-auto">
+                        Ver histórico
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

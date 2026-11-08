@@ -2,13 +2,13 @@
     "IT": {
         "nome": "Itália",
         "regiao": "Europa",
-        "operadora": "Operadora IT",
+        "operadora": "Mama Mia",
         "tecnologia": "5G"
     },
     "BR": {
         "nome": "Brasil",
         "regiao": "América",
-        "operadora": "Morto",
+        "operadora": "Vivo",
         "tecnologia": "5G"
     },
     "PT": {
@@ -33,6 +33,12 @@
         "nome": "Chile",
         "regiao": "América",
         "operadora": "CHI",
+        "tecnologia": "5G"
+    },
+    "MX": {
+        "nome": "México",
+        "regiao": "América",
+        "operadora": "Arigato",
         "tecnologia": "5G"
     }
 }

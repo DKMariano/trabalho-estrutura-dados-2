@@ -4,278 +4,171 @@
 
 {% block admin_content %}
 
-<section class="admin-paises admin-paises-layout mx-auto">
+{% from "admin/_componentes.html" import banner %}
 
-    <!-- Apresentação -->
-    <section class="card admin-dashboard-card mb-4">
-        <div class="card-body p-4">
-            <div class="row align-items-center g-3">
+{# Item de paginação: desabilitado quando não há destino #}
+{% macro pg(icone, rotulo, destino=None) %}
+<li class="page-item {% if not destino %}disabled{% endif %}">
+    {% if destino %}
+    <a class="page-link" href="{{ destino }}" aria-label="{{ rotulo }}">
+        <i class="bi {{ icone }}" aria-hidden="true"></i>
+    </a>
+    {% else %}
+    <span class="page-link" aria-label="{{ rotulo }}">
+        <i class="bi {{ icone }}" aria-hidden="true"></i>
+    </span>
+    {% endif %}
+</li>
+{% endmacro %}
 
-                <div class="col-12 col-lg-7">
+{{ banner("Países", "Gerencie os países atendidos e seus dados de cobertura.") }}
 
-                    <div
-                        class="admin-dashboard-destaque mb-3"
-                        aria-hidden="true"
-                    ></div>
+<!-- BUSCA E FILTROS -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
 
-                    <h1 class="admin-dashboard-titulo fs-2 mb-2">
-                        Países
-                    </h1>
+        <form action="{{ url_for('admin_paises') }}" method="GET"
+              class="row g-3 align-items-end">
 
-                    <p class="admin-dashboard-descricao mb-0">
-                        Gerencie os países atendidos e seus dados de cobertura.
-                    </p>
-
-                </div>
-
-                <div class="col-lg-5 d-none d-lg-block">
-                    <img
-                        src="{{ url_for('static', filename='img/admin/mapa-mundi.png') }}"
-                        class="img-fluid w-100 admin-dashboard-mapa"
-                        alt=""
-                        aria-hidden="true"
-                    >
-                </div>
-
+            <div class="col-12 col-lg-5">
+                <label for="busca" class="form-label fw-semibold">Buscar país</label>
+                <input type="search" class="form-control" id="busca" name="busca"
+                       value="{{ busca }}" placeholder="Nome ou código do país">
             </div>
-        </div>
-    </section>
 
-    <!-- Busca e filtros -->
-    <section class="card admin-paises-filtros mb-4">
-        <div class="card-body">
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="regiao" class="form-label fw-semibold">Filtrar por região</label>
+                <select class="form-select" id="regiao" name="regiao">
+                    <option value="">Todas</option>
+                    {% for regiao in regioes %}
+                    <option value="{{ regiao }}"
+                        {% if regiao == regiao_selecionada %}selected{% endif %}>
+                        {{ regiao }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            <form
-                action="{{ url_for('admin_paises') }}"
-                method="GET"
-                class="row g-3 align-items-end"
-            >
+            <div class="col-12 col-lg-4 d-flex gap-2">
+                <button class="btn btn-primary flex-fill" type="submit">
+                    <i class="bi bi-search me-2" aria-hidden="true"></i>Buscar
+                </button>
 
-                <div class="col-12 col-lg-7">
-                    <label for="busca" class="form-label fw-semibold">
-                        Buscar país
-                    </label>
+                <a href="{{ url_for('admin_cadastrar_pais') }}"
+                   class="btn btn-outline-primary flex-fill">
+                    <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Cadastrar país
+                </a>
+            </div>
 
-                    <input
-                        type="search"
-                        class="form-control"
-                        id="busca"
-                        name="busca"
-                        value="{{ busca }}"
-                        placeholder="Nome ou código do país"
-                    >
-                </div>
+            {% if busca or regiao_selecionada %}
+            <div class="col-12">
+                <a href="{{ url_for('admin_paises') }}"
+                   class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-circle me-2" aria-hidden="true"></i>Limpar filtros
+                </a>
+            </div>
+            {% endif %}
 
-                <div class="col-12 col-md-8 col-lg-3">
-                    <label for="regiao" class="form-label fw-semibold">
-                        Filtrar por região
-                    </label>
+        </form>
 
-                    <select
-                        class="form-select"
-                        id="regiao"
-                        name="regiao"
-                    >
-                        <option value="">Todas</option>
+    </div>
+</section>
 
-                        {% for regiao in regioes %}
-                        <option
-                            value="{{ regiao }}"
-                            {% if regiao == regiao_selecionada %}
-                                selected
-                            {% endif %}
-                        >
-                            {{ regiao }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
+<!-- LISTAGEM -->
+<section class="card border-0 shadow-sm">
+    <div class="card-body p-3 p-lg-4">
 
-                <div class="col-12 col-md-4 col-lg-2 d-grid">
-                    <button class="btn btn-primary" type="submit">
-                        <i
-                            class="bi bi-search me-2"
-                            aria-hidden="true"
-                        ></i>
-                        Buscar
-                    </button>
-                </div>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
 
-                {% if busca or regiao_selecionada %}
-                <div class="col-12">
-                    <a
-                        href="{{ url_for('admin_paises') }}"
-                        class="btn btn-outline-secondary btn-sm"
-                    >
-                        <i
-                            class="bi bi-x-circle me-2"
-                            aria-hidden="true"
-                        ></i>
-                        Limpar filtros
-                    </a>
-                </div>
-                {% endif %}
-
-            </form>
-
-        </div>
-    </section>
-
-    <!-- Listagem -->
-    <section class="card admin-dashboard-card admin-paises-tabela">
-
-        <div
-            class="card-header bg-white d-flex flex-wrap
-                   justify-content-between align-items-center gap-3"
-        >
-
-            <div class="d-flex flex-wrap align-items-center gap-2">
-
-                <h2 class="admin-dashboard-subtitulo mb-0">
-                    Países cadastrados
-                </h2>
-
-                <span
-                    class="badge bg-primary-subtle text-primary-emphasis
-                           rounded-pill"
-                >
+            <h2 class="h4 fw-bold mb-0 d-flex flex-wrap align-items-center gap-2">
+                Países cadastrados
+                <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis fs-6">
                     {% if busca or regiao_selecionada %}
                         {{ total_filtrados }} de {{ total_paises }} países
                     {% else %}
                         {{ total_paises }} países
                     {% endif %}
                 </span>
+            </h2>
 
-            </div>
-
-            <a
-                href="{{ url_for('admin_cadastrar_pais') }}"
-                class="btn btn-primary"
-            >
-                <i
-                    class="bi bi-plus-circle me-2"
-                    aria-hidden="true"
-                ></i>
-                Cadastrar país
+            <a href="{{ url_for('admin_tabela_hash') }}" class="btn btn-outline-primary">
+                <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>Ver Tabela Hash
             </a>
 
         </div>
 
-        <div class="card-body p-0">
-            <div class="table-responsive">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0"
+                   aria-label="Países cadastrados">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">País</th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Região</th>
+                        <th scope="col">Operadora</th>
+                        <th scope="col">Tecnologia</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
 
-                <table class="table table-hover align-middle mb-0">
+                <tbody>
+                    {% for codigo, pais in paises %}
+                    <tr>
+                        <td>{{ ((pagina - 1) * por_pagina) + loop.index }}</td>
+                        <td class="fw-bold">{{ pais.nome }}</td>
+                        <td>{{ codigo }}</td>
+                        <td>{{ pais.regiao }}</td>
+                        <td>{{ pais.operadora }}</td>
+                        <td>
+                            <span class="badge bg-primary-subtle text-primary-emphasis">{{ pais.tecnologia }}</span>
+                        </td>
+                        <td class="text-center text-nowrap">
 
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">País</th>
-                            <th scope="col">Código</th>
-                            <th scope="col">Região</th>
-                            <th scope="col">Operadora</th>
-                            <th scope="col">Tecnologia</th>
-                            <th scope="col" class="text-end">Ações</th>
-                        </tr>
-                    </thead>
+                            <a href="{{ url_for('admin_visualizar_pais', codigo=codigo) }}"
+                               class="btn btn-sm btn-outline-primary"
+                               title="Visualizar país"
+                               aria-label="Visualizar {{ pais.nome }}">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </a>
 
-                    <tbody>
-                        {% for codigo, pais in paises %}
-                        <tr>
+                            <a href="{{ url_for('admin_editar_pais', codigo=codigo) }}"
+                               class="btn btn-sm btn-outline-primary"
+                               title="Editar país"
+                               aria-label="Editar {{ pais.nome }}">
+                                <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+                            </a>
 
-                            <td>
-                                {{ ((pagina - 1) * por_pagina) + loop.index }}
-                            </td>
-
-                            <td>
-                                <strong>{{ pais.nome }}</strong>
-                            </td>
-
-                            <td>{{ codigo }}</td>
-                            <td>{{ pais.regiao }}</td>
-                            <td>{{ pais.operadora }}</td>
-
-                            <td>
-                                <span class="badge text-bg-success">
-                                    {{ pais.tecnologia }}
-                                </span>
-                            </td>
-
-                            <td class="text-end">
-
-                                <a
-                                    href="{{ url_for('admin_visualizar_pais', codigo=codigo) }}"
-                                    class="btn btn-sm btn-outline-primary"
-                                    title="Visualizar país"
-                                    aria-label="Visualizar {{ pais.nome }}"
-                                >
-                                    <i
-                                        class="bi bi-eye"
-                                        aria-hidden="true"
-                                    ></i>
-                                </a>
-
-                                <a
-                                    href="{{ url_for('admin_editar_pais', codigo=codigo) }}"
-                                    class="btn btn-sm btn-outline-primary"
-                                    title="Editar país"
-                                    aria-label="Editar {{ pais.nome }}"
-                                >
-                                    <i
-                                        class="bi bi-pencil-fill"
-                                        aria-hidden="true"
-                                    ></i>
-                                </a>
-
-                                <button
-                                    type="button"
+                            <button type="button"
                                     class="btn btn-sm btn-outline-danger"
                                     title="Remover país"
                                     aria-label="Remover {{ pais.nome }}"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modalExcluir{{ codigo }}"
-                                >
-                                    <i
-                                        class="bi bi-trash"
-                                        aria-hidden="true"
-                                    ></i>
-                                </button>
+                                    data-bs-target="#modalExcluir{{ codigo }}">
+                                <i class="bi bi-trash" aria-hidden="true"></i>
+                            </button>
 
-                            </td>
-
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td
-                                colspan="7"
-                                class="text-center py-5 text-secondary"
-                            >
-                                <i
-                                    class="bi bi-search d-block fs-3 mb-2"
-                                    aria-hidden="true"
-                                ></i>
-                                Nenhum país encontrado.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-
-                </table>
-
-            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-secondary">
+                            <i class="bi bi-search d-block fs-3 mb-2" aria-hidden="true"></i>
+                            Nenhum país encontrado.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
         <!-- Rodapé e paginação -->
-        <div
-            class="card-footer bg-white d-flex flex-wrap
-                   justify-content-between align-items-center gap-3"
-        >
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3">
 
-            <span class="text-secondary">
+            <span class="small text-secondary">
                 {% if total_filtrados > 0 %}
-                    Mostrando
-                    {{ ((pagina - 1) * por_pagina) + 1 }}
-                    a
-                    {{ [pagina * por_pagina, total_filtrados] | min }}
+                    Mostrando {{ ((pagina - 1) * por_pagina) + 1 }}
+                    a {{ [pagina * por_pagina, total_filtrados] | min }}
                     de {{ total_filtrados }} países
                 {% else %}
                     Nenhum país encontrado
@@ -286,120 +179,27 @@
             <nav aria-label="Paginação dos países">
                 <ul class="pagination mb-0">
 
-                    <!-- Primeira página e anterior -->
-                    {% if pagina > 1 %}
-                    <li class="page-item">
-                        <a
-                            class="page-link"
-                            href="{{ url_for('admin_paises', pagina=1, busca=busca, regiao=regiao_selecionada) }}"
-                            aria-label="Primeira página"
-                        >
-                            <i
-                                class="bi bi-chevron-double-left"
-                                aria-hidden="true"
-                            ></i>
-                        </a>
-                    </li>
+                    {{ pg("bi-chevron-double-left", "Primeira página",
+                          url_for('admin_paises', pagina=1, busca=busca, regiao=regiao_selecionada) if pagina > 1) }}
+                    {{ pg("bi-chevron-left", "Página anterior",
+                          url_for('admin_paises', pagina=pagina - 1, busca=busca, regiao=regiao_selecionada) if pagina > 1) }}
 
-                    <li class="page-item">
-                        <a
-                            class="page-link"
-                            href="{{ url_for('admin_paises', pagina=pagina - 1, busca=busca, regiao=regiao_selecionada) }}"
-                            aria-label="Página anterior"
-                        >
-                            <i
-                                class="bi bi-chevron-left"
-                                aria-hidden="true"
-                            ></i>
-                        </a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link" aria-label="Primeira página">
-                            <i
-                                class="bi bi-chevron-double-left"
-                                aria-hidden="true"
-                            ></i>
-                        </span>
-                    </li>
-
-                    <li class="page-item disabled">
-                        <span class="page-link" aria-label="Página anterior">
-                            <i
-                                class="bi bi-chevron-left"
-                                aria-hidden="true"
-                            ></i>
-                        </span>
-                    </li>
-                    {% endif %}
-
-                    <!-- Números das páginas -->
                     {% for numero in range(1, total_paginas + 1) %}
-                    <li
-                        class="page-item {{ 'active' if numero == pagina else '' }}"
-                    >
+                    <li class="page-item {% if numero == pagina %}active{% endif %}">
                         {% if numero == pagina %}
-                        <span class="page-link" aria-current="page">
-                            {{ numero }}
-                        </span>
+                        <span class="page-link" aria-current="page">{{ numero }}</span>
                         {% else %}
-                        <a
-                            class="page-link"
-                            href="{{ url_for('admin_paises', pagina=numero, busca=busca, regiao=regiao_selecionada) }}"
-                            aria-label="Página {{ numero }}"
-                        >
-                            {{ numero }}
-                        </a>
+                        <a class="page-link"
+                           href="{{ url_for('admin_paises', pagina=numero, busca=busca, regiao=regiao_selecionada) }}"
+                           aria-label="Página {{ numero }}">{{ numero }}</a>
                         {% endif %}
                     </li>
                     {% endfor %}
 
-                    <!-- Próxima página e última -->
-                    {% if pagina < total_paginas %}
-                    <li class="page-item">
-                        <a
-                            class="page-link"
-                            href="{{ url_for('admin_paises', pagina=pagina + 1, busca=busca, regiao=regiao_selecionada) }}"
-                            aria-label="Próxima página"
-                        >
-                            <i
-                                class="bi bi-chevron-right"
-                                aria-hidden="true"
-                            ></i>
-                        </a>
-                    </li>
-
-                    <li class="page-item">
-                        <a
-                            class="page-link"
-                            href="{{ url_for('admin_paises', pagina=total_paginas, busca=busca, regiao=regiao_selecionada) }}"
-                            aria-label="Última página"
-                        >
-                            <i
-                                class="bi bi-chevron-double-right"
-                                aria-hidden="true"
-                            ></i>
-                        </a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link" aria-label="Próxima página">
-                            <i
-                                class="bi bi-chevron-right"
-                                aria-hidden="true"
-                            ></i>
-                        </span>
-                    </li>
-
-                    <li class="page-item disabled">
-                        <span class="page-link" aria-label="Última página">
-                            <i
-                                class="bi bi-chevron-double-right"
-                                aria-hidden="true"
-                            ></i>
-                        </span>
-                    </li>
-                    {% endif %}
+                    {{ pg("bi-chevron-right", "Próxima página",
+                          url_for('admin_paises', pagina=pagina + 1, busca=busca, regiao=regiao_selecionada) if pagina < total_paginas) }}
+                    {{ pg("bi-chevron-double-right", "Última página",
+                          url_for('admin_paises', pagina=total_paginas, busca=busca, regiao=regiao_selecionada) if pagina < total_paginas) }}
 
                 </ul>
             </nav>
@@ -407,137 +207,73 @@
 
         </div>
 
-    </section>
-
+    </div>
 </section>
 
-<!-- Confirmação de exclusão -->
+<!-- CONFIRMAÇÃO DE EXCLUSÃO -->
 {% for codigo, pais in paises %}
-<div
-    class="modal fade"
-    id="modalExcluir{{ codigo }}"
-    tabindex="-1"
-    aria-labelledby="modalExcluirLabel{{ codigo }}"
-    aria-hidden="true"
->
+<div class="modal fade" id="modalExcluir{{ codigo }}" tabindex="-1"
+     aria-labelledby="modalExcluirLabel{{ codigo }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
             <div class="modal-header">
-
-                <h2
-                    class="modal-title fs-5 d-flex align-items-center gap-3"
-                    id="modalExcluirLabel{{ codigo }}"
-                >
-                    <span
-                        class="d-inline-flex align-items-center
-                               justify-content-center rounded-circle
-                               bg-danger-subtle text-danger p-3"
-                    >
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-3"
+                    id="modalExcluirLabel{{ codigo }}">
+                    <span class="d-inline-flex align-items-center justify-content-center
+                                 rounded-circle bg-danger-subtle text-danger p-3">
                         <i class="bi bi-trash" aria-hidden="true"></i>
                     </span>
-
                     Confirmar remoção
                 </h2>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fechar"
-                ></button>
-
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Fechar"></button>
             </div>
 
             <div class="modal-body">
-
-                <p class="mb-1">
-                    Tem certeza que deseja remover este país da base de dados?
-                </p>
-
+                <p class="mb-1">Tem certeza que deseja remover este país da base de dados?</p>
                 <p class="text-secondary mb-4">
                     Esta ação removerá o país dos dados utilizados pela aplicação.
                 </p>
 
                 <div class="bg-light border rounded p-3">
                     <dl class="row g-3 mb-0">
-
                         <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">
-                                País
-                            </dt>
-                            <dd class="fw-semibold text-break mb-0">
-                                {{ pais.nome }}
-                            </dd>
+                            <dt class="small text-secondary fw-normal">País</dt>
+                            <dd class="fw-semibold text-break mb-0">{{ pais.nome }}</dd>
                         </div>
-
                         <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">
-                                Região
-                            </dt>
-                            <dd class="fw-semibold mb-0">
-                                {{ pais.regiao }}
-                            </dd>
+                            <dt class="small text-secondary fw-normal">Região</dt>
+                            <dd class="fw-semibold mb-0">{{ pais.regiao }}</dd>
                         </div>
-
                         <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">
-                                Código
-                            </dt>
-                            <dd class="fw-semibold mb-0">
-                                {{ codigo }}
-                            </dd>
+                            <dt class="small text-secondary fw-normal">Código</dt>
+                            <dd class="fw-semibold mb-0">{{ codigo }}</dd>
                         </div>
-
                         <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">
-                                Operadora
-                            </dt>
-                            <dd class="fw-semibold text-break mb-0">
-                                {{ pais.operadora }}
-                            </dd>
+                            <dt class="small text-secondary fw-normal">Operadora</dt>
+                            <dd class="fw-semibold text-break mb-0">{{ pais.operadora }}</dd>
                         </div>
-
                         <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">
-                                Tecnologia
-                            </dt>
+                            <dt class="small text-secondary fw-normal">Tecnologia</dt>
                             <dd class="mb-0">
-                                <span class="badge text-bg-success">
-                                    {{ pais.tecnologia }}
-                                </span>
+                                <span class="badge bg-primary-subtle text-primary-emphasis">{{ pais.tecnologia }}</span>
                             </dd>
                         </div>
-
                     </dl>
                 </div>
-
             </div>
 
             <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal">Cancelar</button>
 
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    data-bs-dismiss="modal"
-                >
-                    Cancelar
-                </button>
-
-                <form
-                    action="{{ url_for('admin_excluir_pais', codigo=codigo) }}"
-                    method="POST"
-                    class="m-0"
-                >
+                <form action="{{ url_for('admin_excluir_pais', codigo=codigo) }}"
+                      method="POST" class="m-0">
                     <button type="submit" class="btn btn-danger">
-                        <i
-                            class="bi bi-trash me-2"
-                            aria-hidden="true"
-                        ></i>
-                        Remover país
+                        <i class="bi bi-trash me-2" aria-hidden="true"></i>Remover país
                     </button>
                 </form>
-
             </div>
 
         </div>

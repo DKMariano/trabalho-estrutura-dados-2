@@ -1,0 +1,112 @@
+{% extends "cliente/base_cliente.html" %}
+
+{% block title %}Minha conta | DGB SIM{% endblock %}
+
+{% block cliente_content %}
+
+{% from "cliente/_componentes.html" import banner %}
+
+{{ banner("Minha conta", "Confira seus dados cadastrais, seu eSIM e o pacote associado.") }}
+
+<div class="row g-4">
+
+    <!-- Dados do cliente + eSIM -->
+    <div class="col-12 col-lg-7">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4">
+
+                <h2 class="h4 fw-bold mb-4">
+                    <span class="cliente-marcador bg-success"></span>Dados do cliente
+                </h2>
+
+                <div class="row g-4">
+                    <div class="col-12 col-md-6">
+                        <small class="text-body-secondary d-block">ID do cliente</small>
+                        <strong class="fs-5">{{ cliente["id"] }}</strong>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <small class="text-body-secondary d-block">Nome completo</small>
+                        <strong class="fs-5">{{ cliente["nome"] }}</strong>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <small class="text-body-secondary d-block">E-mail</small>
+                        <strong class="fs-5 text-break">{{ cliente["email"] }}</strong>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <small class="text-body-secondary d-block">Status</small>
+                        <span class="badge bg-success-subtle text-success-emphasis fs-6">
+                            {{ cliente["status"]|capitalize }}
+                        </span>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h2 class="h4 fw-bold mb-3">
+                    <span class="cliente-marcador bg-success"></span>eSIM associado
+                </h2>
+
+                <small class="text-body-secondary d-block">Identificador do eSIM</small>
+                <strong class="fs-4 d-block mb-3">{{ cliente["esim"] }}</strong>
+
+                <p class="small mb-0">
+                    Os dados cadastrais e as associações são mantidos pelo administrador.
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Pacote associado -->
+    <div class="col-12 col-lg-5">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex flex-column p-4">
+
+                <h2 class="h4 fw-bold mb-3">
+                    <i class="bi bi-sim text-success fs-3 me-2 align-middle"></i>Pacote associado
+                </h2>
+
+                {% if pacote %}
+                <table class="table mb-4">
+                    <tbody>
+                        <tr>
+                            <td>Código do pacote</td>
+                            <th class="text-end">{{ cliente["pacote"] }}</th>
+                        </tr>
+                        <tr>
+                            <td>Nome</td>
+                            <th class="text-end">{{ pacote["nome"] }}</th>
+                        </tr>
+                        <tr>
+                            <td>Franquia de dados</td>
+                            <th class="text-end">{{ pacote["dados_gb"] }} GB</th>
+                        </tr>
+                        <tr>
+                            <td>Validade do pacote</td>
+                            <th class="text-end">{{ pacote["validade_dias"] }} dias</th>
+                        </tr>
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-body-secondary">Pacote não encontrado no catálogo.</p>
+                {% endif %}
+
+                <p class="border-top pt-3 mb-3">
+                    Consulte a cobertura e a rota para o seu destino.
+                </p>
+
+                <a href="{{ url_for('minha_conectividade', cliente_id=cliente['id']) }}"
+                    class="btn btn-success btn-lg fw-bold mt-auto">
+                    <i class="bi bi-diagram-3 me-2"></i>Consultar conectividade
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

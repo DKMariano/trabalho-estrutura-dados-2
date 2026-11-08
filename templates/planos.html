@@ -1,290 +1,199 @@
-
 {% extends "base.html" %}
 
 {% block title %}Planos eSIM | DGB SIM{% endblock %}
 
 {% block content %}
 
-{% set apresentacao = {
-    '101': {
-        'descricao': 'Ideal para viagens pela Europa',
-        'regiao': 'Conexão na Europa',
-        'beneficio': 'Ativação rápida',
-        'icone': 'bi-globe-europe-africa',
-        'tema': 'europa-basic'
-    },
-    '102': {
-        'descricao': 'Mais dados para sua viagem europeia',
-        'regiao': 'Conexão na Europa',
-        'beneficio': 'Suporte prioritário',
-        'icone': 'bi-globe-europe-africa',
-        'tema': 'europa-plus'
-    },
-    '201': {
-        'descricao': 'Conexão para a América',
-        'regiao': 'Conexão nas Américas',
-        'beneficio': 'Ativação rápida',
-        'icone': 'bi-globe-americas',
-        'tema': 'america-basic'
-    },
-    '202': {
-        'descricao': 'Mais internet para suas viagens',
-        'regiao': 'Conexão nas Américas',
-        'beneficio': 'Suporte prioritário',
-        'icone': 'bi-globe-americas',
-        'tema': 'america-plus'
-    },
-    '301': {
-        'descricao': 'Conexão em vários continentes',
-        'regiao': 'Cobertura global',
-        'beneficio': 'Suporte 24/7',
-        'icone': 'bi-globe2',
-        'tema': 'global'
-    }
-} %}
+{# Reutiliza as imagens e informações dos planos. #}
+{% set fotos = {} %}
+{% for plano in planos %}
+    {% set _ = fotos.update({plano.nome: plano}) %}
+{% endfor %}
 
-<main class="pagina-planos">
+<main>
 
-    <!-- BANNER SUPERIOR -->
+    <!-- Banner superior -->
     <section
-        class="planos-hero d-flex align-items-center"
-        style="background-image:
-            linear-gradient(
-                90deg,
-                rgba(3, 35, 78, 0.85) 0%,
-                rgba(3, 35, 78, 0.55) 35%,
-                rgba(3, 35, 78, 0.05) 75%
-            ),
-            url('{{ url_for('static', filename='img/planos/banner-planos.png') }}');"
+        class="fundo-imagem fundo-imagem-claro banner-publico
+               d-flex align-items-center py-5"
+        style="--imagem: url('{{ url_for('static', filename='img/planos/banner-planos.png') }}')"
     >
-        <div class="container planos-hero-conteudo">
+        <div class="container py-lg-4">
+            <div class="row">
+                <div class="col-12 col-lg-7">
 
-            <span class="planos-hero-etiqueta">
-                PLANOS DE SERVIÇO
-            </span>
+                    <div
+                        class="barra-destaque bg-primary rounded mb-3"
+                        aria-hidden="true"
+                    ></div>
 
-            <h1>
-                Planos <span>eSIM</span>
-            </h1>
+                    <h1 class="display-5 fw-bold mb-3">
+                        Planos eSIM
+                    </h1>
 
-            <p class="planos-hero-descricao">
-                Escolha o plano ideal para sua viagem e tenha
-                conexão estável em diversos destinos, com
-                eSIM digital, sem chip físico.
-            </p>
+                    <p class="mb-0">
+                        Conheça os pacotes e consulte a cobertura
+                        no seu destino.
+                    </p>
 
-            <div class="d-flex flex-wrap align-items-center planos-hero-beneficios">
-
-                <div class="d-flex align-items-center gap-2 planos-hero-beneficio">
-                    <i class="bi bi-phone d-flex align-items-center justify-content-center"
-                       aria-hidden="true"></i>
-
-                    <div class="d-flex flex-column">
-                        <strong>eSIM digital</strong>
-                        <span>Ativação rápida</span>
-                    </div>
                 </div>
-
-                <div class="d-flex align-items-center gap-2 planos-hero-beneficio">
-                    <i class="bi bi-globe2 d-flex align-items-center justify-content-center"
-                       aria-hidden="true"></i>
-
-                    <div class="d-flex flex-column">
-                        <strong>Cobertura internacional</strong>
-                        <span>Pacotes regionais e global</span>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center gap-2 planos-hero-beneficio">
-                    <i class="bi bi-shield-check d-flex align-items-center justify-content-center"
-                       aria-hidden="true"></i>
-
-                    <div class="d-flex flex-column">
-                        <strong>Conexão segura</strong>
-                        <span>Serviço demonstrativo</span>
-                    </div>
-                </div>
-
             </div>
-
         </div>
     </section>
 
-    <!-- CATÁLOGO -->
-    <section class="planos-catalogo">
-
+    <!-- Catálogo -->
+    <section class="py-5 bg-body-tertiary">
         <div class="container">
 
-            <header class="planos-catalogo-cabecalho">
-
-                <span class="planos-secao-etiqueta">
-                    NOSSOS PLANOS
-                </span>
-
-                <h2>
-                    Encontre o plano ideal para o seu destino
-                </h2>
-
-                <p>
-                    Todos os planos incluem eSIM digital
-                    e cobertura internacional.
-                    Escolha a opção que melhor se adapta
-                    ao seu perfil de viagem.
-                </p>
-
-            </header>
+            <h2 class="fw-bold mb-4">Pacotes disponíveis</h2>
 
             <div class="row g-4 justify-content-center">
 
                 {% for codigo, pacote in pacotes.items() %}
-                {% set visual = apresentacao.get(codigo) %}
+                {% set visual = apresentacao.get(codigo|string) %}
+                {% set foto = fotos.get(pacote.nome) %}
 
                 {% if visual %}
-
                 <div class="col-12 col-md-6 col-lg-4">
+                    <article
+                        class="card h-100 border-0 shadow-sm overflow-hidden"
+                    >
 
-                    <article class="card plano-card plano-{{ visual.tema }} h-100">
+                        <!-- Imagem -->
+                        {% if foto %}
+                        <div class="ratio ratio-21x9">
+                            <img
+                                src="{{ url_for('static', filename=foto.imagem) }}"
+                                class="card-img-top object-fit-cover"
+                                alt="{{ foto.alt }}"
+                                loading="lazy"
+                            >
+                        </div>
+                        {% endif %}
 
-                        <!-- CABEÇALHO DO CARD -->
-                        <div class="plano-card-cabecalho d-flex align-items-center gap-3">
+                        <!-- Nome -->
+                        <div
+                            class="card-header {{ visual.fundo }} border-0
+                                   d-flex align-items-center gap-3 p-3"
+                            style="color: var(--texto-principal);"
+                        >
+                            <span
+                                class="circulo d-inline-flex align-items-center
+                                       justify-content-center bg-white fs-4
+                                       {{ visual.icone_cor }}"
+                                aria-hidden="true"
+                            >
+                                <i class="bi {{ visual.icone }}"></i>
+                            </span>
 
-                            <div class="plano-card-icone d-flex align-items-center justify-content-center">
-                                <i class="bi {{ visual.icone }}"
-                                   aria-hidden="true"></i>
-                            </div>
-
-                            <div class="plano-card-identificacao">
-
-                                <h3>{{ pacote.nome }}</h3>
-
-                                <p>{{ visual.descricao }}</p>
-
-                            </div>
-
+                            <h3 class="h5 fw-bold mb-0">
+                                {{ pacote.nome }}
+                            </h3>
                         </div>
 
-                        <!-- CORPO DO CARD -->
-                        <div class="card-body plano-card-corpo d-flex flex-column">
+                        <!-- Franquia, cobertura e detalhes -->
+                        <div class="card-body d-flex flex-column p-3">
 
-                            <div class="plano-card-informacoes">
+                            <div class="row align-items-center g-3 mb-3">
 
-                                <div class="plano-card-franquia d-flex flex-column align-items-center">
+                                <div class="col-6 border-end">
+                                    <strong class="d-block fs-3 lh-1 mb-2">
+                                        {{ pacote.dados_gb }} GB
+                                    </strong>
 
-                                    <strong>{{ pacote.dados_gb }} GB</strong>
-
-                                    <span>{{ pacote.validade_dias }} dias</span>
-
+                                    <span class="small">
+                                        Franquia de dados
+                                    </span>
                                 </div>
 
-                                <ul class="list-unstyled mb-0 plano-card-beneficios">
+                                <div class="col-6">
+                                    <a
+                                        href="{{ url_for('paises') }}"
+                                        class="d-flex align-items-center
+                                               justify-content-center gap-2
+                                               text-center fs-6 py-3 px-1"
+                                        aria-label="Consultar cobertura geral por país"
+                                    >
+                                        <i
+                                            class="bi bi-globe-americas flex-shrink-0"
+                                            aria-hidden="true"
+                                        ></i>
 
-                                    <li class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-check-circle-fill"
-                                           aria-hidden="true"></i>
-                                        {{ visual.regiao }}
-                                    </li>
-
-                                    <li class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-check-circle-fill"
-                                           aria-hidden="true"></i>
-                                        eSIM digital
-                                    </li>
-
-                                    <li class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-check-circle-fill"
-                                           aria-hidden="true"></i>
-                                        {{ visual.beneficio }}
-                                    </li>
-
-                                </ul>
+                                        <span>Consultar cobertura</span>
+                                    </a>
+                                </div>
 
                             </div>
 
                             <button
                                 type="button"
-                                class="btn w-100 mt-auto plano-card-botao"
+                                class="btn {{ visual.get('botao', 'btn-outline-primary') }} w-100 mt-auto"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modalPacote{{ codigo }}"
+                                aria-label="Ver detalhes do pacote {{ pacote.nome }}"
                             >
                                 Ver detalhes
-                                <i class="bi bi-arrow-right ms-1"
-                                   aria-hidden="true"></i>
+
+                                <i
+                                    class="bi bi-arrow-right ms-1"
+                                    aria-hidden="true"
+                                ></i>
                             </button>
 
                         </div>
 
                     </article>
-
                 </div>
-
                 {% endif %}
                 {% endfor %}
 
             </div>
 
-        </div>
+            <!-- Acesso à área do cliente -->
+            <div
+                class="fundo-imagem fundo-imagem-claro
+                       border border-primary-subtle rounded-3
+                       p-4 p-lg-5 mt-4"
+                style="--imagem: url('{{ url_for('static', filename='img/cliente/cliente-banner-superior.png') }}')"
+            >
+                <div class="row py-lg-4">
+                    <div class="col-12 col-md-7 col-lg-6">
 
-    </section>
+                        <h2 class="h4 fw-bold mb-2">
+                            Já é cliente?
+                        </h2>
 
-    <!-- BANNER INFERIOR -->
-    <section class="planos-banner-conectividade">
+                        <p class="mb-3">
+                            Acesse sua conta para consultar seu eSIM,
+                            pacote e conectividade.
+                        </p>
 
-        <div
-            class="container planos-banner-conteudo d-flex align-items-center"
-            style="background-image: url('{{ url_for('static', filename='img/planos/banner-conectividade.png') }}');"
-        >
+                        <a
+                            href="{{ url_for('login') }}"
+                            class="btn btn-primary"
+                        >
+                            <i
+                                class="bi bi-person me-2"
+                                aria-hidden="true"
+                            ></i>
+                            Acessar minha conta
+                        </a>
 
-            <div class="row align-items-center g-3">
-
-                <div class="col-lg-3 d-none d-lg-block"></div>
-
-                <div class="col-lg-5">
-
-                    <span class="planos-banner-etiqueta">
-                        JÁ TEM UM eSIM?
-                    </span>
-
-                    <h2>Consulte sua conectividade</h2>
-
-                    <p>
-                        Verifique sua rota internacional,
-                        latência e demais informações
-                        do seu plano informando seu ID de cliente.
-                    </p>
-
+                    </div>
                 </div>
-
-                <div class="col-lg-4 text-lg-end">
-
-                    <a
-                        href="{{ url_for('minha_conectividade') }}"
-                        class="btn planos-banner-botao"
-                    >
-                        <i class="bi bi-reception-4 me-2"
-                           aria-hidden="true"></i>
-
-                        Minha conectividade
-
-                        <i class="bi bi-arrow-right ms-2"
-                           aria-hidden="true"></i>
-                    </a>
-
-                </div>
-
             </div>
 
         </div>
-
     </section>
 
 </main>
 
-<!-- MODAIS -->
+<!-- Modais fora dos cards para evitar recorte pelo overflow-hidden -->
 {% for codigo, pacote in pacotes.items() %}
-{% set visual = apresentacao.get(codigo) %}
+{% set visual = apresentacao.get(codigo|string) %}
+{% set foto = fotos.get(pacote.nome) %}
 
 {% if visual %}
-
 <div
     class="modal fade"
     id="modalPacote{{ codigo }}"
@@ -292,57 +201,70 @@
     aria-labelledby="tituloPacote{{ codigo }}"
     aria-hidden="true"
 >
-    <div class="modal-dialog modal-dialog-centered">
-
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
 
-            <div class="modal-header">
-
-                <h2 class="modal-title fs-5"
-                    id="tituloPacote{{ codigo }}">
+            <div
+                class="modal-header {{ visual.fundo }}"
+                style="color: var(--texto-principal);"
+            >
+                <h2
+                    class="modal-title fs-5 fw-bold"
+                    id="tituloPacote{{ codigo }}"
+                >
                     {{ pacote.nome }}
                 </h2>
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Fechar"
-                ></button>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn {{ visual.get('botao', 'btn-outline-primary') }}"
+                        data-bs-dismiss="modal"
+                    >
+                        Fechar
+                    </button>
+                </div>
 
             </div>
 
             <div class="modal-body">
+                <dl class="row mb-0">
 
-                <p><strong>Código:</strong> {{ codigo }}</p>
+                    <dt class="col-5">Código</dt>
+                    <dd class="col-7">{{ codigo }}</dd>
 
-                <p><strong>Pacote:</strong> {{ pacote.nome }}</p>
+                    <dt class="col-5">Franquia</dt>
+                    <dd class="col-7">{{ pacote.dados_gb }} GB</dd>
 
-                <p><strong>Franquia:</strong> {{ pacote.dados_gb }} GB</p>
+                    <dt class="col-5">Validade</dt>
+                    <dd class="col-7">{{ pacote.validade_dias }} dias</dd>
 
-                <p><strong>Validade:</strong> {{ pacote.validade_dias }} dias</p>
+                    {% if foto and foto.get('cobertura') %}
+                    <dt class="col-5">Abrangência</dt>
+                    <dd class="col-7">{{ foto.cobertura }}</dd>
+                    {% endif %}
 
-                <p><strong>Abrangência:</strong> {{ visual.regiao }}</p>
+                </dl>
 
+                <p class="small text-secondary mt-3 mb-0">
+                    A consulta de cobertura é realizada por país
+                    e não aplica um filtro específico deste pacote.
+                </p>
             </div>
 
             <div class="modal-footer">
-
                 <button
                     type="button"
-                    class="btn btn-secondary"
+                    class="btn {{ visual.get('botao', 'btn-outline-primary') }}"
                     data-bs-dismiss="modal"
                 >
                     Fechar
                 </button>
-
             </div>
-
+            
         </div>
-
     </div>
 </div>
-
 {% endif %}
 {% endfor %}
 

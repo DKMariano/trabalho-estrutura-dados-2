@@ -7,8 +7,7 @@ inicial do MVP.
 Este arquivo contém os dados do carrossel, benefícios, etapas,
 depoimentos e planos apresentados na página inicial.
 
-Confirmar com a professora se este arquivo poderá ser mantido na entrega
-final ou se deverá ser substituído.
+Confirmado com a professora que este arquivo pode ser mantido na entrega.
 """
 
 
@@ -208,3 +207,38 @@ PLANOS = [
         "alt": "Mapa de conexões internacionais representando o plano Global",
     },
 ]
+
+# Configuração visual dos cards de pacotes.
+# As chaves correspondem aos códigos de pacotes.json.
+APRESENTACAO_PLANOS = {
+    "101": {
+        "icone": "bi-globe-europe-africa",
+        "fundo": "bg-primary-subtle",
+        "icone_cor": "text-primary",
+        "botao": "btn-outline-primary",
+    },
+    "102": {
+        "icone": "bi-globe-europe-africa",
+        "fundo": "bg-success-subtle",
+        "icone_cor": "text-success",
+        "botao": "btn-outline-success",
+    },
+    "201": {
+        "icone": "bi-globe-americas",
+        "fundo": "bg-warning-subtle",
+        "icone_cor": "text-warning-emphasis",
+        "botao": "btn-outline-warning text-warning-emphasis",
+    },
+    "202": {
+        "icone": "bi-globe-americas",
+        "fundo": "bg-danger-subtle",
+        "icone_cor": "text-danger",
+        "botao": "btn-outline-danger",
+    },
+    "301": {
+        "icone": "bi-globe2",
+        "fundo": "bg-roxo-subtle",
+        "icone_cor": "text-roxo",
+        "botao": "btn-outline-roxo",
+    },
+}

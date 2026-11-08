@@ -96,12 +96,16 @@ def consultar_conectividade(
         )
 
     # --------------------------------------
-    # 4. Buscar pacote associado ao eSIM
+    # 4. Buscar pacote associado ao cliente
     # --------------------------------------
 
+    # O eSIM agora é armazenado como uma string.
     esim = cliente["esim"]
-    codigo_pacote = str(esim["pacote_codigo"])
 
+    # O pacote é um campo direto do cliente.
+    codigo_pacote = str(cliente["pacote"])
+
+    # Busca o pacote no catálogo existente.
     pacote = pacotes.get(codigo_pacote)
 
     if pacote is None:
@@ -147,13 +151,13 @@ def consultar_conectividade(
 
     resultado = {
         "cliente": {
-            "id": cliente_id,
+            "id": cliente["id"],
             "nome": cliente["nome"],
             "status": cliente["status"]
         },
 
         "esim": {
-            "codigo": esim["codigo"]
+            "codigo": esim
         },
 
         "pacote": {
