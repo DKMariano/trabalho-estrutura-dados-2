@@ -37,8 +37,8 @@
 
                     <div class="col-12 col-md-6">
                         <small class="text-body-secondary d-block">Status</small>
-                        <span class="badge bg-success-subtle text-success-emphasis fs-6">
-                            {{ cliente["status"]|capitalize }}
+                        <span class="badge text-bg-success fs-6">
+                            <i class="bi bi-check-circle me-1" aria-hidden="true"></i>Ativo
                         </span>
                     </div>
                 </div>
@@ -85,22 +85,48 @@
                             <th class="text-end">{{ pacote["dados_gb"] }} GB</th>
                         </tr>
                         <tr>
-                            <td>Validade do pacote</td>
-                            <th class="text-end">{{ pacote["validade_dias"] }} dias</th>
+                            <td>Vigência</td>
+                            <th class="text-end">
+                                {{ cliente.contratacao_inicio | data_br }} a {{ cliente.contratacao_fim | data_br }}
+                            </th>
                         </tr>
+                        <tr>
+                            <td>Situação do plano</td>
+                            <th class="text-end">
+                                {% if plano_vigente %}
+                                <span class="badge bg-success-subtle text-success-emphasis">Plano vigente</span>
+                                {% else %}
+                                <span class="badge text-bg-warning">Plano expirado</span>
+                                {% endif %}
+                            </th>
+                        </tr>
+                        {% if cliente.paises_ativos %}
+                        <tr>
+                            <td>Países escolhidos (Basic)</td>
+                            <th class="text-end">{{ cliente.paises_ativos | join(', ') }}</th>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
                 {% else %}
+                {% if cliente.pacote is none %}
+                <p class="text-body-secondary">Sem plano contratado.</p>
+                {% else %}
                 <p class="text-body-secondary">Pacote não encontrado no catálogo.</p>
+                {% endif %}
                 {% endif %}
 
                 <p class="border-top pt-3 mb-3">
-                    Consulte a cobertura e a rota para o seu destino.
+                    Consulte seu destino e troque de plano quando precisar.
                 </p>
 
-                <a href="{{ url_for('minha_conectividade', cliente_id=cliente['id']) }}"
+                <a href="{{ url_for('cliente_contratar', cliente_id=cliente['id']) }}"
                     class="btn btn-success btn-lg fw-bold mt-auto">
-                    <i class="bi bi-diagram-3 me-2"></i>Consultar conectividade
+                    {% if pacote and plano_vigente %}
+                    <i class="bi bi-arrow-left-right me-2"></i>Trocar plano
+                    {% else %}
+                    <i class="bi bi-bag-plus me-2"></i>Contratar plano
+                    {% endif %}
                 </a>
 
             </div>

@@ -7,7 +7,7 @@
 {% from "admin/_componentes.html" import banner, breadcrumb, secao %}
 
 {{ breadcrumb("Clientes", url_for('admin_clientes'), "Cadastrar cliente") }}
-{{ banner("Cadastrar cliente", "Informe os dados do cliente e associe seu eSIM e pacote.") }}
+{{ banner("Cadastrar cliente", "Informe os dados do cliente e o eSIM. O plano é associado depois, na contratação.") }}
 
 <div class="row g-4 align-items-stretch">
 
@@ -50,7 +50,7 @@
 
                     <hr class="my-4">
 
-                    {{ secao("eSIM e pacote", "success") }}
+                    {{ secao("eSIM e status", "success") }}
 
                     <div class="row g-4">
 
@@ -61,23 +61,6 @@
                             <input type="text" class="form-control" id="esim" name="esim"
                                    placeholder="Ex.: ESIM-83921"
                                    value="{{ formulario.get('esim', '') }}" required>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="pacote" class="form-label fw-semibold">Pacote</label>
-                            <select class="form-select" id="pacote" name="pacote" required>
-                                <option value="">Selecione um pacote</option>
-                                {% for codigo, pacote in pacotes.items() %}
-                                <option value="{{ codigo }}"
-                                    {% if formulario.get('pacote', '')|string == codigo|string %}selected{% endif %}>
-                                    {{ codigo }} — {{ pacote.nome }}
-                                    ({{ pacote.dados_gb }} GB, {{ pacote.validade_dias }} dias)
-                                </option>
-                                {% endfor %}
-                            </select>
-                            <div class="form-text">
-                                Código, nome, franquia e validade na seleção.
-                            </div>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -92,6 +75,10 @@
                                     Inativo
                                 </option>
                             </select>
+                            <div class="form-text">
+                                Novos clientes são ativos. Se escolher Inativo, o cliente
+                                será cadastrado sem acesso ao sistema.
+                            </div>
                         </div>
 
                     </div>
@@ -138,15 +125,16 @@
                 </div>
 
                 <div class="mb-4">
-                    <strong>Pacote</strong>
+                    <strong>Plano</strong>
                     <p class="text-secondary mb-0">
-                        Selecione uma opção do catálogo existente.
+                        O cliente é cadastrado sem plano. O pacote é associado na
+                        contratação, onde o Basic recebe os 3 países.
                     </p>
                 </div>
 
                 <div class="alert alert-primary small mb-0" role="note">
-                    <strong>Exemplo do enunciado:</strong>
-                    pacote 102 — Europa Plus, 10 GB, 30 dias.
+                    <strong>Ao salvar:</strong> o registro entra no fim do arquivo de
+                    clientes, e o ID e o e-mail são inseridos nas duas Árvores B.
                 </div>
 
             </div>

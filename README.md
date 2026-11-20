@@ -1,7 +1,7 @@
 # DGB SIM
 
-**Etapa 01 — Tabela Hash e Aplicação Web**  
-**Entrega prevista no enunciado:** 20/10/2026.
+**Etapa 01 — Tabela Hash e Aplicação Web** (entrega prevista: 20/10/2026)  
+**Etapa 02 — Árvore B e clientes** (entrega prevista: 24/11/2026) — frontend pronto com dados simulados; Árvores B em implementação.
 
 Sistema Web desenvolvido como trabalho prático da disciplina de **Estruturas de Dados II**, utilizando **Python, Flask, HTML, CSS, Bootstrap e Jinja**.
 
@@ -138,9 +138,10 @@ O sistema considera dois tipos de utilização:
 O usuário comum acessa funcionalidades de consulta, como:
 
 - página inicial;
-- consulta de cobertura por país.
+- consulta de cobertura por país;
+- aquisição de planos (tela pública "Adquirir") e criação de conta.
 
-O acesso de clientes pela tela de login ainda não está disponível nesta etapa.
+O cliente entra pela aba "Cliente" da tela de login (e-mail e senha demonstrativa `123456`). Não há sessão: depois do login, o cliente é identificado pelo ID na URL (`/cliente/<id>`). Cliente inativo é bloqueado no login e também ao abrir essas URLs diretamente.
 
 ### Administrador
 
@@ -276,6 +277,19 @@ Tabela Hash
 Cobertura
 ```
 
+### Etapa 02 — Estado atual do frontend
+
+As telas da Etapa 2 estão prontas e funcionam com **dados simulados** em `dados_site/dados_etapa02.py`. As funções desse arquivo têm a mesma interface que o backend definitivo deverá oferecer; na integração, basta trocar o import em `app.py` e em `dados_site/servico_conectividade.py`.
+
+- **Árvores B (decisões D1 e D2):** duas árvores, por ID e por e-mail, que guardam somente **chave → posição** do registro. Os clientes ficarão em `arquivos/clientes.json`, organizado como **lista**; a posição na lista é a localização devolvida pela árvore. A exclusão física deixa a posição vazia (`null`), sem deslocar as demais.
+- **Consulta integrada:** Árvore B (cliente) → pacote do cliente → Tabela Hash (destino) → cobertura. As telas mostram qual estrutura respondeu cada passo e marcam como "Simulado" o que ainda não vem da Árvore B real.
+- **Status do cliente:** ativo/inativo. A inativação é o fluxo normal e preserva o registro e os índices; a exclusão física fica na "Zona de risco", só para cliente inativo.
+- **Planos:** 101/102 Europa, 201/202 América, 301 IlimitadoSIM e 401/402 Ásia (códigos do enunciado preservados). O Basic cobre exatamente 3 países da sua região, escolhidos na contratação.
+- **Países:** 21 países (7 por continente). Na interface, o campo `regiao` aparece com o rótulo "Continente"; os formulários oferecem as tecnologias 4G e 5G.
+- **Testes:** `python testes/teste_bloco1.py` a `teste_bloco5.py` (cliente de testes do Flask, sem gravar arquivos).
+
+O registro completo das decisões está em `documentos/DGB_SIM_Decisoes_Etapa2.docx`.
+
 ### Etapa 03 — Grafos
 
 Na etapa final, a rede internacional será representada por meio de **grafos**, permitindo analisar conexões entre localidades e calcular rotas.
@@ -383,7 +397,7 @@ http://127.0.0.1:5000
 
 ### Acesso administrativo
 
-Use a opção de administrador na tela `/login`. As credenciais de teste estão em `dados_site/dados_usuario.py`.
+Use a opção de administrador na tela `/login` (`admin` / `admin`). As credenciais de teste estão em `dados_site/dados_usuario.py`. O login de administrador é apenas demonstrativo: as rotas `/admin` não são protegidas.
 
 ---
 
@@ -423,8 +437,9 @@ Por esse motivo, algumas soluções relacionadas à autenticação, persistênci
 
 ### Próximas etapas
 
-- [ ] Implementação da Árvore B
-- [ ] Gerenciamento de clientes e eSIMs
+- [x] Telas da Etapa 2 (clientes, contratação, consulta integrada, Árvore B) com dados simulados
+- [ ] Implementação da Árvore B (ID e e-mail, chave → posição)
+- [ ] `arquivos/clientes.json` com cerca de 1.000 clientes gerados automaticamente
 - [ ] Implementação do grafo
 - [ ] BFS e DFS
 - [ ] Roteamento com Dijkstra

@@ -3,7 +3,7 @@
     <div class="card-body p-4">
         <div class="row">
             <div class="col-12 col-lg-7">
-                <span class="d-block bg-primary rounded-pill mb-2 cliente-barra"></span>
+                <span class="d-block bg-primary rounded-pill mb-2 barra-destaque"></span>
                 <h1 class="fw-bold mb-1">{{ titulo }}</h1>
                 <p class="mb-0">{{ descricao }}</p>
             </div>
@@ -13,11 +13,6 @@
 {% endmacro %}
 
 
-{# Aviso de dados simulados: abre sozinho uma vez por sessão (por página) e
-   pode ser reaberto por qualquer elemento com data-bs-target="#<id>".
-   "cor" é a cor do botão (primary, success, roxo), conforme a etapa.
-   O script espera o carregamento da página porque o JavaScript do Bootstrap
-   é carregado no final do base.html. #}
 {% macro aviso_simulacao(id, titulo, texto, etapa, cor="primary") %}
 <div class="modal fade" id="{{ id }}" tabindex="-1"
      aria-labelledby="{{ id }}Titulo" aria-hidden="true">
@@ -28,7 +23,7 @@
                 <h2 class="modal-title fs-5 fw-bold d-flex align-items-center gap-3"
                     id="{{ id }}Titulo">
                     <span class="d-inline-flex align-items-center justify-content-center
-                                 rounded-circle bg-warning-subtle text-warning-emphasis p-3">
+                                 rounded-circle bg-{{ cor }}-subtle text-warning-emphasis p-3">
                         <i class="bi bi-hourglass-split" aria-hidden="true"></i>
                     </span>
                     {{ titulo }}
@@ -60,14 +55,16 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var modal = document.getElementById('{{ id }}');
-        var chave = 'aviso-simulacao:' + location.pathname;
 
+        /* Veio da mesma página? (formulário enviado, página da tabela) */
+        var mesmaPagina = false;
         try {
-            if (sessionStorage.getItem(chave)) { return; }
-            sessionStorage.setItem(chave, '1');
-        } catch (erro) { /* sem sessionStorage: mostra sempre */ }
+            mesmaPagina = new URL(document.referrer).pathname === location.pathname;
+        } catch (erro) { /* sem página anterior: mostra o aviso */ }
 
-        bootstrap.Modal.getOrCreateInstance(modal).show();
+        if (!mesmaPagina) {
+            bootstrap.Modal.getOrCreateInstance(modal).show();
+        }
     });
 </script>
 {% endmacro %}

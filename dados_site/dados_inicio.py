@@ -173,7 +173,7 @@ PLANOS = [
     {
         "id": "EuropaPlus",
         "nome": "Europa Plus",
-        "dados": "10 GB",
+        "dados": "15 GB",
         "validade": "30 dias",
         "cobertura": "Europa",
         "imagem": "img/planos/EuropaPlus.jpg",
@@ -198,13 +198,31 @@ PLANOS = [
         "alt": "Viagem internacional representando o plano América Plus",
     },
     {
-        "id": "Global",
-        "nome": "Global",
-        "dados": "20 GB",
+        "id": "AsiaBasic",
+        "nome": "Ásia Basic",
+        "dados": "5 GB",
+        "validade": "15 dias",
+        "cobertura": "Ásia",
+        "imagem": "img/planos/AsiaBasic.png",
+        "alt": "Destino asiático representando o plano Ásia Basic",
+    },
+    {
+        "id": "AsiaPlus",
+        "nome": "Ásia Plus",
+        "dados": "15 GB",
         "validade": "30 dias",
-        "cobertura": "Global",
+        "cobertura": "Ásia",
+        "imagem": "img/planos/AsiaPlus.png",
+        "alt": "Destino asiático representando o plano Ásia Plus",
+    },
+    {
+        "id": "IlimitadoSIM",
+        "nome": "IlimitadoSIM",
+        "dados": "30 GB",
+        "validade": "30 dias",
+        "cobertura": "Todos os 21 países atendidos",
         "imagem": "img/planos/global.jpg",
-        "alt": "Mapa de conexões internacionais representando o plano Global",
+        "alt": "Mapa de conexões internacionais representando o plano IlimitadoSIM",
     },
 ]
 
@@ -240,5 +258,17 @@ APRESENTACAO_PLANOS = {
         "fundo": "bg-roxo-subtle",
         "icone_cor": "text-roxo",
         "botao": "btn-outline-roxo",
+    },
+    "401": {
+        "icone": "bi-globe-asia-australia",
+        "fundo": "bg-info-subtle",
+        "icone_cor": "text-info-emphasis",
+        "botao": "btn-outline-info",
+    },
+    "402": {
+        "icone": "bi-globe-asia-australia",
+        "fundo": "bg-secondary-subtle",
+        "icone_cor": "text-secondary-emphasis",
+        "botao": "btn-outline-secondary",
     },
 }

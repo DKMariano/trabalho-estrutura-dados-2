@@ -32,7 +32,7 @@
 {% endmacro %}
 
 {{ breadcrumb("Clientes", url_for('admin_clientes'), "Árvore B") }}
-{{ banner("Árvore B", "Índice que localiza cada cliente pelo ID. Os dados ficam no arquivo.") }}
+{{ banner("Árvore B", "Índices que localizam cada cliente pelo ID ou pelo e-mail. Os dados ficam no arquivo.") }}
 
 <div class="alert alert-warning d-flex align-items-start gap-2" role="status">
     <i class="bi bi-hourglass-split fs-5" aria-hidden="true"></i>
@@ -41,6 +41,103 @@
         implementada: os valores desta página simulam o funcionamento esperado.
     </div>
 </div>
+
+<!-- BUSCA NO ÍNDICE: chave -> posição -> registro -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
+
+        <h2 class="h4 fw-bold mb-1">
+            <i class="bi bi-search text-success me-2" aria-hidden="true"></i>
+            Buscar no índice
+        </h2>
+        <p class="small text-secondary mb-3">
+            A árvore devolve apenas a posição do registro. Os dados do cliente são lidos
+            no arquivo, nessa posição.
+        </p>
+
+        <form action="{{ url_for('admin_arvore_b') }}" method="GET" class="row g-3 align-items-end mb-3">
+            <div class="col-12 col-md-8">
+                <label for="chave" class="form-label fw-semibold">ID ou e-mail do cliente</label>
+                <input type="text" id="chave" name="chave" class="form-control" required
+                       placeholder="Ex.: 58372 ou maria@email.com" value="{{ chave }}">
+                <div class="form-text">Número: Árvore B de ID. Texto com "@": Árvore B de e-mail.</div>
+            </div>
+            <div class="col-12 col-md-4">
+                <button type="submit" class="btn btn-success w-100">
+                    <i class="bi bi-search me-2" aria-hidden="true"></i>Buscar
+                </button>
+            </div>
+        </form>
+
+        {% if busca %}
+        {% set i = busca.instrumentacao %}
+        <div class="row g-4">
+
+            <div class="col-12 col-lg-5">
+                <h3 class="h6 fw-bold">1. Índice consultado</h3>
+                <table class="table table-sm align-middle mb-0" aria-label="Resultado da busca no índice">
+                    <tbody>
+                        <tr><th scope="row" class="fw-normal w-50">Árvore</th>
+                            <td class="fw-bold">{{ "Árvore B de e-mail" if i.arvore == "email" else "Árvore B de ID" }}</td></tr>
+                        <tr><th scope="row" class="fw-normal">Chave</th><td class="fw-bold">{{ i.chave }}</td></tr>
+                        <tr><th scope="row" class="fw-normal">Resultado</th>
+                            <td>
+                                <span class="badge {{ 'text-bg-success' if i.encontrado else 'text-bg-danger' }}">
+                                    {{ "Encontrado" if i.encontrado else "Não encontrado" }}
+                                </span>
+                            </td></tr>
+                        <tr><th scope="row" class="fw-normal">Posição no arquivo</th>
+                            <td class="fw-bold">{{ i.posicao if i.posicao is not none else "—" }}</td></tr>
+                        <tr><th scope="row" class="fw-normal">Comparações</th>
+                            <td>{{ i.comparacoes if i.comparacoes is not none else "—" }}</td></tr>
+                        <tr><th scope="row" class="fw-normal">Nós visitados</th>
+                            <td>{{ i.nos_visitados if i.nos_visitados is not none else "—" }}</td></tr>
+                    </tbody>
+                </table>
+                {% if i.simulado %}
+                <p class="small text-secondary mt-2 mb-0">
+                    <span class="badge text-bg-warning">Simulado</span>
+                    Comparações e nós visitados aparecerão quando a Árvore B for implementada.
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="col-12 col-lg-7">
+                <h3 class="h6 fw-bold">2. Registro lido no arquivo (posição {{ i.posicao if i.posicao is not none else "—" }})</h3>
+                {% if busca.registro %}
+                {% set r = busca.registro %}
+                <table class="table table-sm align-middle mb-0" aria-label="Registro lido no arquivo">
+                    <tbody>
+                        <tr><th scope="row" class="fw-normal w-50">ID</th><td class="fw-bold">{{ r.id }}</td></tr>
+                        <tr><th scope="row" class="fw-normal">Nome</th><td class="fw-bold">{{ r.nome }}</td></tr>
+                        <tr><th scope="row" class="fw-normal">E-mail</th><td class="fw-bold">{{ r.email }}</td></tr>
+                        <tr><th scope="row" class="fw-normal">eSIM</th><td class="fw-bold">{{ r.esim }}</td></tr>
+                        <tr><th scope="row" class="fw-normal">Pacote</th>
+                            <td class="fw-bold">{{ r.pacote if r.pacote is not none else "Sem plano" }}</td></tr>
+                        <tr><th scope="row" class="fw-normal">Status</th>
+                            <td>
+                                {% if r.status == 'ativo' %}
+                                <span class="badge text-bg-success">Ativo</span>
+                                {% else %}
+                                <span class="badge text-bg-secondary">Inativo</span>
+                                {% endif %}
+                            </td></tr>
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-secondary mb-0">Nenhum registro: a chave não está no índice.</p>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<p class="small text-secondary mb-2">
+    Indicadores e operações abaixo: <span class="badge text-bg-warning">valores demonstrativos</span>
+</p>
 
 <!-- INDICADORES -->
 <div class="row g-3 mb-2">

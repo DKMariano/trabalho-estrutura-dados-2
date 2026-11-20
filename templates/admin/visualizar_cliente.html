@@ -4,10 +4,21 @@
 
 {% block admin_content %}
 
-{% from "admin/_componentes.html" import banner, breadcrumb, secao %}
+{% from "admin/_componentes.html" import banner, breadcrumb, secao, badge_status, botao_status, modal_status %}
 
 {{ breadcrumb("Clientes", url_for('admin_clientes'), "Detalhes do cliente") }}
 {{ banner("Detalhes do cliente", "Consulte os dados cadastrais, o eSIM e o pacote associado.") }}
+
+{% if cliente.status == "inativo" %}
+<div class="alert alert-secondary d-flex align-items-start gap-2" role="status">
+    <i class="bi bi-slash-circle fs-5" aria-hidden="true"></i>
+    <div>
+        <strong>Cliente inativo.</strong>
+        Acesso à área do cliente, contratação e consulta de conectividade estão bloqueados.
+        Os dados continuam preservados no arquivo e nos índices.
+    </div>
+</div>
+{% endif %}
 
 <div class="row g-4 align-items-stretch">
 
@@ -32,18 +43,8 @@
                         <dd class="fs-5 fw-semibold text-break mb-0">{{ cliente.email }}</dd>
                     </div>
                     <div class="col-12 col-md-6">
-                        <dt class="small text-secondary fw-normal">Status</dt>
-                        <dd class="mb-0">
-                            {% if cliente.status == "ativo" %}
-                            <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-6">
-                                Ativo
-                            </span>
-                            {% else %}
-                            <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis fs-6">
-                                {{ cliente.status|capitalize }}
-                            </span>
-                            {% endif %}
-                        </dd>
+                        <dt class="small text-secondary fw-normal">Status do cliente</dt>
+                        <dd class="fs-6 mb-0">{{ badge_status(cliente.status) }}</dd>
                     </div>
                 </dl>
 
@@ -60,10 +61,13 @@
                     <a href="{{ url_for('admin_clientes') }}" class="btn btn-outline-success">
                         <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Voltar
                     </a>
-                    <a href="{{ url_for('admin_editar_cliente', cliente_id=cliente.id) }}"
-                       class="btn btn-success">
-                        <i class="bi bi-pencil me-2" aria-hidden="true"></i>Editar cliente
-                    </a>
+                    <div class="d-flex flex-wrap gap-2">
+                        {{ botao_status(cliente) }}
+                        <a href="{{ url_for('admin_editar_cliente', cliente_id=cliente.id) }}"
+                           class="btn btn-success">
+                            <i class="bi bi-pencil me-2" aria-hidden="true"></i>Editar cliente
+                        </a>
+                    </div>
                 </div>
 
             </div>
@@ -84,37 +88,60 @@
                 <table class="table mb-4">
                     <tbody>
                         <tr>
-                            <td>Código do pacote</td>
-                            <th class="text-end">{{ cliente.pacote }}</th>
-                        </tr>
-                        <tr>
-                            <td>Nome</td>
-                            <th class="text-end">{{ pacote.nome }}</th>
+                            <td>Pacote</td>
+                            <th class="text-end">{{ cliente.pacote }} — {{ pacote.nome }}</th>
                         </tr>
                         <tr>
                             <td>Franquia de dados</td>
                             <th class="text-end">{{ pacote.dados_gb }} GB</th>
                         </tr>
                         <tr>
-                            <td>Validade do pacote</td>
-                            <th class="text-end">{{ pacote.validade_dias }} dias</th>
+                            <td>Vigência</td>
+                            <th class="text-end">
+                                {{ cliente.contratacao_inicio | data_br }} a {{ cliente.contratacao_fim | data_br }}
+                            </th>
                         </tr>
+                        <tr>
+                            <td>Situação do plano</td>
+                            <th class="text-end">
+                                {% if plano_vigente %}
+                                <span class="badge bg-success-subtle text-success-emphasis">Plano vigente</span>
+                                {% else %}
+                                <span class="badge text-bg-warning">Plano expirado</span>
+                                {% endif %}
+                            </th>
+                        </tr>
+                        {% if cliente.paises_ativos %}
+                        <tr>
+                            <td>Países escolhidos (Basic)</td>
+                            <th class="text-end">{{ cliente.paises_ativos | join(', ') }}</th>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
+                {% elif cliente.pacote is none %}
+                <p class="text-secondary">Sem plano contratado.</p>
                 {% else %}
                 <p class="text-secondary">Informações do pacote indisponíveis.</p>
                 {% endif %}
 
                 <div class="mt-auto">
                     <p class="border-top pt-3 mb-3">
-                        Consulte a cobertura e a rota para o destino do cliente.
+                        Verifique a cobertura do cliente para um destino.
                     </p>
 
-                    <a href="{{ url_for('admin_rede') }}"
-                       class="btn btn-outline-roxo w-100">
-                        <i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>
-                        Visualizar rede internacional
+                    <a href="{{ url_for('admin_consulta', cliente=cliente.id) }}"
+                       class="btn btn-outline-success w-100">
+                        <i class="bi bi-globe2 me-2" aria-hidden="true"></i>
+                        Consulta integrada
                     </a>
+                    {% if cliente.status == "ativo" %}
+                    <a href="{{ url_for('cliente_contratar', cliente_id=cliente.id) }}"
+                       class="btn btn-outline-success w-100 mt-2">
+                        <i class="bi bi-bag-plus me-2" aria-hidden="true"></i>
+                        Contratar plano para o cliente
+                    </a>
+                    {% endif %}
                 </div>
 
             </div>
@@ -122,5 +149,91 @@
     </div>
 
 </div>
+
+{{ modal_status(cliente) }}
+
+<!-- ZONA DE RISCO: exclusão física, somente para cliente inativo -->
+{% if cliente.status == "inativo" %}
+<section class="card border-danger shadow-sm mt-4">
+    <div class="card-body p-4">
+        <h2 class="h5 fw-bold text-danger mb-2">
+            <i class="bi bi-exclamation-octagon me-2" aria-hidden="true"></i>Zona de risco
+        </h2>
+        <p class="mb-3">
+            A exclusão permanente remove o cadastro do arquivo de clientes e as chaves das
+            duas Árvores B (ID e e-mail). A operação é irreversível. A inativação já bloqueia
+            o acesso sem apagar os dados.
+        </p>
+        <button type="button" class="btn btn-outline-danger"
+                data-bs-toggle="modal" data-bs-target="#modalExcluirPermanente">
+            <i class="bi bi-trash me-2" aria-hidden="true"></i>Excluir permanentemente…
+        </button>
+    </div>
+</section>
+
+<div class="modal fade" id="modalExcluirPermanente" tabindex="-1"
+     aria-labelledby="modalExcluirPermanenteTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content border-danger" method="POST"
+              action="{{ url_for('admin_excluir_cliente', cliente_id=cliente.id) }}">
+
+            <div class="modal-header bg-danger-subtle">
+                <h2 class="modal-title fs-5 fw-bold text-danger-emphasis" id="modalExcluirPermanenteTitulo">
+                    <i class="bi bi-exclamation-octagon me-2" aria-hidden="true"></i>Exclusão permanente
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>
+                    Esta ação excluirá permanentemente o cadastro de
+                    <strong>{{ cliente.nome }}</strong> e não poderá ser desfeita. A inativação
+                    já bloqueia o acesso sem apagar os dados. Prossiga somente se a remoção
+                    definitiva for realmente necessária.
+                </p>
+
+                <label for="confirmacao" class="form-label fw-semibold">
+                    Digite o ID do cliente (<strong>{{ cliente.id }}</strong>) ou EXCLUIR
+                </label>
+                <input type="text" id="confirmacao" name="confirmacao" class="form-control mb-3"
+                       autocomplete="off" required>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="ciencia" name="ciencia" value="sim" required>
+                    <label class="form-check-label" for="ciencia">
+                        Estou ciente de que a exclusão é irreversível.
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-danger" id="botaoExcluirPermanente" disabled>
+                    Excluir permanentemente
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    /* O botão final só é habilitado com a confirmação correta.
+       O servidor revalida tudo antes de excluir. */
+    document.addEventListener('DOMContentLoaded', function () {
+        var campo = document.getElementById('confirmacao');
+        var ciencia = document.getElementById('ciencia');
+        var botao = document.getElementById('botaoExcluirPermanente');
+
+        function atualizar() {
+            var texto = campo.value.trim();
+            botao.disabled = !((texto === '{{ cliente.id }}' || texto === 'EXCLUIR') && ciencia.checked);
+        }
+
+        campo.addEventListener('input', atualizar);
+        ciencia.addEventListener('change', atualizar);
+    });
+</script>
+{% endif %}
 
 {% endblock %}

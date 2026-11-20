@@ -12,8 +12,8 @@
 {% set menu = [
     ("dashboard",     "cliente_dashboard",   "bi-house-fill", "Dashboard",     None),
     ("conta",         "cliente_conta",       "bi-person",     "Minha conta",   2),
-    ("conectividade", "minha_conectividade", "bi-diagram-3",  "Conectividade", 3),
-    ("historico",     "cliente_historico",   "bi-clock",      "Histórico",     3),
+    ("contratar",     "cliente_contratar",   "bi-bag-plus",   "Contratar plano", 2),
+    ("conectividade", "minha_conectividade", "bi-diagram-3",  "Minha conectividade", 3),
 ] %}
 
 {% set cores_etapa = {
@@ -21,9 +21,9 @@
     2: "bg-success-subtle text-success-emphasis",
     3: "badge-roxo"
 } %}
-<div class="admin-layout">
+<div>
 
-    <header class="admin-topo">
+    <header class="bg-azul-escuro">
         <nav class="navbar admin-navbar">
             <a class="navbar-brand"
                href="{{ url_for('cliente_dashboard', cliente_id=cliente['id']) }}">
@@ -38,7 +38,7 @@
         </nav>
     </header>
 
-    <div class="admin-corpo">
+    <div class="admin-corpo d-md-flex">
 
         <div class="d-md-none bg-white border-bottom p-3">
             <button class="btn btn-outline-primary" type="button"
@@ -76,6 +76,15 @@
 
         <main class="admin-conteudo">
             <div class="container-xxl px-0">
+                {# Mensagens das operações (contratação, erros de validação) #}
+                {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% for categoria, texto in mensagens %}
+                <div class="alert alert-{{ 'success' if categoria == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                    {{ texto }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+                {% endfor %}
+                {% endwith %}
                 {% block cliente_content %}{% endblock %}
             </div>
         </main>

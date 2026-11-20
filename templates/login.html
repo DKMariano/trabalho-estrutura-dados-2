@@ -11,62 +11,7 @@
 <main class="row g-0 min-vh-100">
 
     <!-- APRESENTAÇÃO DO DGB SIM -->
-    <section class="col-lg-6 fundo-imagem fundo-imagem-azul text-white d-flex"
-             style="--imagem: url('{{ url_for('static', filename='img/login/login-aviao.png') }}')">
-
-        <div class="d-flex flex-column justify-content-between gap-5 w-100 p-4 p-lg-5">
-
-            <!-- Identidade visual -->
-            <img src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
-                 alt="DGB SIM - Internet internacional com eSIM"
-                 width="260" height="87">
-
-            <!-- Apresentação principal do serviço -->
-            <div>
-                <div class="barra-destaque bg-primary rounded-pill mb-4"></div>
-
-                <h1 class="display-3 fw-bold mb-3">
-                    Conecte-se<br>
-                    ao mundo.
-                </h1>
-
-                <p class="fs-5 opacity-75 mb-0">
-                    Internet internacional de forma simples,
-                    segura e acessível, com tecnologia eSIM.
-                </p>
-            </div>
-
-            <!-- Benefícios do serviço -->
-            <div class="d-grid gap-3">
-
-                {% for icone, titulo, texto in [
-                    ("bi-globe-americas", "Cobertura em diversos países",
-                     "Verifique a disponibilidade de internet no seu destino."),
-                    ("bi-tags", "Planos flexíveis",
-                     "Escolha o plano ideal para o seu tipo de viagem."),
-                    ("bi-sim", "Conexão sem complicação",
-                     "Tecnologia eSIM para você viajar com mais liberdade.")
-                ] %}
-                <div class="d-flex align-items-center gap-3">
-
-                    <span class="circulo d-inline-flex align-items-center justify-content-center
-                                 bg-white bg-opacity-25 fs-5" aria-hidden="true">
-                        <i class="bi {{ icone }}"></i>
-                    </span>
-
-                    <div>
-                        <h2 class="h6 fw-bold mb-0">{{ titulo }}</h2>
-                        <p class="small opacity-75 mb-0">{{ texto }}</p>
-                    </div>
-
-                </div>
-                {% endfor %}
-
-            </div>
-
-        </div>
-
-    </section>
+    {% include "_painel_acesso.html" %}
 
 
     <!-- ÁREA DE ACESSO -->
@@ -91,6 +36,13 @@
                                     suas credenciais para continuar.
                                 </p>
                             </div>
+
+                            {# Mensagens enviadas por outras páginas (ex.: cliente não encontrado) #}
+                            {% with mensagens = get_flashed_messages() %}
+                            {% for texto in mensagens %}
+                            <div class="alert alert-danger" role="alert">{{ texto }}</div>
+                            {% endfor %}
+                            {% endwith %}
 
                             {% if mensagem %}
                             <div class="alert alert-danger" role="alert">
@@ -137,7 +89,7 @@
                                         </span>
                                         <input type="text" class="form-control" id="usuario" name="usuario"
                                                placeholder="Digite seu e-mail ou usuário"
-                                               autocomplete="username">
+                                               value="{{ usuario }}" autocomplete="username">
                                     </div>
                                 </div>
 
@@ -173,12 +125,11 @@
                                     </a>
                                 </p>
 
-                                <!-- O cadastro será implementado em uma etapa posterior -->
-                                <!-- <p class="text-center small text-secondary mb-0">
+                                <p class="text-center small text-secondary mb-0">
                                     Ainda não possui uma conta?
-                                    <a href="#" class="fw-semibold" data-bs-toggle="modal"
-                                       data-bs-target="#modalCadastro">Cadastre-se</a>
-                                </p> -->
+                                    <a href="{{ url_for('criar_conta_cliente') }}"
+                                       class="fw-semibold">Criar conta</a>
+                                </p>
 
                             </form>
 

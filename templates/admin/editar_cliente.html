@@ -16,7 +16,7 @@
         <section class="card border-0 shadow-sm h-100">
             <div class="card-body p-4">
 
-                <form method="POST"
+                <form method="POST" id="formEditarCliente" data-status-original="{{ cliente.status }}"
                       action="{{ url_for('admin_editar_cliente', cliente_id=cliente.id) }}">
 
                     {{ secao("Informações do cliente", "success") }}
@@ -61,13 +61,16 @@
                                 <option value="inativo"
                                     {% if cliente.status == "inativo" %}selected{% endif %}>Inativo</option>
                             </select>
+                            <div class="form-text">
+                                Mudar o status pede confirmação. Ele não altera a validade do plano.
+                            </div>
                         </div>
 
                     </div>
 
                     <hr class="my-4">
 
-                    {{ secao("eSIM e pacote", "success") }}
+                    {{ secao("eSIM", "success") }}
 
                     <div class="row g-4">
 
@@ -80,18 +83,10 @@
                         </div>
 
                         <div class="col-12 col-md-6">
-                            <label for="pacote" class="form-label fw-semibold">
-                                Pacote <span class="text-danger">*</span>
-                            </label>
-                            <select id="pacote" name="pacote" class="form-select" required>
-                                {% for codigo, dados in pacotes.items() %}
-                                <option value="{{ codigo }}"
-                                    {% if codigo|string == cliente.pacote|string %}selected{% endif %}>
-                                    {{ codigo }} — {{ dados.nome }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                            <div class="form-text">Selecione o pacote associado ao cliente.</div>
+                            <span class="form-label fw-semibold d-block">Plano</span>
+                            <p class="text-secondary mb-0">
+                                O plano é alterado somente pela contratação.
+                            </p>
                         </div>
 
                     </div>
@@ -144,7 +139,7 @@
                         </tr>
                         <tr>
                             <th scope="row">Pacote:</th>
-                            <td class="text-end">{{ cliente.pacote }}</td>
+                            <td class="text-end">{{ cliente.pacote if cliente.pacote is not none else "Sem plano" }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -159,5 +154,70 @@
     </div>
 
 </div>
+
+<!-- CONFIRMAÇÃO AO MUDAR O STATUS NA EDIÇÃO -->
+<div class="modal fade" id="modalEditarInativar" tabindex="-1" aria-labelledby="modalEditarInativarTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5 fw-bold" id="modalEditarInativarTitulo">Inativar cliente</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                Ao inativar este cliente, o acesso, a contratação de planos e a consulta de
+                conectividade serão bloqueados. O cadastro e os vínculos serão preservados
+                e poderão ser reativados posteriormente. Deseja continuar?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-confirmar-edicao>Confirmar inativação</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarReativar" tabindex="-1" aria-labelledby="modalEditarReativarTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5 fw-bold" id="modalEditarReativarTitulo">Reativar cliente</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                O cliente voltará a acessar a área do cliente, contratar planos e consultar
+                a conectividade. Pacote, países e datas continuam como estavam.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" data-confirmar-edicao>Confirmar reativação</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* Se o status foi alterado, pede confirmação antes de salvar.
+       O servidor valida os dados de qualquer forma. */
+    document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('formEditarCliente');
+
+        form.addEventListener('submit', function (evento) {
+            var original = form.dataset.statusOriginal;
+            var novo = form.querySelector('#status').value;
+
+            if (novo !== original) {
+                evento.preventDefault();
+                var id = novo === 'inativo' ? 'modalEditarInativar' : 'modalEditarReativar';
+                bootstrap.Modal.getOrCreateInstance(document.getElementById(id)).show();
+            }
+        });
+
+        document.querySelectorAll('[data-confirmar-edicao]').forEach(function (botao) {
+            botao.addEventListener('click', function () {
+                form.submit();  /* envia sem passar de novo pela verificação */
+            });
+        });
+    });
+</script>
 
 {% endblock %}

@@ -25,16 +25,20 @@
             {% for item in itens_carrossel %}
             <div class="carousel-item {% if loop.first %}active{% endif %}">
 
-                <div class="fundo-imagem fundo-imagem-claro py-5"
+                <div class="fundo-imagem fundo-imagem-claro banner-publico
+                            d-flex align-items-center py-5"
                      style="--imagem: url('{{ url_for('static', filename='img/carousel/' ~ item.classe ~ '.png') }}')">
 
-                    <div class="container py-lg-5">
+                    <div class="container">
                         <div class="row">
-                            <div class="col-12 col-md-8 col-lg-6 py-4">
+                            <div class="col-12 col-lg-7">
+
+                                <div class="barra-destaque bg-primary rounded-pill mb-3"
+                                     aria-hidden="true"></div>
 
                                 <h1 class="display-5 fw-bold mb-3">{{ item.titulo }}</h1>
 
-                                <p class="fs-5 text-secondary mb-4">{{ item.texto }}</p>
+                                <p class="fs-5 mb-4">{{ item.texto }}</p>
 
                                 {% if item.botao %}
                                 <a href="{{ url_for('paises') }}" class="btn btn-primary btn-lg">

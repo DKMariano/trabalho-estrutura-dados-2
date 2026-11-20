@@ -18,12 +18,12 @@
                d-flex align-items-center py-5"
         style="--imagem: url('{{ url_for('static', filename='img/planos/banner-planos.png') }}')"
     >
-        <div class="container py-lg-4">
+        <div class="container">
             <div class="row">
                 <div class="col-12 col-lg-7">
 
                     <div
-                        class="barra-destaque bg-primary rounded mb-3"
+                        class="barra-destaque bg-primary rounded-pill mb-3"
                         aria-hidden="true"
                     ></div>
 
@@ -31,7 +31,7 @@
                         Planos eSIM
                     </h1>
 
-                    <p class="mb-0">
+                    <p class="fs-5 mb-0">
                         Conheça os pacotes e consulte a cobertura
                         no seu destino.
                     </p>
@@ -47,14 +47,26 @@
 
             <h2 class="fw-bold mb-4">Pacotes disponíveis</h2>
 
-            <div class="row g-4 justify-content-center">
+            <!-- Faixa deslizante: 3 cards visíveis (1 no celular); as setas
+                 andam um card por vez. Também dá para arrastar com o dedo. -->
+            <div class="position-relative carrossel-planos">
+
+                <button type="button"
+                        class="btn btn-light border shadow-sm circulo p-0
+                               position-absolute top-50 start-0 translate-middle z-2 carrossel-seta"
+                        data-carrossel="-1" aria-controls="faixaPlanos" aria-label="Plano anterior">
+                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                </button>
+
+            <div class="row g-4 flex-nowrap overflow-x-auto py-2 carrossel-faixa" id="faixaPlanos"
+                 tabindex="0" aria-label="Pacotes disponíveis">
 
                 {% for codigo, pacote in pacotes.items() %}
                 {% set visual = apresentacao.get(codigo|string) %}
                 {% set foto = fotos.get(pacote.nome) %}
 
                 {% if visual %}
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12 col-md-6 col-lg-4 carrossel-item">
                     <article
                         class="card h-100 border-0 shadow-sm overflow-hidden"
                     >
@@ -107,38 +119,38 @@
                                 </div>
 
                                 <div class="col-6">
-                                    <a
-                                        href="{{ url_for('paises') }}"
-                                        class="d-flex align-items-center
-                                               justify-content-center gap-2
+                                    <button
+                                        type="button"
+                                        class="btn btn-link d-flex align-items-center
+                                               justify-content-center gap-2 w-100
                                                text-center fs-6 py-3 px-1"
-                                        aria-label="Consultar cobertura geral por país"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalPacote{{ codigo }}"
+                                        aria-label="Ver detalhes do pacote {{ pacote.nome }}"
                                     >
                                         <i
-                                            class="bi bi-globe-americas flex-shrink-0"
+                                            class="bi bi-info-circle flex-shrink-0"
                                             aria-hidden="true"
                                         ></i>
 
-                                        <span>Consultar cobertura</span>
-                                    </a>
+                                        <span>Ver detalhes</span>
+                                    </button>
                                 </div>
 
                             </div>
 
-                            <button
-                                type="button"
+                            <a
+                                href="{{ url_for('adquirir', plano=codigo) }}"
                                 class="btn {{ visual.get('botao', 'btn-outline-primary') }} w-100 mt-auto"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalPacote{{ codigo }}"
-                                aria-label="Ver detalhes do pacote {{ pacote.nome }}"
+                                aria-label="Comprar o pacote {{ pacote.nome }}"
                             >
-                                Ver detalhes
-
                                 <i
-                                    class="bi bi-arrow-right ms-1"
+                                    class="bi bi-cart3 me-1"
                                     aria-hidden="true"
                                 ></i>
-                            </button>
+
+                                Comprar
+                            </a>
 
                         </div>
 
@@ -148,6 +160,48 @@
                 {% endfor %}
 
             </div>
+
+                <button type="button"
+                        class="btn btn-light border shadow-sm circulo p-0
+                               position-absolute top-50 start-100 translate-middle z-2 carrossel-seta"
+                        data-carrossel="1" aria-controls="faixaPlanos" aria-label="Próximo plano">
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </button>
+
+            </div>
+
+            <script>
+                /* Cada seta rola a faixa em um card. As setas ficam
+                   desabilitadas no começo e no fim da faixa. */
+                document.addEventListener('DOMContentLoaded', function () {
+                    var faixa = document.getElementById('faixaPlanos');
+                    var setas = document.querySelectorAll('[data-carrossel]');
+
+                    function larguraDeUmCard() {
+                        var item = faixa.querySelector('.carrossel-item');
+                        return item ? item.getBoundingClientRect().width : faixa.clientWidth;
+                    }
+
+                    function atualizarSetas() {
+                        var fim = faixa.scrollWidth - faixa.clientWidth - 2;
+                        setas.forEach(function (seta) {
+                            seta.disabled = seta.dataset.carrossel === '-1'
+                                ? faixa.scrollLeft <= 2
+                                : faixa.scrollLeft >= fim;
+                        });
+                    }
+
+                    setas.forEach(function (seta) {
+                        seta.addEventListener('click', function () {
+                            faixa.scrollBy({ left: larguraDeUmCard() * Number(seta.dataset.carrossel) });
+                        });
+                    });
+
+                    faixa.addEventListener('scroll', atualizarSetas);
+                    window.addEventListener('resize', atualizarSetas);
+                    atualizarSetas();
+                });
+            </script>
 
             <!-- Acesso à área do cliente -->
             <div
@@ -215,16 +269,8 @@
                     {{ pacote.nome }}
                 </h2>
 
-                <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn {{ visual.get('botao', 'btn-outline-primary') }}"
-                        data-bs-dismiss="modal"
-                    >
-                        Fechar
-                    </button>
-                </div>
-
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Fechar"></button>
             </div>
 
             <div class="modal-body">
@@ -246,10 +292,11 @@
 
                 </dl>
 
-                <p class="small text-secondary mt-3 mb-0">
-                    A consulta de cobertura é realizada por país
-                    e não aplica um filtro específico deste pacote.
-                </p>
+                <a href="{{ url_for('paises') }}"
+                   class="d-inline-flex align-items-center gap-2 small mt-3">
+                    <i class="bi bi-globe-americas" aria-hidden="true"></i>
+                    Consultar os países atendidos
+                </a>
             </div>
 
             <div class="modal-footer">
@@ -260,6 +307,9 @@
                 >
                     Fechar
                 </button>
+                <a href="{{ url_for('adquirir', plano=codigo) }}" class="btn btn-primary">
+                    <i class="bi bi-cart3 me-1" aria-hidden="true"></i>Comprar
+                </a>
             </div>
             
         </div>

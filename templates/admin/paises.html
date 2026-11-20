@@ -4,7 +4,7 @@
 
 {% block admin_content %}
 
-{% from "admin/_componentes.html" import banner %}
+{% from "admin/_componentes.html" import banner, seletor_por_pagina %}
 
 {# Item de paginação: desabilitado quando não há destino #}
 {% macro pg(icone, rotulo, destino=None) %}
@@ -37,7 +37,7 @@
             </div>
 
             <div class="col-12 col-md-6 col-lg-3">
-                <label for="regiao" class="form-label fw-semibold">Filtrar por região</label>
+                <label for="regiao" class="form-label fw-semibold">Filtrar por continente</label>
                 <select class="form-select" id="regiao" name="regiao">
                     <option value="">Todas</option>
                     {% for regiao in regioes %}
@@ -69,6 +69,7 @@
             </div>
             {% endif %}
 
+            <input type="hidden" name="por_pagina" value="{{ por_pagina }}">
         </form>
 
     </div>
@@ -105,7 +106,7 @@
                         <th scope="col">#</th>
                         <th scope="col">País</th>
                         <th scope="col">Código</th>
-                        <th scope="col">Região</th>
+                        <th scope="col">Continente</th>
                         <th scope="col">Operadora</th>
                         <th scope="col">Tecnologia</th>
                         <th scope="col" class="text-center">Ações</th>
@@ -165,24 +166,28 @@
         <!-- Rodapé e paginação -->
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3">
 
-            <span class="small text-secondary">
-                {% if total_filtrados > 0 %}
-                    Mostrando {{ ((pagina - 1) * por_pagina) + 1 }}
-                    a {{ [pagina * por_pagina, total_filtrados] | min }}
-                    de {{ total_filtrados }} países
-                {% else %}
-                    Nenhum país encontrado
-                {% endif %}
-            </span>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                {{ seletor_por_pagina('admin_paises', opcoes_por_pagina, por_pagina,
+                                      {'busca': busca, 'regiao': regiao_selecionada}) }}
+                <span class="small text-secondary">
+                    {% if total_filtrados > 0 %}
+                        Mostrando {{ ((pagina - 1) * por_pagina) + 1 }}
+                        a {{ [pagina * por_pagina, total_filtrados] | min }}
+                        de {{ total_filtrados }} países
+                    {% else %}
+                        Nenhum país encontrado
+                    {% endif %}
+                </span>
+            </div>
 
             {% if total_paginas > 1 %}
             <nav aria-label="Paginação dos países">
                 <ul class="pagination mb-0">
 
                     {{ pg("bi-chevron-double-left", "Primeira página",
-                          url_for('admin_paises', pagina=1, busca=busca, regiao=regiao_selecionada) if pagina > 1) }}
+                          url_for('admin_paises', pagina=1, busca=busca, regiao=regiao_selecionada, por_pagina=por_pagina) if pagina > 1) }}
                     {{ pg("bi-chevron-left", "Página anterior",
-                          url_for('admin_paises', pagina=pagina - 1, busca=busca, regiao=regiao_selecionada) if pagina > 1) }}
+                          url_for('admin_paises', pagina=pagina - 1, busca=busca, regiao=regiao_selecionada, por_pagina=por_pagina) if pagina > 1) }}
 
                     {% for numero in range(1, total_paginas + 1) %}
                     <li class="page-item {% if numero == pagina %}active{% endif %}">
@@ -190,16 +195,16 @@
                         <span class="page-link" aria-current="page">{{ numero }}</span>
                         {% else %}
                         <a class="page-link"
-                           href="{{ url_for('admin_paises', pagina=numero, busca=busca, regiao=regiao_selecionada) }}"
+                           href="{{ url_for('admin_paises', pagina=numero, busca=busca, regiao=regiao_selecionada, por_pagina=por_pagina) }}"
                            aria-label="Página {{ numero }}">{{ numero }}</a>
                         {% endif %}
                     </li>
                     {% endfor %}
 
                     {{ pg("bi-chevron-right", "Próxima página",
-                          url_for('admin_paises', pagina=pagina + 1, busca=busca, regiao=regiao_selecionada) if pagina < total_paginas) }}
+                          url_for('admin_paises', pagina=pagina + 1, busca=busca, regiao=regiao_selecionada, por_pagina=por_pagina) if pagina < total_paginas) }}
                     {{ pg("bi-chevron-double-right", "Última página",
-                          url_for('admin_paises', pagina=total_paginas, busca=busca, regiao=regiao_selecionada) if pagina < total_paginas) }}
+                          url_for('admin_paises', pagina=total_paginas, busca=busca, regiao=regiao_selecionada, por_pagina=por_pagina) if pagina < total_paginas) }}
 
                 </ul>
             </nav>
@@ -243,7 +248,7 @@
                             <dd class="fw-semibold text-break mb-0">{{ pais.nome }}</dd>
                         </div>
                         <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">Região</dt>
+                            <dt class="small text-secondary fw-normal">Continente</dt>
                             <dd class="fw-semibold mb-0">{{ pais.regiao }}</dd>
                         </div>
                         <div class="col-12 col-sm-6">

@@ -4,11 +4,12 @@
 
 {% block admin_content %}
 
-{% from "admin/_componentes.html" import banner %}
+{% from "admin/_componentes.html" import banner, seletor_por_pagina, switch_status, botao_lixeira, modal_status, modal_excluir %}
 
 {{ banner("Clientes", "Gerencie os clientes, seus eSIMs e pacotes associados.") }}
 
-{% set filtrando = request.args.get('busca', '')|trim or request.args.get('status', '') or request.args.get('pacote', '') %}
+{% set filtrando = busca or pacote_selecionado or status_selecionado != 'ativo' %}
+{% set recortes = {"ativo": "clientes ativos", "inativo": "clientes inativos", "todos": "clientes no total"} %}
 
 <!-- BUSCA E FILTROS -->
 <section class="card border-0 shadow-sm mb-4">
@@ -22,17 +23,18 @@
                     Buscar cliente
                 </label>
                 <input type="search" id="busca" name="busca" class="form-control"
-                       placeholder="Nome ou ID do cliente" value="{{ busca }}">
+                       placeholder="ID, e-mail ou nome" value="{{ busca }}">
             </div>
 
             <div class="col-12 col-md-6 col-lg-2">
                 <label for="status" class="form-label fw-semibold">Status</label>
                 <select id="status" name="status" class="form-select">
-                    <option value="">Todos</option>
                     <option value="ativo"
-                        {% if status_selecionado == 'ativo' %}selected{% endif %}>Ativo</option>
+                        {% if status_selecionado == 'ativo' %}selected{% endif %}>Ativos</option>
                     <option value="inativo"
-                        {% if status_selecionado == 'inativo' %}selected{% endif %}>Inativo</option>
+                        {% if status_selecionado == 'inativo' %}selected{% endif %}>Inativos</option>
+                    <option value="todos"
+                        {% if status_selecionado == 'todos' %}selected{% endif %}>Todos</option>
                 </select>
             </div>
 
@@ -40,6 +42,7 @@
                 <label for="pacote" class="form-label fw-semibold">Filtrar por pacote</label>
                 <select id="pacote" name="pacote" class="form-select">
                     <option value="">Todos</option>
+                    <option value="sem" {% if pacote_selecionado == 'sem' %}selected{% endif %}>Sem plano</option>
                     {% for codigo, dados in pacotes.items() %}
                     <option value="{{ codigo }}"
                         {% if pacote_selecionado == codigo|string %}selected{% endif %}>
@@ -62,8 +65,8 @@
 
             <div class="col-12">
                 <small class="text-secondary">
-                    Busque pelo ID completo (consulta na Árvore B, após sua
-                    implementação) ou por parte do nome.
+                    ID completo: busca na Árvore B de ID. E-mail: busca na Árvore B de e-mail.
+                    Outro texto: parte do nome. A lista abre com os clientes ativos.
                 </small>
             </div>
 
@@ -76,6 +79,7 @@
             </div>
             {% endif %}
 
+            <input type="hidden" name="por_pagina" value="{{ por_pagina }}">
         </form>
 
     </div>
@@ -90,11 +94,7 @@
             <h2 class="h4 fw-bold mb-0 d-flex flex-wrap align-items-center gap-2">
                 Clientes cadastrados
                 <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-6">
-                    {% if filtrando %}
-                        {{ total_filtrado }} de {{ total_clientes }} clientes
-                    {% else %}
-                        {{ total_clientes }} clientes
-                    {% endif %}
+                    {{ total_filtrado }} {{ recortes.get(status_selecionado, "clientes") }}
                 </span>
             </h2>
 
@@ -127,19 +127,17 @@
                         <td>{{ cliente.email }}</td>
                         <td>{{ cliente.esim }}</td>
                         <td>
+                            {% if cliente.pacote is none %}
+                            <span class="text-secondary">Sem plano</span>
+                            {% else %}
                             <strong>{{ cliente.pacote }}</strong>
                             <small class="d-block text-secondary">
                                 {{ nomes_pacotes.get(cliente.pacote|string, "Pacote não encontrado") }}
                             </small>
+                            {% endif %}
                         </td>
                         <td>
-                            {% if cliente.status == "ativo" %}
-                            <span class="badge bg-success-subtle text-success-emphasis">Ativo</span>
-                            {% else %}
-                            <span class="badge bg-danger-subtle text-danger-emphasis">
-                                {{ cliente.status|capitalize }}
-                            </span>
-                            {% endif %}
+                            {{ switch_status(cliente) }}
                         </td>
                         <td class="text-center text-nowrap">
 
@@ -157,14 +155,7 @@
                                 <i class="bi bi-pencil-fill" aria-hidden="true"></i>
                             </a>
 
-                            <button type="button"
-                                    class="btn btn-sm btn-outline-danger"
-                                    title="Remover cliente"
-                                    aria-label="Remover {{ cliente.nome }}"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalExcluirCliente{{ cliente.id }}">
-                                <i class="bi bi-trash" aria-hidden="true"></i>
-                            </button>
+                            {{ botao_lixeira(cliente) }}
 
                         </td>
                     </tr>
@@ -183,13 +174,18 @@
         <!-- Rodapé e paginação -->
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3">
 
-            <span class="small text-secondary">
-                {% if total_filtrado > 0 %}
-                    Mostrando {{ inicio }} a {{ fim }} de {{ total_filtrado }} clientes
-                {% else %}
-                    Nenhum cliente para exibir
-                {% endif %}
-            </span>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                {{ seletor_por_pagina('admin_clientes', opcoes_por_pagina, por_pagina,
+                                      {'busca': busca, 'status': status_selecionado, 'pacote': pacote_selecionado}) }}
+
+                <span class="small text-secondary">
+                    {% if total_filtrado > 0 %}
+                        Mostrando {{ inicio }} a {{ fim }} de {{ total_filtrado }} clientes
+                    {% else %}
+                        Nenhum cliente para exibir
+                    {% endif %}
+                </span>
+            </div>
 
             {% if total_paginas > 1 %}
             <nav aria-label="Paginação de clientes">
@@ -197,7 +193,7 @@
 
                     <li class="page-item {% if pagina == 1 %}disabled{% endif %}">
                         <a class="page-link" aria-label="Página anterior"
-                           href="{{ url_for('admin_clientes', pagina=pagina - 1, busca=busca, status=status_selecionado, pacote=pacote_selecionado) }}">
+                           href="{{ url_for('admin_clientes', pagina=pagina - 1, busca=busca, status=status_selecionado, pacote=pacote_selecionado, por_pagina=por_pagina) }}">
                             &laquo;
                         </a>
                     </li>
@@ -210,7 +206,7 @@
                         {% else %}
                         <li class="page-item {% if numero == pagina %}active{% endif %}">
                             <a class="page-link"
-                               href="{{ url_for('admin_clientes', pagina=numero, busca=busca, status=status_selecionado, pacote=pacote_selecionado) }}">
+                               href="{{ url_for('admin_clientes', pagina=numero, busca=busca, status=status_selecionado, pacote=pacote_selecionado, por_pagina=por_pagina) }}">
                                 {{ numero }}
                             </a>
                         </li>
@@ -219,7 +215,7 @@
 
                     <li class="page-item {% if pagina == total_paginas %}disabled{% endif %}">
                         <a class="page-link" aria-label="Próxima página"
-                           href="{{ url_for('admin_clientes', pagina=pagina + 1, busca=busca, status=status_selecionado, pacote=pacote_selecionado) }}">
+                           href="{{ url_for('admin_clientes', pagina=pagina + 1, busca=busca, status=status_selecionado, pacote=pacote_selecionado, por_pagina=por_pagina) }}">
                             &raquo;
                         </a>
                     </li>
@@ -233,88 +229,25 @@
     </div>
 </section>
 
-<!-- CONFIRMAÇÃO DE EXCLUSÃO -->
+<!-- CONFIRMAÇÃO DO SWITCH (inativar/reativar) E DA LIXEIRA (só inativos) -->
 {% for cliente in clientes %}
-<div class="modal fade" id="modalExcluirCliente{{ cliente.id }}" tabindex="-1"
-     aria-labelledby="modalExcluirClienteLabel{{ cliente.id }}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h2 class="modal-title fs-5 d-flex align-items-center gap-3"
-                    id="modalExcluirClienteLabel{{ cliente.id }}">
-                    <span class="d-inline-flex align-items-center justify-content-center
-                                 rounded-circle bg-danger-subtle text-danger p-3">
-                        <i class="bi bi-trash" aria-hidden="true"></i>
-                    </span>
-                    Confirmar remoção
-                </h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Fechar"></button>
-            </div>
-
-            <div class="modal-body">
-                <p class="mb-1">Tem certeza que deseja remover este cliente da base de dados?</p>
-                <p class="text-secondary mb-4">
-                    Esta ação removerá o cliente dos dados utilizados pela aplicação.
-                </p>
-
-                <div class="bg-light border rounded p-3">
-                    <dl class="row g-3 mb-0">
-                        <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">Cliente</dt>
-                            <dd class="fw-semibold text-break mb-0">{{ cliente.nome }}</dd>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">ID</dt>
-                            <dd class="fw-semibold mb-0">{{ cliente.id }}</dd>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">E-mail</dt>
-                            <dd class="fw-semibold text-break mb-0">{{ cliente.email }}</dd>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">eSIM</dt>
-                            <dd class="fw-semibold text-break mb-0">{{ cliente.esim }}</dd>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">Pacote</dt>
-                            <dd class="fw-semibold mb-0">
-                                {{ cliente.pacote }} —
-                                {{ nomes_pacotes.get(cliente.pacote|string, "Pacote não encontrado") }}
-                            </dd>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <dt class="small text-secondary fw-normal">Status</dt>
-                            <dd class="mb-0">
-                                {% if cliente.status == "ativo" %}
-                                <span class="badge bg-success-subtle text-success-emphasis">Ativo</span>
-                                {% else %}
-                                <span class="badge bg-danger-subtle text-danger-emphasis">
-                                    {{ cliente.status|capitalize }}
-                                </span>
-                                {% endif %}
-                            </dd>
-                        </div>
-                    </dl>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary"
-                        data-bs-dismiss="modal">Cancelar</button>
-
-                <form action="{{ url_for('admin_excluir_cliente', cliente_id=cliente.id) }}"
-                      method="POST" class="m-0">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash me-2" aria-hidden="true"></i>Remover cliente
-                    </button>
-                </form>
-            </div>
-
-        </div>
-    </div>
-</div>
+{{ modal_status(cliente) }}
+{% if cliente.status == "inativo" %}
+{{ modal_excluir(cliente) }}
+{% endif %}
 {% endfor %}
+
+<script>
+    /* Lixeira: o botão final só habilita com o ID (ou EXCLUIR) e a ciência.
+       O servidor revalida tudo antes de excluir. */
+    document.querySelectorAll('.form-excluir').forEach(function (form) {
+        var botao = form.querySelector('button[type="submit"]');
+        form.addEventListener('input', function () {
+            var texto = form.elements.confirmacao.value.trim();
+            botao.disabled = !((texto === form.dataset.id || texto === 'EXCLUIR')
+                               && form.elements.ciencia.checked);
+        });
+    });
+</script>
 
 {% endblock %}

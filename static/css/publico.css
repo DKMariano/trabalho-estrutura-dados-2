@@ -3,11 +3,6 @@
    Tudo o que o Bootstrap já faz é feito no HTML, com as classes do
    Bootstrap. Este arquivo tem apenas o que ele não oferece. */
 
-/* Azul-escuro da marca (cabeçalho). */
-.bg-azul-escuro {
-    background-color: var(--azul-escuro) !important;
-}
-
 /* Imagem de fundo com degradê por cima, para o texto ficar legível.
    A imagem vem do HTML, pela variável --imagem:
    style="--imagem: url('...')". */
@@ -25,17 +20,6 @@
         rgba(255, 255, 255, 0.9) 35%,
         rgba(255, 255, 255, 0.2) 65%,
         rgba(255, 255, 255, 0) 100%
-    );
-}
-
-.fundo-imagem-escuro {
-    --degrade: linear-gradient(
-        90deg,
-        rgba(5, 35, 69, 0.98) 0%,
-        rgba(5, 35, 69, 0.9) 28%,
-        rgba(5, 35, 69, 0.68) 48%,
-        rgba(5, 35, 69, 0.15) 75%,
-        rgba(5, 35, 69, 0.02) 100%
     );
 }
 
@@ -59,15 +43,7 @@
         );
     }
 
-    .fundo-imagem-escuro {
-        --degrade: linear-gradient(
-            90deg,
-            rgba(5, 35, 69, 0.96),
-            rgba(5, 35, 69, 0.76)
-        );
-    }
 }
-
 
 /* Círculo de tamanho fixo (ícones, números e fotos). O Bootstrap não tem
    largura e altura fixas; cor e alinhamento vêm das classes do Bootstrap. */
@@ -78,8 +54,58 @@
     border-radius: 50%;
 }
 
-/* Barra de destaque acima dos títulos. */
-.barra-destaque {
-    width: 4.25rem;
-    height: 0.5rem;
+/* Altura mínima igual para os banners de início, cobertura e planos
+   (o Bootstrap só tem min-vh-100). Em telas pequenas o conteúdo pode
+   passar disso. */
+.banner-publico {
+    min-height: 25rem;
+}
+
+@media (min-width: 768px) {
+    .banner-publico {
+        min-height: 27rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .banner-publico {
+        min-height: 31.5rem;
+    }
+}
+
+
+/* Faixa deslizante dos planos (página Planos).
+   Posição, tamanho e cor das setas vêm de classes do Bootstrap e da
+   classe .circulo; aqui fica só o que o Bootstrap não oferece. */
+
+/* Encaixe: cada clique para exatamente no início de um card. */
+.carrossel-faixa {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;          /* esconde a barra de rolagem */
+}
+
+.carrossel-faixa::-webkit-scrollbar {
+    display: none;
+}
+
+.carrossel-item {
+    scroll-snap-align: start;
+}
+
+/* A seta some no começo e no fim da faixa. */
+.carrossel-seta:disabled {
+    opacity: 0;
+}
+
+/* No celular, as setas ficam dentro da tela (o Bootstrap não tem
+   posição responsiva para translate-middle). */
+@media (max-width: 575.98px) {
+    .carrossel-seta.start-0 {
+        transform: translate(0, -50%) !important;
+    }
+
+    .carrossel-seta.start-100 {
+        transform: translate(-100%, -50%) !important;
+    }
 }

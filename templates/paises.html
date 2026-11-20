@@ -7,14 +7,16 @@
 <main>
 
     <!-- CONSULTA DE COBERTURA -->
-    <section class="fundo-imagem fundo-imagem-claro py-5"
+    <section class="fundo-imagem fundo-imagem-claro banner-publico
+                    d-flex align-items-center py-5"
              style="--imagem: url('{{ url_for('static', filename='img/cobertura/cobertura-paises.jpg') }}')">
 
-        <div class="container py-lg-4">
+        <div class="container">
             <div class="row">
-                <div class="col-12 col-lg-8">
+                <div class="col-12 col-lg-7">
 
-                    <div class="barra-destaque bg-primary rounded-pill mb-3"></div>
+                    <div class="barra-destaque bg-primary rounded-pill mb-3"
+                         aria-hidden="true"></div>
 
                     <h1 class="display-5 fw-bold mb-3">
                         Consulte a cobertura<br>
@@ -120,7 +122,7 @@
                                 </div>
 
                                 <div class="d-flex justify-content-between border-bottom py-3">
-                                    <dt class="fw-normal text-secondary">Região</dt>
+                                    <dt class="fw-normal text-secondary">Continente</dt>
                                     <dd class="fw-bold mb-0">{{ resultado.regiao }}</dd>
                                 </div>
 
@@ -168,13 +170,28 @@
 
                             </div>
 
-                            <div class="bg-light border rounded-3 p-3 mb-4">
-                                <h3 class="h6 mb-2">Confira os planos</h3>
-                                <p class="text-secondary mb-0">
-                                    Consulte as informações de franquia de dados e validade
-                                    para planejar sua conexão durante a viagem.
-                                </p>
-                            </div>
+                            <h3 class="h6 mb-2">Planos compatíveis com {{ resultado.nome }}</h3>
+                            <ul class="list-group mb-4">
+                                {% for plano in planos_compativeis %}
+                                <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <div>
+                                        <strong>{{ plano.nome }}</strong>
+                                        <small class="d-block text-secondary">
+                                            {{ plano.dados_gb }} GB · {{ plano.validade_dias }} dias
+                                            {% if plano.categoria == 'Basic' %}
+                                            · {{ resultado.nome }} deverá ser um dos 3 países escolhidos
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <a href="{{ url_for('adquirir', plano=plano.codigo, destino=codigo_selecionado) }}"
+                                       class="btn btn-sm btn-outline-primary">Adquirir</a>
+                                </li>
+                                {% else %}
+                                <li class="list-group-item text-secondary">
+                                    Nenhum plano disponível para este destino.
+                                </li>
+                                {% endfor %}
+                            </ul>
 
                             <a href="{{ url_for('planos') }}" class="btn btn-primary w-100 mt-auto">
                                 Ver planos disponíveis

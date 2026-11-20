@@ -1,0 +1,265 @@
+{% extends "cliente/base_cliente.html" %}
+
+{% block title %}Contratar plano | DGB SIM{% endblock %}
+
+{% block cliente_content %}
+
+{% from "cliente/_componentes.html" import banner %}
+
+{# Texto curto da cobertura de um plano #}
+{% macro cobertura(plano) -%}
+    {% if plano.categoria == 'Basic' %}3 países da {{ plano.regiao }} à sua escolha
+    {% elif plano.categoria == 'Plus' %}Todos os países da {{ plano.regiao }}
+    {% else %}Todos os países atendidos{% endif %}
+{%- endmacro %}
+
+{{ banner("Contratar plano", "Consulte seu destino e veja se o seu plano cobre ou se vale um upgrade.") }}
+
+<div class="row g-4 mb-4">
+
+    <!-- PLANO ATUAL -->
+    <div class="col-12 col-xl-4">
+        <section class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4 d-flex flex-column">
+
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="rounded-circle p-3 lh-1 bg-success-subtle text-success">
+                        <i class="bi bi-sim fs-4" aria-hidden="true"></i>
+                    </span>
+                    <div>
+                        <h2 class="h5 fw-bold mb-0">Seu plano atual</h2>
+                        <small class="text-secondary">{{ cliente.esim }}</small>
+                    </div>
+                </div>
+
+                {% if pacote_atual %}
+                <p class="fs-4 fw-bold mb-2">{{ pacote_atual.nome }}</p>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    {% if plano_vigente %}
+                    <span class="badge bg-success-subtle text-success-emphasis">Vigente até {{ cliente.contratacao_fim | data_br }}</span>
+                    {% else %}
+                    <span class="badge text-bg-warning">Expirou em {{ cliente.contratacao_fim | data_br }}</span>
+                    {% endif %}
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis">{{ pacote_atual.dados_gb }} GB</span>
+                </div>
+                <p class="text-secondary mb-0">{{ cobertura(pacote_atual) }}</p>
+                {% if cliente.paises_ativos %}
+                <p class="fw-semibold mt-2 mb-0">Países: {{ cliente.paises_ativos | join(', ') }}</p>
+                {% endif %}
+                {% else %}
+                <p class="fs-5 fw-bold mb-1">Sem plano contratado</p>
+                <p class="text-secondary mb-0">Consulte seu destino para ver os planos disponíveis.</p>
+                {% endif %}
+
+                <a href="{{ url_for('planos') }}" class="btn btn-link px-0 mt-auto text-start">
+                    Ver o catálogo completo de planos <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </a>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- CONSULTA DO DESTINO -->
+    <div class="col-12 col-xl-8">
+        <section class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4">
+
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="rounded-circle p-3 lh-1 bg-primary-subtle text-primary">
+                        <i class="bi bi-globe2 fs-4" aria-hidden="true"></i>
+                    </span>
+                    <div>
+                        <h2 class="h5 fw-bold mb-0">Seu plano cobre o seu destino?</h2>
+                        <small class="text-secondary">O destino é consultado na Tabela Hash de países.</small>
+                    </div>
+                </div>
+
+                <form method="GET" action="{{ url_for('cliente_contratar', cliente_id=cliente.id) }}"
+                      class="row g-3 align-items-end">
+                    <div class="col-12 col-md-4">
+                        <label for="origem" class="form-label fw-semibold">
+                            Origem <span class="badge badge-roxo">Etapa 3</span>
+                        </label>
+                        <input type="text" id="origem" name="origem" class="form-control"
+                               list="listaPaises" autocomplete="off"
+                               placeholder="Ex.: Brasil" value="{{ origem_digitada }}">
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="destino" class="form-label fw-semibold">Destino</label>
+                        <input type="text" id="destino" name="destino" class="form-control"
+                               list="listaPaises" autocomplete="off" required
+                               placeholder="Ex.: Itália" value="{{ destino_digitado }}">
+                    </div>
+                    <datalist id="listaPaises">
+                        {% for codigo, pais in paises %}
+                        <option value="{{ pais.nome }}">{{ codigo }}</option>
+                        {% endfor %}
+                    </datalist>
+                    <div class="col-12 col-md-4">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-search me-2" aria-hidden="true"></i>Consultar
+                        </button>
+                    </div>
+                </form>
+
+                {% if consulta %}
+                {% set r = consulta.resposta %}
+                <div class="alert {{ 'alert-success' if r.coberto else 'alert-warning' }} d-flex align-items-center gap-2 mt-4 mb-0" role="status">
+                    <i class="bi {{ 'bi-check-circle-fill' if r.coberto else 'bi-exclamation-triangle-fill' }} fs-5" aria-hidden="true"></i>
+                    <strong>{{ consulta.mensagem }}</strong>
+                </div>
+                {% else %}
+                <p class="small text-secondary mt-3 mb-0">
+                    Digite o nome ou o código do país (ex.: Itália ou IT). A origem será usada no cálculo de rota da Etapa 3.
+                </p>
+                {% endif %}
+
+            </div>
+        </section>
+    </div>
+
+</div>
+
+<!-- SUGESTÕES -->
+{% if consulta and consulta.sugestoes %}
+<h2 class="h5 fw-bold mb-3"><span class="cliente-marcador bg-success"></span>Planos sugeridos</h2>
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4">
+    {% for sugestao in consulta.sugestoes %}
+    <div class="col">
+        <article class="card h-100 border-0 shadow-sm {{ 'border-start border-4 border-success' if pacote_escolhido and plano == sugestao.codigo }}">
+            <div class="card-body p-4 d-flex flex-column">
+                <span class="badge bg-success-subtle text-success-emphasis align-self-start mb-2">{{ sugestao.categoria }}</span>
+                <h3 class="h5 fw-bold mb-1">{{ sugestao.codigo }} · {{ sugestao.nome }}</h3>
+                <p class="text-secondary mb-3">{{ cobertura(sugestao) }}</p>
+                <div class="d-flex gap-4 mb-4">
+                    <div><strong class="d-block fs-4 lh-1">{{ sugestao.dados_gb }} GB</strong><small class="text-secondary">Franquia</small></div>
+                    <div><strong class="d-block fs-4 lh-1">{{ sugestao.validade_dias }} dias</strong><small class="text-secondary">Validade</small></div>
+                </div>
+                <a class="btn btn-success mt-auto"
+                   href="{{ url_for('cliente_contratar', cliente_id=cliente.id, plano=sugestao.codigo, origem=origem or None, destino=destino) }}#adquirir">
+                    Adquirir este plano
+                </a>
+            </div>
+        </article>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- ADQUIRIR (só depois de escolher um plano) -->
+{% if pacote_escolhido %}
+<section class="card border-success shadow-sm mb-4" id="adquirir">
+    <div class="card-body p-4">
+
+        <form method="POST" id="formContratacao" data-vigente="{{ 'sim' if plano_vigente else 'nao' }}"
+              data-basic="{{ 'sim' if pacote_escolhido.categoria == 'Basic' else 'nao' }}"
+              action="{{ url_for('cliente_contratar', cliente_id=cliente.id, plano=plano, origem=origem or None, destino=destino or None) }}">
+
+            <input type="hidden" name="plano" value="{{ plano }}">
+            <input type="hidden" name="confirmado" value="">
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                <span class="rounded-circle p-3 lh-1 bg-success text-white">
+                    <i class="bi bi-bag-check fs-4" aria-hidden="true"></i>
+                </span>
+                <div>
+                    <h2 class="h5 fw-bold mb-0">Adquirir {{ pacote_escolhido.nome }}</h2>
+                    <small class="text-secondary">
+                        {{ pacote_escolhido.dados_gb }} GB · {{ pacote_escolhido.validade_dias }} dias ·
+                        {{ cobertura(pacote_escolhido) }}
+                    </small>
+                </div>
+            </div>
+
+            {% if pacote_escolhido.categoria == 'Basic' %}
+            <fieldset class="bg-body-tertiary rounded-3 p-3 mb-3">
+                <legend class="fs-6 fw-bold mb-1">Escolha exatamente 3 países da {{ pacote_escolhido.regiao }}</legend>
+                <p class="small text-secondary mb-3">
+                    Eles ficam fixos durante os {{ pacote_escolhido.validade_dias }} dias de validade.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    {% for codigo, nome in paises_por_regiao.get(pacote_escolhido.regiao, []) %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="paises" value="{{ codigo }}"
+                               id="pais{{ codigo }}" {% if codigo in paises_marcados %}checked{% endif %}>
+                        <label class="form-check-label" for="pais{{ codigo }}">{{ nome }} ({{ codigo }})</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            {% endif %}
+
+            {% if plano_vigente %}
+            <p class="small text-warning-emphasis mb-3">
+                <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+                Seu plano atual ainda está vigente: ele será substituído e a validade reiniciada.
+            </p>
+            {% endif %}
+
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+                <a href="{{ url_for('cliente_contratar', cliente_id=cliente.id, origem=origem or None, destino=destino or None) }}"
+                   class="btn btn-outline-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-success">Confirmar contratação</button>
+            </div>
+
+        </form>
+
+    </div>
+</section>
+
+<!-- CONFIRMAÇÃO (Basic e/ou substituição de plano vigente) -->
+<div class="modal fade" id="modalConfirmarContratacao" tabindex="-1"
+     aria-labelledby="modalConfirmarContratacaoTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5 fw-bold" id="modalConfirmarContratacaoTitulo">Confirmar contratação</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                {% if pacote_escolhido.categoria == 'Basic' %}
+                <p>
+                    Confirme os três países selecionados. Durante os {{ pacote_escolhido.validade_dias }} dias
+                    de validade do plano Basic, essa seleção não poderá ser alterada. Para escolher
+                    outros países, será necessário aguardar o término da validade e realizar uma
+                    nova contratação. Deseja continuar?
+                </p>
+                {% endif %}
+                {% if plano_vigente %}
+                <p class="mb-0">
+                    Você já possui um plano vigente. A nova contratação substitui o plano atual
+                    e reinicia a validade.
+                </p>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar para revisar</button>
+                <button type="button" class="btn btn-success" id="botaoConfirmarContratacao">Confirmar contratação</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* Basic ou troca de plano vigente: pede confirmação antes de enviar.
+       O servidor valida tudo de novo. */
+    document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('formContratacao');
+        var precisaConfirmar = form.dataset.basic === 'sim' || form.dataset.vigente === 'sim';
+
+        form.addEventListener('submit', function (evento) {
+            if (precisaConfirmar && form.elements['confirmado'].value !== 'sim') {
+                evento.preventDefault();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalConfirmarContratacao')).show();
+            }
+        });
+
+        document.getElementById('botaoConfirmarContratacao').addEventListener('click', function () {
+            form.elements['confirmado'].value = 'sim';
+            form.submit();
+        });
+    });
+</script>
+{% endif %}
+
+{% endblock %}

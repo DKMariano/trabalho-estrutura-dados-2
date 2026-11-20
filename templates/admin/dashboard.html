@@ -14,10 +14,10 @@
 {{ banner("Visão geral", "Acompanhe os países, os clientes e a rede internacional.") }}
 
 <!-- ACESSO RÁPIDO -->
-<div class="row g-4 mb-4">
+<div class="row row-cols-1 row-cols-lg-2 row-cols-xxl-4 g-4 mb-4">
 
     <!-- Países -->
-    <div class="col-12 col-lg-4">
+    <div class="col">
         <div class="card h-100 border-primary-subtle shadow-sm">
             <div class="card-body d-flex flex-column p-4">
                 <div class="d-flex align-items-center gap-3 mb-2">
@@ -26,6 +26,9 @@
                     </span>
                     <h2 class="h4 fw-bold mb-0">Países</h2>
                 </div>
+                <span class="badge bg-primary-subtle text-secondary-emphasis ms-auto">
+                    Etapa 1
+                </span>
                 <p class="mb-4">Gerencie os países e consulte a cobertura.</p>
                 <a href="{{ url_for('admin_paises') }}" class="btn btn-primary fw-bold mt-auto">
                     Acessar países
@@ -35,7 +38,7 @@
     </div>
 
     <!-- Clientes -->
-    <div class="col-12 col-lg-4">
+    <div class="col">
         <div class="card h-100 border-success-subtle shadow-sm">
             <div class="card-body d-flex flex-column p-4">
                 <div class="d-flex align-items-center gap-3 mb-2">
@@ -44,6 +47,9 @@
                     </span>
                     <h2 class="h4 fw-bold mb-0">Clientes</h2>
                 </div>
+                <span class="badge bg-success-subtle text-secondary-emphasis ms-auto">
+                    Etapa 2
+                </span>
                 <p class="mb-4">Gerencie clientes, eSIMs e pacotes.</p>
                 <a href="{{ url_for('admin_clientes') }}" class="btn btn-success fw-bold mt-auto">
                     Acessar clientes
@@ -53,8 +59,8 @@
     </div>
 
     <!-- Rede internacional -->
-    <div class="col-12 col-lg-4">
-        <div class="card card-roxo h-100 shadow-sm">
+    <div class="col">
+        <div class="card h-100 border-success-subtle shadow-sm">
             <div class="card-body d-flex flex-column p-4">
                 <div class="d-flex align-items-center gap-3 mb-2">
                     <span class="rounded-circle p-3 lh-1 bg-roxo-subtle">
@@ -62,9 +68,35 @@
                     </span>
                     <h2 class="h4 fw-bold mb-0">Rede internacional</h2>
                 </div>
+                <span class="badge bg-roxo-subtle text-secondary-emphasis ms-auto">
+                    Etapa 3
+                </span>
                 <p class="mb-4">Visualize a rede e execute os algoritmos.</p>
                 <a href="{{ url_for('admin_rede') }}" class="btn btn-roxo fw-bold mt-auto">
                     Acessar rede
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consulta integrada (Etapas 2 e 3) -->
+    <div class="col">
+        <div class="card h-100 border-success-subtle shadow-sm">
+            <div class="card-body d-flex flex-column p-4">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                        <span class="rounded-circle p-3 lh-1 bg-secondary-subtle text-secondary">
+                            <i class="bi bi-search fs-3" aria-hidden="true"></i>
+                        </span>
+                        <h2 class="h4 fw-bold mb-0">Consulta integrada</h2>
+                    </div>
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis ms-auto">
+                        Etapas 2 e 3
+                    </span>
+                </div>
+                <p class="mb-4">Consulte cliente, cobertura e rota.</p>
+                <a href="{{ url_for('admin_consulta') }}" class="btn btn-secondary fw-bold mt-auto">
+                    Consultar
                 </a>
             </div>
         </div>
@@ -142,7 +174,7 @@
 
             <!-- Grafo -->
             <div class="col-12 col-xl-4">
-                <div class="card card-roxo h-100">
+                <div class="card h-100 border-success-subtle">
                     <div class="card-body d-flex flex-column">
                         <h3 class="h5 fw-bold mb-3">
                             <i class="bi bi-diagram-3 text-roxo me-2" aria-hidden="true"></i>
@@ -156,14 +188,10 @@
                             {{ mini(grafo.maior_grau, "Maior grau", "bg-roxo-subtle") }}
                         </div>
 
-                        <div class="text-center mt-auto">
-                            <span class="badge badge-roxo fs-6 mb-2">
-                                Maior grau: {{ grafo.paises_maior_grau | join(", ") }}
-                            </span>
-                            <p class="small mb-3">
-                                {{ grafo.maior_grau }} conexões diretas por país.
-                            </p>
-                        </div>
+                        <p class="small mb-3">
+                            Valores demonstrativos: O grafo ainda não foi
+                            implementada.
+                        </p>
 
                         <a href="{{ url_for('admin_grafo') }}"
                            class="btn btn-outline-roxo fw-bold">

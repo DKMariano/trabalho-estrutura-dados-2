@@ -17,12 +17,6 @@
         "operadora": "Operadora PT",
         "tecnologia": "5G"
     },
-    "FR": {
-        "nome": "França",
-        "regiao": "Europa",
-        "operadora": "PR",
-        "tecnologia": "5G"
-    },
     "JP": {
         "nome": "Japão",
         "regiao": "Ásia",
@@ -40,5 +34,95 @@
         "regiao": "América",
         "operadora": "Arigato",
         "tecnologia": "5G"
+    },
+    "UY": {
+        "nome": "Uruguai",
+        "regiao": "América",
+        "operadora": "Operadora UY",
+        "tecnologia": "4G"
+    },
+    "PA": {
+        "nome": "Panamá",
+        "regiao": "América",
+        "operadora": "Operadora PA",
+        "tecnologia": "4G"
+    },
+    "CR": {
+        "nome": "Costa Rica",
+        "regiao": "América",
+        "operadora": "Operadora CR",
+        "tecnologia": "4G"
+    },
+    "CA": {
+        "nome": "Canadá",
+        "regiao": "América",
+        "operadora": "Operadora CA",
+        "tecnologia": "5G"
+    },
+    "ES": {
+        "nome": "Espanha",
+        "regiao": "Europa",
+        "operadora": "Operadora ES",
+        "tecnologia": "5G"
+    },
+    "GB": {
+        "nome": "Reino Unido",
+        "regiao": "Europa",
+        "operadora": "Operadora GB",
+        "tecnologia": "5G"
+    },
+    "NO": {
+        "nome": "Noruega",
+        "regiao": "Europa",
+        "operadora": "Operadora NO",
+        "tecnologia": "5G"
+    },
+    "SE": {
+        "nome": "Suécia",
+        "regiao": "Europa",
+        "operadora": "Operadora SE",
+        "tecnologia": "5G"
+    },
+    "FI": {
+        "nome": "Finlândia",
+        "regiao": "Europa",
+        "operadora": "Operadora FI",
+        "tecnologia": "4G"
+    },
+    "ID": {
+        "nome": "Indonésia",
+        "regiao": "Ásia",
+        "operadora": "Operadora ID",
+        "tecnologia": "4G"
+    },
+    "MY": {
+        "nome": "Malásia",
+        "regiao": "Ásia",
+        "operadora": "Operadora MY",
+        "tecnologia": "4G"
+    },
+    "TH": {
+        "nome": "Tailândia",
+        "regiao": "Ásia",
+        "operadora": "Operadora TH",
+        "tecnologia": "4G"
+    },
+    "IN": {
+        "nome": "Índia",
+        "regiao": "Ásia",
+        "operadora": "Operadora IN",
+        "tecnologia": "4G"
+    },
+    "CN": {
+        "nome": "China",
+        "regiao": "Ásia",
+        "operadora": "Operadora CN",
+        "tecnologia": "5G"
+    },
+    "RU": {
+        "nome": "Rússia",
+        "regiao": "Ásia",
+        "operadora": "Operadora RU",
+        "tecnologia": "4G"
     }
 }

@@ -53,10 +53,10 @@
 
                         <div class="col-12 col-md-6">
                             <label for="regiao" class="form-label fw-semibold">
-                                Região <span class="text-danger">*</span>
+                                Continente <span class="text-danger">*</span>
                             </label>
                             <select class="form-select" id="regiao" name="regiao" required>
-                                <option value="">Selecione a região</option>
+                                <option value="">Selecione o continente</option>
                                 {% for regiao in regioes %}
                                 <option value="{{ regiao }}"
                                     {% if dados_formulario.get('regiao') == regiao %}selected{% endif %}>
@@ -136,8 +136,8 @@
                         <span class="text-secondary">Utilize duas letras. Exemplo: BR para Brasil.</span>
                     </li>
                     <li class="mb-3">
-                        <strong class="d-block">Região e operadora</strong>
-                        <span class="text-secondary">Selecione a região e informe a operadora local.</span>
+                        <strong class="d-block">Continente e operadora</strong>
+                        <span class="text-secondary">Selecione o continente e informe a operadora local.</span>
                     </li>
                     <li>
                         <strong class="d-block">Tecnologia</strong>

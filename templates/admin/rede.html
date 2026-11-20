@@ -110,7 +110,7 @@
                         </span>
                     </h2>
 
-                    <a href="{{ url_for('admin_grafo') }}" class="btn btn-outline-primary">
+                    <a href="{{ url_for('admin_grafo') }}" class="btn btn-outline-roxo">
                         <i class="bi bi-share me-2" aria-hidden="true"></i>Ver Grafo
                     </a>
                 </div>
@@ -144,7 +144,7 @@
                     </span>
                     {% if dijkstra %}
                     <span class="d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-circle-fill text-success" aria-hidden="true"></i>Destino
+                        <i class="bi bi-circle-fill text-roxo" aria-hidden="true"></i>Destino
                     </span>
                     {% endif %}
                 </div>
@@ -174,7 +174,7 @@
 
                 {% if not ex %}
 
-                <div class="alert alert-warning mb-0" role="alert">
+                <div class="alert alert-roxo mb-0" role="alert">
                     <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
                     Esta combinação ainda não possui um cenário demonstrativo.
                     Use origem Brasil (BFS e DFS) ou Brasil → Itália (Dijkstra).
@@ -182,7 +182,7 @@
 
                 {% else %}
 
-                <span class="badge bg-success-subtle text-success-emphasis fs-6 mb-3">
+                <span class="badge bg-roxo-subtle text-roxo-emphasis fs-6 mb-3">
                     <i class="bi bi-check-circle me-1" aria-hidden="true"></i>Concluída
                 </span>
 
@@ -251,7 +251,7 @@
                 <h3 class="h6 fw-bold">
                     {{ 'Profundidade na árvore DFS' if ex.algoritmo == 'dfs' else 'Nível na árvore BFS' }}
                 </h3>
-                <div class="bg-primary-subtle rounded p-3 mb-2">
+                <div class="bg-roxo-subtle rounded p-3 mb-2">
                     {% for codigo in ex.ordem %}
                     <div><strong>{{ codigo }}:</strong> {{ ex.nivel[codigo] }}</div>
                     {% endfor %}
@@ -442,8 +442,8 @@
 </section>
 
 <div class="d-flex flex-wrap justify-content-end gap-3 mt-4">
-    <a href="{{ url_for('admin') }}" class="btn btn-outline-primary">Voltar ao dashboard</a>
-    <a href="{{ url_for('admin_grafo') }}" class="btn btn-outline-primary">Ver instrumentação do grafo</a>
+    <a href="{{ url_for('admin') }}" class="btn btn-outline-roxo">Voltar ao dashboard</a>
+    <a href="{{ url_for('admin_grafo') }}" class="btn btn-outline-roxo">Ver instrumentação do grafo</a>
 </div>
 
 <script>
@@ -466,7 +466,8 @@
     "modalSimulacao",
     "Dados simulados",
     "Os dados desta página são meramente simulações, criadas para mostrar como o layout vai funcionar. O grafo, os algoritmos (BFS, DFS e Dijkstra) e o desenho da rede serão implementados apenas na Etapa 3.",
-    3
+    3,
+    "roxo"
 ) }}
 
 {% endblock %}

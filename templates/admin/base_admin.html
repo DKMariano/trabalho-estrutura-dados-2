@@ -23,18 +23,22 @@
     {"rota": "admin_rede", "icone": "bi-diagram-3", "texto": "Rede internacional", "etapa": 3,
      "ativas": ["admin_rede"]},
     {"rota": "admin_grafo", "icone": "bi-share", "texto": "Grafo", "etapa": 3,
-     "ativas": ["admin_grafo"]},
+     "ativas": ["admin_grafo"]},     
+    {"rota": "admin_consulta", "icone": "bi-search", "texto": "Consulta integrada",
+     "etapa": "2e3", "etiqueta": "Etapas 2 e 3", "ativas": ["admin_consulta"]},
+     
 ] %}
 
 {% set cores_etapa = {
     1: "bg-primary-subtle text-primary-emphasis",
     2: "bg-success-subtle text-success-emphasis",
-    3: "badge-roxo"
+    3: "badge-roxo",
+    "2e3": "bg-secondary-subtle text-secondary-emphasis"
 } %}
 
-<div class="admin-layout">
+<div>
 
-    <header class="admin-topo">
+    <header class="bg-azul-escuro">
         <nav class="navbar admin-navbar flex-wrap gap-2" aria-label="Cabeçalho administrativo">
             <a class="navbar-brand" href="{{ url_for('admin') }}">
                 <img src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
@@ -45,7 +49,7 @@
         </nav>
     </header>
 
-    <div class="admin-corpo">
+    <div class="admin-corpo d-md-flex">
 
         <div class="d-md-none bg-white border-bottom p-3">
             <button class="btn btn-outline-primary d-inline-flex align-items-center gap-2"
@@ -72,7 +76,7 @@
                     <span>{{ item.texto }}</span>
                     {% if item.etapa %}
                     <span class="badge rounded-pill ms-auto text-nowrap {{ cores_etapa[item.etapa] }}">
-                        Etapa {{ item.etapa }}
+                        {{ item.etiqueta or ('Etapa ' ~ item.etapa) }}
                     </span>
                     {% endif %}
                 </a>
@@ -80,9 +84,9 @@
 
                 <hr>
 
-                <a class="nav-link" href="{{ url_for('login') }}">
+                <a class="nav-link" href="{{ url_for('inicio') }}">
                     <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
-                    <span>Sair</span>
+                    <span>Voltar ao site</span>
                 </a>
 
             </nav>
