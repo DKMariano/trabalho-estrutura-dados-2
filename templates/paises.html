@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Cobertura | DGB SIM{% endblock %}
+
+{% block content %}
+
+<main>
+
+    <!-- CONSULTA DE COBERTURA -->
+    <section class="fundo-imagem fundo-imagem-claro banner-publico
+                    d-flex align-items-center py-5"
+             style="--imagem: url('{{ url_for('static', filename='img/cobertura/cobertura-paises.jpg') }}')">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-7">
+
+                    <div class="barra-destaque bg-primary rounded-pill mb-3"
+                         aria-hidden="true"></div>
+
+                    <h1 class="display-5 fw-bold mb-3">
+                        Consulte a cobertura<br>
+                        no seu destino
+                    </h1>
+
+                    <p class="fs-5 mb-4">
+                        Verifique se há cobertura de internet
+                        no país que deseja visitar.
+                    </p>
+
+                    <form action="{{ url_for('paises') }}" method="POST" class="card shadow-sm">
+                        <div class="card-body p-3 p-lg-4">
+
+                            <label for="destino" class="form-label fw-semibold">Destino</label>
+
+                            <div class="row g-3">
+
+                                <div class="col-12 col-md-7">
+                                    <select id="destino" name="destino" class="form-select" required>
+                                        {% for codigo, pais in paises %}
+                                        <option value="{{ codigo }}"
+                                            {% if codigo == codigo_selecionado %}selected{% endif %}>
+                                            {{ pais.nome }} ({{ codigo }})
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="col-12 col-md-5">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        Consultar cobertura
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <div class="form-text mt-3">
+                                Selecione o país que deseja verificar
+                                a disponibilidade de internet.
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    {% if nao_encontrado %}
+    <section class="pt-4">
+        <div class="container">
+            <div class="alert alert-warning mb-0" role="alert">
+                <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
+                {% if codigo_selecionado %}
+                    Nenhuma cobertura encontrada para o código
+                    <strong>{{ codigo_selecionado }}</strong>.
+                {% else %}
+                    Selecione um destino para consultar a cobertura.
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- RESULTADO DA CONSULTA -->
+    {% if resultado %}
+
+    <section class="py-5 bg-body-tertiary">
+        <div class="container">
+            <div class="row g-4">
+
+                <!-- Dados de cobertura do país consultado -->
+                <div class="col-12 col-lg-6">
+                    <article class="card h-100 border-success shadow-sm">
+                        <div class="card-body p-4">
+
+                            <div class="d-flex align-items-center gap-3 mb-4">
+
+                                <span class="circulo d-inline-flex align-items-center justify-content-center
+                                             bg-success-subtle text-success fs-4" aria-hidden="true">
+                                    <i class="bi bi-check-lg"></i>
+                                </span>
+
+                                <div>
+                                    <h2 class="h4 fw-bold text-success mb-1">Cobertura disponível!</h2>
+                                    <p class="small text-secondary mb-0">
+                                        O DGB SIM possui cobertura para este destino.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <dl class="mb-0">
+
+                                <div class="d-flex justify-content-between border-bottom py-3">
+                                    <dt class="fw-normal text-secondary">País</dt>
+                                    <dd class="fw-bold mb-0">
+                                        {{ resultado.nome }} ({{ codigo_selecionado }})
+                                    </dd>
+                                </div>
+
+                                <div class="d-flex justify-content-between border-bottom py-3">
+                                    <dt class="fw-normal text-secondary">Continente</dt>
+                                    <dd class="fw-bold mb-0">{{ resultado.regiao }}</dd>
+                                </div>
+
+                                <div class="d-flex justify-content-between border-bottom py-3">
+                                    <dt class="fw-normal text-secondary">Operadora</dt>
+                                    <dd class="fw-bold mb-0">{{ resultado.operadora }}</dd>
+                                </div>
+
+                                <div class="d-flex justify-content-between pt-3">
+                                    <dt class="fw-normal text-secondary">Tecnologia</dt>
+                                    <dd class="mb-0">
+                                        <span class="badge bg-success-subtle text-success-emphasis">
+                                            {{ resultado.tecnologia }}
+                                        </span>
+                                    </dd>
+                                </div>
+
+                            </dl>
+
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Apresentação dos planos, sem associação automática ao destino -->
+                <div class="col-12 col-lg-6">
+                    <article class="card h-100 border-primary shadow-sm">
+                        <div class="card-body d-flex flex-column p-4">
+
+                            <div class="d-flex align-items-start gap-3 mb-4">
+
+                                <span class="circulo d-inline-flex align-items-center justify-content-center
+                                             bg-primary-subtle text-primary fs-4" aria-hidden="true">
+                                    <i class="bi bi-sim"></i>
+                                </span>
+
+                                <div>
+                                    <span class="d-block text-primary text-uppercase small fw-bold">
+                                        Próximo passo
+                                    </span>
+                                    <h2 class="h4 fw-bold mb-2">Internet para sua viagem</h2>
+                                    <p class="text-secondary mb-0">
+                                        Conheça as opções de planos de internet móvel da DGB SIM.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <h3 class="h6 mb-2">Planos compatíveis com {{ resultado.nome }}</h3>
+                            <ul class="list-group mb-4">
+                                {% for plano in planos_compativeis %}
+                                <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <div>
+                                        <strong>{{ plano.nome }}</strong>
+                                        <small class="d-block text-secondary">
+                                            {{ plano.dados_gb }} GB · {{ plano.validade_dias }} dias
+                                            {% if plano.categoria == 'Basic' %}
+                                            · {{ resultado.nome }} deverá ser um dos 3 países escolhidos
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <a href="{{ url_for('adquirir', plano=plano.codigo, destino=codigo_selecionado) }}"
+                                       class="btn btn-sm btn-outline-primary">Adquirir</a>
+                                </li>
+                                {% else %}
+                                <li class="list-group-item text-secondary">
+                                    Nenhum plano disponível para este destino.
+                                </li>
+                                {% endfor %}
+                            </ul>
+
+                            <a href="{{ url_for('planos') }}" class="btn btn-primary w-100 mt-auto">
+                                Ver planos disponíveis
+                                <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+                            </a>
+
+                        </div>
+                    </article>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    {% else %}
+
+    <!-- Chamada inicial para planos enquanto não houver resultado -->
+    <section class="py-5 bg-body-tertiary">
+        <div class="container">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <div class="row align-items-center g-4">
+
+                        <div class="col-12 col-md">
+                            <span class="d-block text-primary text-uppercase small fw-bold">
+                                Próximo passo
+                            </span>
+                            <h2 class="h3 fw-bold">Confira os planos disponíveis</h2>
+                            <p class="text-secondary mb-0">
+                                Conheça as opções de internet móvel para sua viagem.
+                            </p>
+                        </div>
+
+                        <div class="col-12 col-md-auto">
+                            <a href="{{ url_for('planos') }}" class="btn btn-primary btn-lg">
+                                Ver planos disponíveis
+                                <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% endif %}
+
+</main>
+
+{% endblock %}

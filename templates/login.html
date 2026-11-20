@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Acesso | DGB SIM{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+
+<!-- TELA DE ACESSO -->
+<main class="row g-0 min-vh-100">
+
+    <!-- APRESENTAÇÃO DO DGB SIM -->
+    {% include "_painel_acesso.html" %}
+
+
+    <!-- ÁREA DE ACESSO -->
+    <section class="col-lg-6 bg-body-tertiary d-flex align-items-center">
+
+        <div class="container-fluid py-4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-11 col-xl-9">
+
+                    <div class="card border-0 shadow rounded-4">
+                        <div class="card-body p-4 p-lg-5">
+
+                            <!-- Logo para fundo claro -->
+                            <img src="{{ url_for('static', filename='img/logo/logo-dgb-sim2.png') }}"
+                                 alt="DGB SIM - Internet internacional com eSIM"
+                                 width="200" height="67" class="d-block mx-auto mb-3">
+
+                            <div class="text-center mb-4">
+                                <h2 class="h3 fw-bold">Acessar o sistema</h2>
+                                <p class="text-secondary mb-0">
+                                    Selecione o tipo de acesso e entre com
+                                    suas credenciais para continuar.
+                                </p>
+                            </div>
+
+                            {# Mensagens enviadas por outras páginas (ex.: cliente não encontrado) #}
+                            {% with mensagens = get_flashed_messages() %}
+                            {% for texto in mensagens %}
+                            <div class="alert alert-danger" role="alert">{{ texto }}</div>
+                            {% endfor %}
+                            {% endwith %}
+
+                            {% if mensagem %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ mensagem }}
+                            </div>
+                            {% endif %}
+
+                            <form method="POST" action="{{ url_for('login') }}">
+
+                                <!-- Tipo de acesso -->
+                                <div class="row g-3 mb-4">
+
+                                    {% for valor, icone, titulo, texto in [
+                                        ("cliente", "bi-person-fill", "Cliente",
+                                         "Consultar cobertura e contratar planos"),
+                                        ("administrador", "bi-gear-fill", "Administrador",
+                                         "Gerenciar o sistema")
+                                    ] %}
+                                    <div class="col-6">
+                                        <input type="radio" class="btn-check" name="tipo_acesso"
+                                               id="tipo-{{ valor }}" value="{{ valor }}"
+                                               autocomplete="off" {% if loop.first %}checked{% endif %}>
+
+                                        <label class="btn btn-outline-primary w-100 h-100 d-flex flex-column
+                                                      align-items-center gap-1 py-3"
+                                               for="tipo-{{ valor }}">
+                                            <i class="bi {{ icone }} fs-4" aria-hidden="true"></i>
+                                            <strong>{{ titulo }}</strong>
+                                            <small>{{ texto }}</small>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+
+                                </div>
+
+                                <!-- Credenciais -->
+                                <div class="mb-3">
+                                    <label for="usuario" class="form-label fw-semibold">
+                                        E-mail (cliente) ou usuário (administrador)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-person" aria-hidden="true"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="usuario" name="usuario"
+                                               placeholder="Digite seu e-mail ou usuário"
+                                               value="{{ usuario }}" autocomplete="username">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="senha" class="form-label fw-semibold">Senha</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-lock" aria-hidden="true"></i>
+                                        </span>
+                                        <input type="password" class="form-control" id="senha" name="senha"
+                                               placeholder="Digite sua senha"
+                                               autocomplete="current-password">
+
+                                        <!-- Controle preparado para exibir ou ocultar a senha -->
+                                        <button type="button" class="btn btn-outline-secondary"
+                                                aria-label="Exibir ou ocultar senha">
+                                            <i class="bi bi-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Ação principal -->
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    Entrar
+                                    <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+                                </button>
+
+                                <p class="text-center mt-3 mb-2">
+                                    <a href="{{ url_for('inicio') }}"
+                                       class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">
+                                        <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
+                                        Voltar para o início
+                                    </a>
+                                </p>
+
+                                <p class="text-center small text-secondary mb-0">
+                                    Ainda não possui uma conta?
+                                    <a href="{{ url_for('criar_conta_cliente') }}"
+                                       class="fw-semibold">Criar conta</a>
+                                </p>
+
+                            </form>
+
+                            <!-- Informação sobre o MVP -->
+                            <div class="alert alert-primary d-flex gap-2 small mt-4 mb-0" role="note">
+                                <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+                                <div>
+                                    <strong class="d-block">Acesso simplificado</strong>
+                                    Esta é uma versão acadêmica desenvolvida para fins de demonstração.
+                                    Seu layout não é definitivo e poderá sofrer alterações no
+                                    decorrer das etapas.
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</main>
+
+{% endblock %}

@@ -1,0 +1,240 @@
+/* DGB SIM — estilos globais (carregados em todas as páginas).
+
+   O que o Bootstrap já faz é feito no HTML, com classes do Bootstrap.
+   Aqui ficam só a identidade da marca, a cor roxa (que o Bootstrap não
+   tem) e o layout do painel (área administrativa e área do cliente). */
+
+:root {
+    /* Marca */
+    --azul-escuro: #062f5b;
+    --azul-principal: #0067b8;
+    --azul-destaque: #168cff;
+    --azul-claro: #eaf4ff;
+    --fundo-claro: #f4f8fc;
+    --texto-principal: #102a43;
+    --texto-secundario: #627d98;
+    --borda: #e1e8f0;
+
+    /* Roxo, a cor da Etapa 3 */
+    --roxo: #5b1a9c;
+    --roxo-rgb: 91, 26, 156;
+    --roxo-escuro: #4b0f87;
+    --roxo-escuro-rgb: 75, 15, 135;
+    --roxo-hover: #3b0c6b;
+    --roxo-ativo: #340a5f;
+    --roxo-ativo-borda: #2f0956;
+    --roxo-claro: #f0e6ff;
+    --roxo-fundo: #f6efff;
+    --roxo-borda: #d9c4f5;
+}
+
+body {
+    color: var(--texto-principal);
+}
+
+
+/* ==========================================
+   UTILITÁRIOS QUE O BOOTSTRAP NÃO TEM
+========================================== */
+
+/* Azul-escuro da marca (cabeçalhos e rodapé). */
+.bg-azul-escuro {
+    background-color: var(--azul-escuro) !important;
+}
+
+/* Barra de destaque acima dos títulos dos banners
+   (cor e arredondamento vêm de bg-primary e rounded-pill). */
+.barra-destaque {
+    width: 4.25rem;
+    height: 0.5rem;
+}
+
+
+/* ==========================================
+   ROXO (Etapa 3)
+========================================== */
+
+.badge-roxo,
+.bg-roxo-subtle {
+    background-color: var(--roxo-claro);
+    color: var(--roxo);
+}
+
+.text-roxo {
+    color: var(--roxo);
+}
+
+.bg-roxo {
+    background-color: var(--roxo) !important;
+}
+
+.border-roxo {
+    border-color: var(--roxo) !important;
+}
+
+.border-roxo-subtle {
+    border-color: var(--roxo-borda) !important;
+}
+
+.card-roxo {
+    --bs-card-bg: var(--roxo-fundo);
+    --bs-card-border-color: var(--roxo-borda);
+}
+
+.btn-roxo {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--roxo-escuro);
+    --bs-btn-border-color: var(--roxo-escuro);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--roxo-hover);
+    --bs-btn-hover-border-color: var(--roxo-hover);
+    --bs-btn-focus-shadow-rgb: var(--roxo-escuro-rgb);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--roxo-ativo);
+    --bs-btn-active-border-color: var(--roxo-ativo-borda);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--roxo-escuro);
+    --bs-btn-disabled-border-color: var(--roxo-escuro);
+}
+
+.btn-outline-roxo {
+    --bs-btn-color: var(--roxo);
+    --bs-btn-border-color: var(--roxo);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--roxo-escuro);
+    --bs-btn-hover-border-color: var(--roxo-escuro);
+    --bs-btn-focus-shadow-rgb: var(--roxo-rgb);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--roxo-escuro);
+    --bs-btn-active-border-color: var(--roxo-escuro);
+    --bs-btn-disabled-color: var(--roxo);
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: var(--roxo);
+}
+
+.pagination-roxo {
+    --bs-pagination-color: var(--roxo);
+    --bs-pagination-hover-color: var(--roxo-escuro);
+    --bs-pagination-hover-bg: var(--roxo-claro);
+    --bs-pagination-focus-color: var(--roxo-escuro);
+    --bs-pagination-focus-bg: var(--roxo-claro);
+    --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(var(--roxo-rgb), 0.25);
+    --bs-pagination-active-bg: var(--roxo-escuro);
+    --bs-pagination-active-border-color: var(--roxo-escuro);
+}
+
+
+/* ==========================================
+   PAINEL (área administrativa e área do cliente)
+========================================== */
+
+.admin-navbar {
+    min-height: 76px;
+    padding: 0 32px;
+}
+
+.admin-logo {
+    display: block;
+    width: 180px;
+    height: auto;
+}
+
+.admin-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--bs-white);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.admin-corpo {
+    min-height: calc(100vh - 76px);
+}
+
+/* Menu lateral: em cima do conteúdo no celular, ao lado no desktop. */
+.admin-menu {
+    flex-shrink: 0;
+    padding: 28px 16px;
+    background-color: var(--bs-white);
+    border-bottom: 1px solid var(--borda);
+}
+
+.admin-conteudo {
+    min-width: 0;
+    flex: 1;
+    padding: 40px 32px;
+    background: linear-gradient(160deg, var(--fundo-claro) 0%, #e3f0ff 100%);
+}
+
+.admin-conteudo .card {
+    --bs-card-border-radius: 0.75rem;
+}
+
+.admin-menu-nav {
+    gap: 6px;
+}
+
+.admin-menu-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 14px;
+    color: var(--texto-principal);
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.admin-menu-nav .nav-link i {
+    width: 22px;
+    flex-shrink: 0;
+    color: var(--texto-secundario);
+    font-size: 20px;
+    text-align: center;
+}
+
+.admin-menu-nav .nav-link:hover {
+    color: var(--azul-principal);
+    background-color: var(--fundo-claro);
+}
+
+.admin-menu-nav .nav-link.active {
+    color: var(--azul-principal);
+    background-color: var(--azul-claro);
+    font-weight: 700;
+}
+
+.admin-menu-nav .nav-link:hover i,
+.admin-menu-nav .nav-link.active i {
+    color: var(--azul-principal);
+}
+
+.admin-menu-nav .nav-link .badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.admin-menu-nav hr {
+    margin: 18px 0;
+    border-color: var(--borda);
+}
+
+@media (min-width: 768px) {
+    .admin-menu {
+        width: 280px;
+        border-right: 1px solid var(--borda);
+        border-bottom: 0;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .admin-conteudo {
+        padding: 32px 24px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .admin-conteudo {
+        padding: 28px 18px;
+    }
+}

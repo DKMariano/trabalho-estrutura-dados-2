@@ -1,0 +1,101 @@
+{#
+  DESENHO DO GRAFO
+
+  Hoje: SVG gerado aqui, com os dados demonstrativos de "rede".
+  Com igraph/Cairo (único trecho a trocar na página):
+    1. gerar o PNG/SVG em Python (igraph.plot com target=...Cairo...);
+    2. salvar em static/img/rede/ e enviar rede["imagem"] = URL da imagem;
+    3. este macro passa a exibir <img> e o SVG abaixo deixa de ser usado.
+
+  Contrato de "rede":
+    vertices: [{codigo, nome, x, y}]   x e y em qualquer escala (o layout do
+                                       igraph cai direto aqui; é reescalado)
+    arestas:  [{origem, destino, latencia_ms, custo}]
+    imagem:   URL da imagem do Cairo, ou None
+
+  Parâmetros:
+    vertices_dest / arestas_dest: o que a execução percorreu (em azul)
+    origem / destino:             vértices de partida e de chegada
+    peso:                         campo da aresta exibido ("latencia_ms" ou "custo")
+    unidade:                      "ms" ou "UC"
+#}
+{% macro grafo(rede, vertices_dest=[], arestas_dest=[], origem=None, destino=None,
+               peso="latencia_ms", unidade="ms") %}
+
+{% if rede.imagem %}
+
+<img src="{{ rede.imagem }}" class="img-fluid d-block mx-auto"
+     alt="Rede internacional gerada com igraph e Cairo">
+
+{% else %}
+
+{% set pos = {} %}
+{% for v in rede.vertices %}{% set _ = pos.update({v.codigo: v}) %}{% endfor %}
+
+{# Área do desenho: x de 100 a 700, y de 55 a 255 (as coordenadas são
+   reescaladas, então qualquer layout do igraph ocupa o quadro todo) #}
+{% set xs = rede.vertices | map(attribute='x') | list %}
+{% set ys = rede.vertices | map(attribute='y') | list %}
+{% set min_x = xs | min %}
+{% set min_y = ys | min %}
+{% set larg = ((xs | max) - min_x) or 1 %}
+{% set alt = ((ys | max) - min_y) or 1 %}
+
+<svg class="d-block w-100 h-auto" viewBox="0 0 800 330"
+     xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Grafo da rede internacional com {{ rede.vertices | length }} países e {{ rede.arestas | length }} conexões">
+
+    <!-- ARESTAS -->
+    {% for a in rede.arestas %}
+        {% set p1 = pos[a.origem] %}
+        {% set p2 = pos[a.destino] %}
+        {% set x1 = 100 + ((p1.x - min_x) / larg) * 600 %}
+        {% set y1 = 55 + ((p1.y - min_y) / alt) * 200 %}
+        {% set x2 = 100 + ((p2.x - min_x) / larg) * 600 %}
+        {% set y2 = 55 + ((p2.y - min_y) / alt) * 200 %}
+        {% set marcada = ([a.origem, a.destino] in arestas_dest) or ([a.destino, a.origem] in arestas_dest) %}
+
+        <line x1="{{ x1 }}" y1="{{ y1 }}" x2="{{ x2 }}" y2="{{ y2 }}"
+              stroke="{{ '#0866ee' if marcada else '#8994a3' }}"
+              stroke-width="{{ 5 if marcada else 2 }}"
+              {% if not marcada %}stroke-dasharray="8 6"{% endif %}
+              stroke-linecap="round"/>
+
+        <text x="{{ (x1 + x2) / 2 }}" y="{{ (y1 + y2) / 2 - 10 }}"
+              text-anchor="middle" font-size="15" font-weight="600"
+              fill="{{ '#0b4cb5' if marcada else '#52606d' }}"
+              stroke="#ffffff" stroke-width="5" paint-order="stroke">
+            {{ "%g" | format(a[peso]) }} {{ unidade }}
+        </text>
+    {% endfor %}
+
+    <!-- VÉRTICES -->
+    {% for v in rede.vertices %}
+        {% set x = 100 + ((v.x - min_x) / larg) * 600 %}
+        {% set y = 55 + ((v.y - min_y) / alt) * 200 %}
+
+        {% if v.codigo == origem %}
+            {% set preenchimento, borda, texto = '#0866ee', '#0b4cb5', '#ffffff' %}
+        {% elif v.codigo == destino %}
+            {% set preenchimento, borda, texto = '#198754', '#146c43', '#ffffff' %}
+        {% elif v.codigo in vertices_dest %}
+            {% set preenchimento, borda, texto = '#e8f2ff', '#0866ee', '#062f5b' %}
+        {% else %}
+            {% set preenchimento, borda, texto = '#f1f5f9', '#8994a3', '#062f5b' %}
+        {% endif %}
+
+        <circle cx="{{ x }}" cy="{{ y }}" r="29"
+                fill="{{ preenchimento }}" stroke="{{ borda }}" stroke-width="3"/>
+
+        <text x="{{ x }}" y="{{ y + 6 }}" text-anchor="middle"
+              font-size="19" font-weight="700" fill="{{ texto }}">{{ v.codigo }}</text>
+
+        <text x="{{ x }}" y="{{ y + 52 }}" text-anchor="middle"
+              font-size="14" fill="#334e68">{{ v.nome }}</text>
+    {% endfor %}
+
+</svg>
+
+{% endif %}
+
+{% endmacro %}

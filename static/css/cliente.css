@@ -1,0 +1,27 @@
+/* DGB SIM — área do cliente (o que não é compartilhado com o admin). */
+
+/* Banner com imagem à direita (some no celular). */
+.cliente-banner {
+    background-color: var(--azul-claro);
+    background-image: url("../img/cliente/cliente-banner-superior.png");
+    background-position: right center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+/* Barra vertical azul dos títulos de seção. */
+.cliente-marcador {
+    display: inline-block;
+    width: 6px;
+    height: 24px;
+    margin-right: 10px;
+    vertical-align: middle;
+    border-radius: 4px;
+    background: #0866ee;
+}
+
+@media (max-width: 767.98px) {
+    .cliente-banner {
+        background-image: none;
+    }
+}

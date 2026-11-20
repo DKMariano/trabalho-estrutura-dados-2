@@ -1,0 +1,138 @@
+{% extends "cliente/base_cliente.html" %}
+
+{% block title %}Minha conta | DGB SIM{% endblock %}
+
+{% block cliente_content %}
+
+{% from "cliente/_componentes.html" import banner %}
+
+{{ banner("Minha conta", "Confira seus dados cadastrais, seu eSIM e o pacote associado.") }}
+
+<div class="row g-4">
+
+    <!-- Dados do cliente + eSIM -->
+    <div class="col-12 col-lg-7">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4">
+
+                <h2 class="h4 fw-bold mb-4">
+                    <span class="cliente-marcador bg-success"></span>Dados do cliente
+                </h2>
+
+                <div class="row g-4">
+                    <div class="col-12 col-md-6">
+                        <small class="text-body-secondary d-block">ID do cliente</small>
+                        <strong class="fs-5">{{ cliente["id"] }}</strong>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <small class="text-body-secondary d-block">Nome completo</small>
+                        <strong class="fs-5">{{ cliente["nome"] }}</strong>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <small class="text-body-secondary d-block">E-mail</small>
+                        <strong class="fs-5 text-break">{{ cliente["email"] }}</strong>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <small class="text-body-secondary d-block">Status</small>
+                        <span class="badge text-bg-success fs-6">
+                            <i class="bi bi-check-circle me-1" aria-hidden="true"></i>Ativo
+                        </span>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h2 class="h4 fw-bold mb-3">
+                    <span class="cliente-marcador bg-success"></span>eSIM associado
+                </h2>
+
+                <small class="text-body-secondary d-block">Identificador do eSIM</small>
+                <strong class="fs-4 d-block mb-3">{{ cliente["esim"] }}</strong>
+
+                <p class="small mb-0">
+                    Os dados cadastrais e as associações são mantidos pelo administrador.
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Pacote associado -->
+    <div class="col-12 col-lg-5">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex flex-column p-4">
+
+                <h2 class="h4 fw-bold mb-3">
+                    <i class="bi bi-sim text-success fs-3 me-2 align-middle"></i>Pacote associado
+                </h2>
+
+                {% if pacote %}
+                <table class="table mb-4">
+                    <tbody>
+                        <tr>
+                            <td>Código do pacote</td>
+                            <th class="text-end">{{ cliente["pacote"] }}</th>
+                        </tr>
+                        <tr>
+                            <td>Nome</td>
+                            <th class="text-end">{{ pacote["nome"] }}</th>
+                        </tr>
+                        <tr>
+                            <td>Franquia de dados</td>
+                            <th class="text-end">{{ pacote["dados_gb"] }} GB</th>
+                        </tr>
+                        <tr>
+                            <td>Vigência</td>
+                            <th class="text-end">
+                                {{ cliente.contratacao_inicio | data_br }} a {{ cliente.contratacao_fim | data_br }}
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>Situação do plano</td>
+                            <th class="text-end">
+                                {% if plano_vigente %}
+                                <span class="badge bg-success-subtle text-success-emphasis">Plano vigente</span>
+                                {% else %}
+                                <span class="badge text-bg-warning">Plano expirado</span>
+                                {% endif %}
+                            </th>
+                        </tr>
+                        {% if cliente.paises_ativos %}
+                        <tr>
+                            <td>Países escolhidos (Basic)</td>
+                            <th class="text-end">{{ cliente.paises_ativos | join(', ') }}</th>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                {% else %}
+                {% if cliente.pacote is none %}
+                <p class="text-body-secondary">Sem plano contratado.</p>
+                {% else %}
+                <p class="text-body-secondary">Pacote não encontrado no catálogo.</p>
+                {% endif %}
+                {% endif %}
+
+                <p class="border-top pt-3 mb-3">
+                    Consulte seu destino e troque de plano quando precisar.
+                </p>
+
+                <a href="{{ url_for('cliente_contratar', cliente_id=cliente['id']) }}"
+                    class="btn btn-success btn-lg fw-bold mt-auto">
+                    {% if pacote and plano_vigente %}
+                    <i class="bi bi-arrow-left-right me-2"></i>Trocar plano
+                    {% else %}
+                    <i class="bi bi-bag-plus me-2"></i>Contratar plano
+                    {% endif %}
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

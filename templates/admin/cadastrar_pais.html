@@ -1,0 +1,160 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Cadastrar país | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner, breadcrumb, secao %}
+
+{{ breadcrumb("Países", url_for('admin_paises'), "Cadastrar país") }}
+{{ banner("Cadastrar país", "Cadastre um país e informe os dados de cobertura.") }}
+
+<div class="row g-4 align-items-stretch">
+
+    <!-- Formulário -->
+    <div class="col-12 col-xl-8">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                {{ secao("Informações do país") }}
+
+                {% if mensagem %}
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
+                    {{ mensagem }}
+                </div>
+                {% endif %}
+
+                <form action="{{ url_for('admin_cadastrar_pais') }}" method="POST">
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+                            <label for="nome" class="form-label fw-semibold">
+                                Nome do país <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="nome" name="nome"
+                                   placeholder="Ex.: Itália"
+                                   value="{{ dados_formulario.get('nome', '') }}" required>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="codigo" class="form-label fw-semibold">
+                                Código (ISO) <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control text-uppercase"
+                                   id="codigo" name="codigo" placeholder="Ex.: IT"
+                                   value="{{ dados_formulario.get('codigo', '') }}"
+                                   minlength="2" maxlength="2" required>
+                            <div class="form-text">
+                                Código de 2 letras (ISO 3166-1 alpha-2).
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="regiao" class="form-label fw-semibold">
+                                Continente <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="regiao" name="regiao" required>
+                                <option value="">Selecione o continente</option>
+                                {% for regiao in regioes %}
+                                <option value="{{ regiao }}"
+                                    {% if dados_formulario.get('regiao') == regiao %}selected{% endif %}>
+                                    {{ regiao }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="operadora" class="form-label fw-semibold">
+                                Operadora local <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="operadora"
+                                   name="operadora" placeholder="Ex.: Operadora IT"
+                                   value="{{ dados_formulario.get('operadora', '') }}" required>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="tecnologia" class="form-label fw-semibold">
+                                Tecnologia disponível <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="tecnologia" name="tecnologia" required>
+                                <option value="">Selecione a tecnologia</option>
+                                {% for tecnologia in tecnologias %}
+                                <option value="{{ tecnologia }}"
+                                    {% if dados_formulario.get('tecnologia') == tecnologia %}selected{% endif %}>
+                                    {{ tecnologia }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">
+                                Tecnologia de rede disponível neste país.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex flex-wrap justify-content-between gap-3">
+                        <a href="{{ url_for('admin_paises') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-floppy me-2" aria-hidden="true"></i>Salvar país
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- Orientações -->
+    <div class="col-12 col-xl-4">
+        <aside class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <h2 class="h5 fw-bold mb-3">
+                    <i class="bi bi-info-circle text-primary me-2" aria-hidden="true"></i>
+                    Como preencher
+                </h2>
+
+                <p class="text-secondary">
+                    Preencha os campos com as informações do país atendido.
+                </p>
+
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-3">
+                        <strong class="d-block">Nome do país</strong>
+                        <span class="text-secondary">Informe o nome completo. Exemplo: Brasil.</span>
+                    </li>
+                    <li class="mb-3">
+                        <strong class="d-block">Código ISO</strong>
+                        <span class="text-secondary">Utilize duas letras. Exemplo: BR para Brasil.</span>
+                    </li>
+                    <li class="mb-3">
+                        <strong class="d-block">Continente e operadora</strong>
+                        <span class="text-secondary">Selecione o continente e informe a operadora local.</span>
+                    </li>
+                    <li>
+                        <strong class="d-block">Tecnologia</strong>
+                        <span class="text-secondary">Selecione a tecnologia disponível no destino.</span>
+                    </li>
+                </ul>
+
+                <div class="alert alert-primary small mb-0" role="note">
+                    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+                    Campos com asterisco (*) são obrigatórios. O código deve ser
+                    único e não poderá ser alterado após o cadastro.
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+</div>
+
+{% endblock %}

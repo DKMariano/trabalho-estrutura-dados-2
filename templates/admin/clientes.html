@@ -1,0 +1,253 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Clientes | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner, seletor_por_pagina, switch_status, botao_lixeira, modal_status, modal_excluir %}
+
+{{ banner("Clientes", "Gerencie os clientes, seus eSIMs e pacotes associados.") }}
+
+{% set filtrando = busca or pacote_selecionado or status_selecionado != 'ativo' %}
+{% set recortes = {"ativo": "clientes ativos", "inativo": "clientes inativos", "todos": "clientes no total"} %}
+
+<!-- BUSCA E FILTROS -->
+<section class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 p-lg-4">
+
+        <form action="{{ url_for('admin_clientes') }}" method="GET"
+              class="row g-3 align-items-end">
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="busca" class="form-label fw-semibold">
+                    Buscar cliente
+                </label>
+                <input type="search" id="busca" name="busca" class="form-control"
+                       placeholder="ID, e-mail ou nome" value="{{ busca }}">
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-2">
+                <label for="status" class="form-label fw-semibold">Status</label>
+                <select id="status" name="status" class="form-select">
+                    <option value="ativo"
+                        {% if status_selecionado == 'ativo' %}selected{% endif %}>Ativos</option>
+                    <option value="inativo"
+                        {% if status_selecionado == 'inativo' %}selected{% endif %}>Inativos</option>
+                    <option value="todos"
+                        {% if status_selecionado == 'todos' %}selected{% endif %}>Todos</option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="pacote" class="form-label fw-semibold">Filtrar por pacote</label>
+                <select id="pacote" name="pacote" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="sem" {% if pacote_selecionado == 'sem' %}selected{% endif %}>Sem plano</option>
+                    {% for codigo, dados in pacotes.items() %}
+                    <option value="{{ codigo }}"
+                        {% if pacote_selecionado == codigo|string %}selected{% endif %}>
+                        {{ codigo }} — {{ dados.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 col-lg-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success flex-fill">
+                    <i class="bi bi-funnel me-2" aria-hidden="true"></i>Filtrar
+                </button>
+
+                <a href="{{ url_for('admin_cadastrar_cliente') }}"
+                   class="btn btn-outline-success flex-fill">
+                    <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Cadastrar cliente
+                </a>
+            </div>
+
+            <div class="col-12">
+                <small class="text-secondary">
+                    ID completo: busca na Árvore B de ID. E-mail: busca na Árvore B de e-mail.
+                    Outro texto: parte do nome. A lista abre com os clientes ativos.
+                </small>
+            </div>
+
+            {% if filtrando %}
+            <div class="col-12">
+                <a href="{{ url_for('admin_clientes') }}"
+                   class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-circle me-2" aria-hidden="true"></i>Limpar filtros
+                </a>
+            </div>
+            {% endif %}
+
+            <input type="hidden" name="por_pagina" value="{{ por_pagina }}">
+        </form>
+
+    </div>
+</section>
+
+<!-- LISTAGEM -->
+<section class="card border-0 shadow-sm">
+    <div class="card-body p-3 p-lg-4">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+
+            <h2 class="h4 fw-bold mb-0 d-flex flex-wrap align-items-center gap-2">
+                Clientes cadastrados
+                <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-6">
+                    {{ total_filtrado }} {{ recortes.get(status_selecionado, "clientes") }}
+                </span>
+            </h2>
+
+            <a href="{{ url_for('admin_arvore_b') }}" class="btn btn-outline-success">
+                <i class="bi bi-diagram-2 me-2" aria-hidden="true"></i>Ver Árvore B
+            </a>
+
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0"
+                   aria-label="Clientes cadastrados">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">E-mail</th>
+                        <th scope="col">eSIM</th>
+                        <th scope="col">Pacote</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <td>{{ cliente.id }}</td>
+                        <td class="fw-bold">{{ cliente.nome }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.esim }}</td>
+                        <td>
+                            {% if cliente.pacote is none %}
+                            <span class="text-secondary">Sem plano</span>
+                            {% else %}
+                            <strong>{{ cliente.pacote }}</strong>
+                            <small class="d-block text-secondary">
+                                {{ nomes_pacotes.get(cliente.pacote|string, "Pacote não encontrado") }}
+                            </small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ switch_status(cliente) }}
+                        </td>
+                        <td class="text-center text-nowrap">
+
+                            <a href="{{ url_for('admin_visualizar_cliente', cliente_id=cliente.id) }}"
+                               class="btn btn-sm btn-outline-success"
+                               title="Visualizar cliente"
+                               aria-label="Visualizar {{ cliente.nome }}">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </a>
+
+                            <a href="{{ url_for('admin_editar_cliente', cliente_id=cliente.id) }}"
+                               class="btn btn-sm btn-outline-success"
+                               title="Editar cliente"
+                               aria-label="Editar {{ cliente.nome }}">
+                                <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+                            </a>
+
+                            {{ botao_lixeira(cliente) }}
+
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-secondary py-5">
+                            <i class="bi bi-search d-block fs-3 mb-2" aria-hidden="true"></i>
+                            Nenhum cliente encontrado.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Rodapé e paginação -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3">
+
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                {{ seletor_por_pagina('admin_clientes', opcoes_por_pagina, por_pagina,
+                                      {'busca': busca, 'status': status_selecionado, 'pacote': pacote_selecionado}) }}
+
+                <span class="small text-secondary">
+                    {% if total_filtrado > 0 %}
+                        Mostrando {{ inicio }} a {{ fim }} de {{ total_filtrado }} clientes
+                    {% else %}
+                        Nenhum cliente para exibir
+                    {% endif %}
+                </span>
+            </div>
+
+            {% if total_paginas > 1 %}
+            <nav aria-label="Paginação de clientes">
+                <ul class="pagination mb-0">
+
+                    <li class="page-item {% if pagina == 1 %}disabled{% endif %}">
+                        <a class="page-link" aria-label="Página anterior"
+                           href="{{ url_for('admin_clientes', pagina=pagina - 1, busca=busca, status=status_selecionado, pacote=pacote_selecionado, por_pagina=por_pagina) }}">
+                            &laquo;
+                        </a>
+                    </li>
+
+                    {% for numero in paginas_visiveis %}
+                        {% if numero is none %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item {% if numero == pagina %}active{% endif %}">
+                            <a class="page-link"
+                               href="{{ url_for('admin_clientes', pagina=numero, busca=busca, status=status_selecionado, pacote=pacote_selecionado, por_pagina=por_pagina) }}">
+                                {{ numero }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    <li class="page-item {% if pagina == total_paginas %}disabled{% endif %}">
+                        <a class="page-link" aria-label="Próxima página"
+                           href="{{ url_for('admin_clientes', pagina=pagina + 1, busca=busca, status=status_selecionado, pacote=pacote_selecionado, por_pagina=por_pagina) }}">
+                            &raquo;
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+            {% endif %}
+
+        </div>
+
+    </div>
+</section>
+
+<!-- CONFIRMAÇÃO DO SWITCH (inativar/reativar) E DA LIXEIRA (só inativos) -->
+{% for cliente in clientes %}
+{{ modal_status(cliente) }}
+{% if cliente.status == "inativo" %}
+{{ modal_excluir(cliente) }}
+{% endif %}
+{% endfor %}
+
+<script>
+    /* Lixeira: o botão final só habilita com o ID (ou EXCLUIR) e a ciência.
+       O servidor revalida tudo antes de excluir. */
+    document.querySelectorAll('.form-excluir').forEach(function (form) {
+        var botao = form.querySelector('button[type="submit"]');
+        form.addEventListener('input', function () {
+            var texto = form.elements.confirmacao.value.trim();
+            botao.disabled = !((texto === form.dataset.id || texto === 'EXCLUIR')
+                               && form.elements.ciencia.checked);
+        });
+    });
+</script>
+
+{% endblock %}

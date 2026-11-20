@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Adquirir {{ pacote.nome }} | DGB SIM{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+
+{% set paises_do_plano = paises_por_regiao.get(pacote.regiao, []) %}
+
+{# Mesmo estilo da tela de acesso: acesso à esquerda, plano à direita #}
+<form method="POST" id="formAdquirir"
+      action="{{ url_for('adquirir', plano=plano, destino=destino or None) }}">
+
+<input type="hidden" name="confirmado" value="">
+
+<main class="row g-0 min-vh-100">
+
+    <!-- ESQUERDA: acesso do cliente -->
+    <section class="col-lg-6 bg-body-tertiary d-flex align-items-center order-2 order-lg-1">
+
+        <div class="container-fluid py-4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-11 col-xl-9">
+
+                    <div class="card border-0 shadow rounded-4">
+                        <div class="card-body p-4 p-lg-5">
+
+                            <img src="{{ url_for('static', filename='img/logo/logo-dgb-sim2.png') }}"
+                                 alt="DGB SIM - Internet internacional com eSIM"
+                                 width="200" height="67" class="d-block mx-auto mb-3">
+
+                            <div class="text-center mb-4">
+                                <h1 class="h3 fw-bold">Adquirir plano</h1>
+                                <p class="text-secondary mb-0">
+                                    Entre com seu e-mail e senha para adquirir o
+                                    <strong>{{ pacote.nome }}</strong>.
+                                </p>
+                            </div>
+
+                            {% with mensagens = get_flashed_messages() %}
+                            {% for texto in mensagens %}
+                            <div class="alert alert-danger" role="alert">{{ texto }}</div>
+                            {% endfor %}
+                            {% endwith %}
+
+                            {% if mensagem %}
+                            <div class="alert alert-danger" role="alert">{{ mensagem }}</div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label for="usuario" class="form-label fw-semibold">E-mail</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+                                    <input type="email" class="form-control" id="usuario" name="usuario"
+                                           placeholder="Ex.: maria@email.com" value="{{ usuario }}"
+                                           autocomplete="username" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="senha" class="form-label fw-semibold">Senha</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock" aria-hidden="true"></i></span>
+                                    <input type="password" class="form-control" id="senha" name="senha"
+                                           placeholder="Digite sua senha" autocomplete="current-password" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-bag-check me-2" aria-hidden="true"></i>Adquirir
+                            </button>
+
+                            <p class="text-center small text-secondary mt-3 mb-2">
+                                Ainda não tem cadastro?
+                                <a href="{{ url_for('criar_conta_cliente', plano=plano, destino=destino or None) }}"
+                                   class="fw-semibold">Criar conta</a>
+                            </p>
+
+                            <p class="text-center mb-0">
+                                <a href="{{ url_for('planos') }}"
+                                   class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">
+                                    <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
+                                    Ver outros planos
+                                </a>
+                            </p>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- DIREITA: informações do plano -->
+    <section class="col-lg-6 fundo-imagem fundo-imagem-azul text-white d-flex position-relative order-1 order-lg-2"
+             style="--imagem: url('{{ url_for('static', filename=imagem_plano) }}')">
+
+        {# Setas nas bordas do painel para olhar os outros planos sem sair desta tela #}
+        {% if plano_anterior %}
+        <a href="{{ url_for('adquirir', plano=plano_anterior, destino=destino or None) }}"
+           class="position-absolute top-50 start-0 translate-middle-y z-2 ms-2
+                  link-light link-opacity-75 link-opacity-100-hover fs-1 lh-1"
+           title="{{ nomes_planos[plano_anterior] }}"
+           aria-label="Plano anterior: {{ nomes_planos[plano_anterior] }}">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+
+        {% if plano_proximo %}
+        <a href="{{ url_for('adquirir', plano=plano_proximo, destino=destino or None) }}"
+           class="position-absolute top-50 end-0 translate-middle-y z-2 me-2
+                  link-light link-opacity-75 link-opacity-100-hover fs-1 lh-1"
+           title="{{ nomes_planos[plano_proximo] }}"
+           aria-label="Próximo plano: {{ nomes_planos[plano_proximo] }}">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+
+        <div class="d-flex flex-column justify-content-center gap-4 w-100 p-5">
+
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-white text-primary">Plano {{ plano }}</span>
+                    <small class="opacity-75">{{ posicao_plano + 1 }} de {{ nomes_planos | length }}</small>
+                </div>
+                <div class="barra-destaque bg-primary rounded-pill mb-4"></div>
+                <h2 class="display-5 fw-bold mb-2">{{ pacote.nome }}</h2>
+                <p class="fs-5 opacity-75 mb-0">
+                    {% if pacote.categoria == 'Basic' %}Escolha 3 países da {{ pacote.regiao }} para a sua viagem.
+                    {% elif pacote.categoria == 'Plus' %}Conexão em todos os países da {{ pacote.regiao }}.
+                    {% else %}Conexão em todos os países atendidos pela DGB SIM.{% endif %}
+                </p>
+            </div>
+
+            <div class="d-grid gap-3">
+                {% for icone, titulo, texto in [
+                    ("bi-layers", pacote.dados_gb ~ " GB", "Franquia de dados"),
+                    ("bi-calendar3", pacote.validade_dias ~ " dias", "Validade a partir da contratação"),
+                    ("bi-globe-americas",
+                     "3 países à sua escolha" if pacote.categoria == 'Basic'
+                     else ("Toda a " ~ pacote.regiao if pacote.categoria == 'Plus' else "Todos os países atendidos"),
+                     "Cobertura do plano")
+                ] %}
+                <div class="d-flex align-items-center gap-3">
+                    <span class="circulo d-inline-flex align-items-center justify-content-center
+                                 bg-white bg-opacity-25 fs-5" aria-hidden="true">
+                        <i class="bi {{ icone }}"></i>
+                    </span>
+                    <div>
+                        <strong class="d-block fs-5 lh-sm">{{ titulo }}</strong>
+                        <small class="opacity-75">{{ texto }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if pacote.categoria == 'Basic' %}
+            <fieldset class="bg-white bg-opacity-10 rounded-3 p-3">
+                <legend class="fs-6 fw-bold mb-1">Escolha exatamente 3 países</legend>
+                <p class="small opacity-75 mb-3">
+                    Eles ficam fixos durante os {{ pacote.validade_dias }} dias de validade.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    {% for codigo, nome in paises_do_plano %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="paises" value="{{ codigo }}"
+                               id="pais{{ codigo }}" {% if codigo in paises_marcados %}checked{% endif %}>
+                        <label class="form-check-label" for="pais{{ codigo }}">{{ nome }} ({{ codigo }})</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            {% endif %}
+
+            <p class="small opacity-75 mb-0">
+                <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+                Se você já tiver um plano vigente, ele será substituído e a validade reiniciada.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+</form>
+
+<!-- CONFIRMAÇÃO -->
+<div class="modal fade" id="modalConfirmarAquisicao" tabindex="-1"
+     aria-labelledby="modalConfirmarAquisicaoTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5 fw-bold" id="modalConfirmarAquisicaoTitulo">Confirmar contratação</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                {% if pacote.categoria == 'Basic' %}
+                <p>
+                    Confirme os três países selecionados. Durante os {{ pacote.validade_dias }} dias de
+                    validade do plano Basic, essa seleção não poderá ser alterada. Para escolher outros
+                    países, será necessário aguardar o término da validade e realizar uma nova
+                    contratação. Deseja continuar?
+                </p>
+                {% else %}
+                <p>Deseja contratar o plano <strong>{{ pacote.nome }}</strong>?</p>
+                {% endif %}
+                <p class="mb-0 small text-secondary">
+                    Se você já tiver um plano vigente, ele será substituído e a validade reiniciada.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar para revisar</button>
+                <button type="button" class="btn btn-primary" id="botaoConfirmarAquisicao">Confirmar contratação</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* Pede confirmação antes de enviar. O servidor valida tudo de novo. */
+    document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('formAdquirir');
+
+        form.addEventListener('submit', function (evento) {
+            if (form.elements['confirmado'].value !== 'sim') {
+                evento.preventDefault();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalConfirmarAquisicao')).show();
+            }
+        });
+
+        document.getElementById('botaoConfirmarAquisicao').addEventListener('click', function () {
+            form.elements['confirmado'].value = 'sim';
+            if (form.reportValidity()) {
+                form.submit();
+            }
+        });
+    });
+</script>
+
+{% endblock %}

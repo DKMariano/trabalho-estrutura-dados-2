@@ -1,0 +1,57 @@
+{# Painel azul com imagem, usado nas telas de acesso (login e criar conta).
+   Variáveis opcionais: painel_titulo (aceita <br>) e painel_texto. #}
+    <!-- APRESENTAÇÃO DO DGB SIM -->
+    <section class="col-lg-6 fundo-imagem fundo-imagem-azul text-white d-flex"
+             style="--imagem: url('{{ url_for('static', filename='img/login/login-aviao.png') }}')">
+
+        <div class="d-flex flex-column justify-content-between gap-5 w-100 p-4 p-lg-5">
+
+            <!-- Identidade visual -->
+            <img src="{{ url_for('static', filename='img/logo/logo-dgb-sim.png') }}"
+                 alt="DGB SIM - Internet internacional com eSIM"
+                 width="260" height="87">
+
+            <!-- Apresentação principal do serviço -->
+            <div>
+                <div class="barra-destaque bg-primary rounded-pill mb-4"></div>
+
+                <h1 class="display-3 fw-bold mb-3">
+                    {{ painel_titulo | default("Conecte-se<br>ao mundo.") | safe }}
+                </h1>
+
+                <p class="fs-5 opacity-75 mb-0">
+                    {{ painel_texto | default("Internet internacional de forma simples, segura e acessível, com tecnologia eSIM.") }}
+                </p>
+            </div>
+
+            <!-- Benefícios do serviço -->
+            <div class="d-grid gap-3">
+
+                {% for icone, titulo, texto in [
+                    ("bi-globe-americas", "Cobertura em diversos países",
+                     "Verifique a disponibilidade de internet no seu destino."),
+                    ("bi-tags", "Planos flexíveis",
+                     "Escolha o plano ideal para o seu tipo de viagem."),
+                    ("bi-sim", "Conexão sem complicação",
+                     "Tecnologia eSIM para você viajar com mais liberdade.")
+                ] %}
+                <div class="d-flex align-items-center gap-3">
+
+                    <span class="circulo d-inline-flex align-items-center justify-content-center
+                                 bg-white bg-opacity-25 fs-5" aria-hidden="true">
+                        <i class="bi {{ icone }}"></i>
+                    </span>
+
+                    <div>
+                        <h2 class="h6 fw-bold mb-0">{{ titulo }}</h2>
+                        <p class="small opacity-75 mb-0">{{ texto }}</p>
+                    </div>
+
+                </div>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </section>

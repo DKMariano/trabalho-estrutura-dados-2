@@ -1,0 +1,51 @@
+{
+  "101": {
+    "nome": "Europa Basic",
+    "categoria": "Basic",
+    "regiao": "Europa",
+    "dados_gb": 5,
+    "validade_dias": 15
+  },
+  "102": {
+    "nome": "Europa Plus",
+    "categoria": "Plus",
+    "regiao": "Europa",
+    "dados_gb": 15,
+    "validade_dias": 30
+  },
+  "201": {
+    "nome": "América Basic",
+    "categoria": "Basic",
+    "regiao": "América",
+    "dados_gb": 5,
+    "validade_dias": 15
+  },
+  "202": {
+    "nome": "América Plus",
+    "categoria": "Plus",
+    "regiao": "América",
+    "dados_gb": 15,
+    "validade_dias": 30
+  },
+  "401": {
+    "nome": "Ásia Basic",
+    "categoria": "Basic",
+    "regiao": "Ásia",
+    "dados_gb": 5,
+    "validade_dias": 15
+  },
+  "402": {
+    "nome": "Ásia Plus",
+    "categoria": "Plus",
+    "regiao": "Ásia",
+    "dados_gb": 15,
+    "validade_dias": 30
+  },
+  "301": {
+    "nome": "IlimitadoSIM",
+    "categoria": "Global",
+    "regiao": null,
+    "dados_gb": 30,
+    "validade_dias": 30
+  }
+}

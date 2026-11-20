@@ -1,0 +1,209 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner, mini %}
+
+{# Dados já fornecidos por metricas(): só leitura, sem cálculos #}
+{% set operacoes = metricas.operacoes | list %}
+{% set busca = operacoes | selectattr('operacao', 'equalto', 'buscar') | first %}
+{% set listagem = operacoes | selectattr('operacao', 'equalto', 'listar') | first %}
+
+{{ banner("Visão geral", "Acompanhe os países, os clientes e a rede internacional.") }}
+
+<!-- ACESSO RÁPIDO -->
+<div class="row row-cols-1 row-cols-lg-2 row-cols-xxl-4 g-4 mb-4">
+
+    <!-- Países -->
+    <div class="col">
+        <div class="card h-100 border-primary-subtle shadow-sm">
+            <div class="card-body d-flex flex-column p-4">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <span class="rounded-circle p-3 lh-1 bg-primary-subtle text-primary">
+                        <i class="bi bi-globe-americas fs-3" aria-hidden="true"></i>
+                    </span>
+                    <h2 class="h4 fw-bold mb-0">Países</h2>
+                </div>
+                <span class="badge bg-primary-subtle text-secondary-emphasis ms-auto">
+                    Etapa 1
+                </span>
+                <p class="mb-4">Gerencie os países e consulte a cobertura.</p>
+                <a href="{{ url_for('admin_paises') }}" class="btn btn-primary fw-bold mt-auto">
+                    Acessar países
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clientes -->
+    <div class="col">
+        <div class="card h-100 border-success-subtle shadow-sm">
+            <div class="card-body d-flex flex-column p-4">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <span class="rounded-circle p-3 lh-1 bg-success-subtle text-success">
+                        <i class="bi bi-people-fill fs-3" aria-hidden="true"></i>
+                    </span>
+                    <h2 class="h4 fw-bold mb-0">Clientes</h2>
+                </div>
+                <span class="badge bg-success-subtle text-secondary-emphasis ms-auto">
+                    Etapa 2
+                </span>
+                <p class="mb-4">Gerencie clientes, eSIMs e pacotes.</p>
+                <a href="{{ url_for('admin_clientes') }}" class="btn btn-success fw-bold mt-auto">
+                    Acessar clientes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rede internacional -->
+    <div class="col">
+        <div class="card h-100 border-success-subtle shadow-sm">
+            <div class="card-body d-flex flex-column p-4">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <span class="rounded-circle p-3 lh-1 bg-roxo-subtle">
+                        <i class="bi bi-diagram-3 fs-3" aria-hidden="true"></i>
+                    </span>
+                    <h2 class="h4 fw-bold mb-0">Rede internacional</h2>
+                </div>
+                <span class="badge bg-roxo-subtle text-secondary-emphasis ms-auto">
+                    Etapa 3
+                </span>
+                <p class="mb-4">Visualize a rede e execute os algoritmos.</p>
+                <a href="{{ url_for('admin_rede') }}" class="btn btn-roxo fw-bold mt-auto">
+                    Acessar rede
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consulta integrada (Etapas 2 e 3) -->
+    <div class="col">
+        <div class="card h-100 border-success-subtle shadow-sm">
+            <div class="card-body d-flex flex-column p-4">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                        <span class="rounded-circle p-3 lh-1 bg-secondary-subtle text-secondary">
+                            <i class="bi bi-search fs-3" aria-hidden="true"></i>
+                        </span>
+                        <h2 class="h4 fw-bold mb-0">Consulta integrada</h2>
+                    </div>
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis ms-auto">
+                        Etapas 2 e 3
+                    </span>
+                </div>
+                <p class="mb-4">Consulte cliente, cobertura e rota.</p>
+                <a href="{{ url_for('admin_consulta') }}" class="btn btn-secondary fw-bold mt-auto">
+                    Consultar
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- RESUMO DAS ESTRUTURAS -->
+<section class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <h2 class="h4 fw-bold mb-4">
+            <i class="bi bi-layers text-primary me-2" aria-hidden="true"></i>
+            Resumo das estruturas
+        </h2>
+
+        <div class="row g-3">
+
+            <!-- Tabela Hash -->
+            <div class="col-12 col-xl-4">
+                <div class="card h-100 border-primary-subtle">
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3">
+                            <i class="bi bi-speedometer2 text-primary me-2" aria-hidden="true"></i>
+                            Tabela Hash
+                        </h3>
+
+                        <div class="row g-2 mb-2">
+                            {{ mini(total_paises, "Países cadastrados", "bg-primary-subtle") }}
+                            {{ mini(metricas.total_chamadas, "Operações", "bg-primary-subtle") }}
+                            {{ mini(busca.chamadas, "Buscas", "bg-primary-subtle") }}
+                            {{ mini(listagem.chamadas, "Listagens", "bg-primary-subtle") }}
+                        </div>
+
+                        <p class="small mb-3">Contadores desta execução.</p>
+
+                        <a href="{{ url_for('admin_tabela_hash') }}"
+                           class="btn btn-outline-primary fw-bold mt-auto">
+                            <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>
+                            Ver instrumentação
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Árvore B -->
+            <div class="col-12 col-xl-4">
+                <div class="card h-100 border-success-subtle">
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3">
+                            <i class="bi bi-diagram-2 text-success me-2" aria-hidden="true"></i>
+                            Árvore B
+                        </h3>
+
+                        <div class="row g-2 mb-2">
+                            {{ mini('{:,}'.format(arvore.clientes).replace(',', '.'), "Clientes indexados", "bg-success-subtle") }}
+                            {{ mini(arvore.altura, "Altura da árvore", "bg-success-subtle") }}
+                            {{ mini(arvore.nos, "Nós da árvore", "bg-success-subtle") }}
+                            {{ mini(arvore.media_nos_visitados|string|replace('.', ','), "Nós visitados por busca", "bg-success-subtle") }}
+                        </div>
+
+                        <p class="small mb-3">
+                            Valores demonstrativos: a Árvore B ainda não foi
+                            implementada.
+                        </p>
+
+                        <a href="{{ url_for('admin_arvore_b') }}"
+                           class="btn btn-outline-success fw-bold mt-auto">
+                            <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>
+                            Ver instrumentação
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grafo -->
+            <div class="col-12 col-xl-4">
+                <div class="card h-100 border-success-subtle">
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3">
+                            <i class="bi bi-diagram-3 text-roxo me-2" aria-hidden="true"></i>
+                            Grafo
+                        </h3>
+
+                        <div class="row g-2 mb-3">
+                            {{ mini(grafo.paises, "Países na rede", "bg-roxo-subtle") }}
+                            {{ mini(grafo.conexoes, "Conexões", "bg-roxo-subtle") }}
+                            {{ mini(grafo.isolados, "Países isolados", "bg-roxo-subtle") }}
+                            {{ mini(grafo.maior_grau, "Maior grau", "bg-roxo-subtle") }}
+                        </div>
+
+                        <p class="small mb-3">
+                            Valores demonstrativos: O grafo ainda não foi
+                            implementada.
+                        </p>
+
+                        <a href="{{ url_for('admin_grafo') }}"
+                           class="btn btn-outline-roxo fw-bold">
+                            <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>
+                            Ver instrumentação
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Visualizar país | DGB SIM{% endblock %}
+
+{% block admin_content %}
+
+{% from "admin/_componentes.html" import banner, breadcrumb, secao %}
+
+{{ breadcrumb("Países", url_for('admin_paises'), "Visualizar país") }}
+{{ banner("Visualizar país", "Confira os dados de cadastro e cobertura do país.") }}
+
+<div class="row g-4 align-items-stretch">
+
+    <!-- Dados do país -->
+    <div class="col-12 col-xl-8">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4 d-flex flex-column">
+
+                {{ secao("Informações do país") }}
+
+                <dl class="row g-4 mb-0">
+                    <div class="col-12 col-md-6">
+                        <dt class="small text-secondary fw-normal">Nome do país</dt>
+                        <dd class="fs-5 fw-semibold text-break mb-0">{{ pais.nome }}</dd>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <dt class="small text-secondary fw-normal">Código ISO</dt>
+                        <dd class="fs-5 fw-semibold mb-0">{{ codigo }}</dd>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <dt class="small text-secondary fw-normal">Continente</dt>
+                        <dd class="fs-5 fw-semibold text-break mb-0">{{ pais.regiao }}</dd>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <dt class="small text-secondary fw-normal">Operadora local</dt>
+                        <dd class="fs-5 fw-semibold text-break mb-0">{{ pais.operadora }}</dd>
+                    </div>
+                </dl>
+
+                <hr class="my-4">
+
+                {{ secao("Tecnologia disponível") }}
+
+                <p class="small text-secondary">
+                    Tecnologia de rede informada para este destino.
+                </p>
+
+                <span class="badge bg-primary-subtle text-primary-emphasis fs-6 align-self-start">
+                    <i class="bi bi-wifi me-2" aria-hidden="true"></i>{{ pais.tecnologia }}
+                </span>
+
+                <hr class="my-4 mt-auto">
+
+                <div class="d-flex flex-wrap justify-content-between gap-3">
+                    <a href="{{ url_for('admin_paises') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Voltar
+                    </a>
+                    <a href="{{ url_for('admin_editar_pais', codigo=codigo) }}"
+                       class="btn btn-primary">
+                        <i class="bi bi-pencil me-2" aria-hidden="true"></i>Editar país
+                    </a>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- Orientações -->
+    <div class="col-12 col-xl-4">
+        <aside class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+
+                <h2 class="h5 fw-bold mb-3">
+                    <i class="bi bi-info-circle text-primary me-2" aria-hidden="true"></i>
+                    Sobre este cadastro
+                </h2>
+
+                <p class="text-secondary">
+                    Confira os dados do país e a tecnologia de rede disponível no destino.
+                </p>
+
+                <div class="mb-4">
+                    <h3 class="h6">Atualização dos dados</h3>
+                    <p class="text-secondary mb-0">
+                        Para atualizar as informações, utilize o botão “Editar país”.
+                    </p>
+                </div>
+
+                <div class="alert alert-primary small mb-0" role="note">
+                    <i class="bi bi-lock me-1" aria-hidden="true"></i>
+                    O código ISO identifica o registro e permanece fixo durante a edição.
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+</div>
+
+{% endblock %}

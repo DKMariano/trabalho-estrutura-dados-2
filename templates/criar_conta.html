@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Criar conta | DGB SIM{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+
+{# Mesmo layout da tela de acesso: painel azul à esquerda e formulário à direita #}
+<main class="row g-0 min-vh-100">
+
+    {% set painel_titulo = "Crie sua<br>conta." %}
+    {% set painel_texto = "Cadastre-se em poucos segundos e escolha o plano ideal para a sua viagem." %}
+    {% include "_painel_acesso.html" %}
+
+    <!-- FORMULÁRIO DE CADASTRO -->
+    <section class="col-lg-6 bg-body-tertiary d-flex align-items-center">
+
+        <div class="container-fluid py-4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-11 col-xl-9">
+
+                    <div class="card border-0 shadow rounded-4">
+                        <div class="card-body p-4 p-lg-5">
+
+                            <img src="{{ url_for('static', filename='img/logo/logo-dgb-sim2.png') }}"
+                                 alt="DGB SIM - Internet internacional com eSIM"
+                                 width="200" height="67" class="d-block mx-auto mb-3">
+
+                            <div class="text-center mb-4">
+                                <h2 class="h3 fw-bold">Criar conta</h2>
+                                <p class="text-secondary mb-0">
+                                    Informe seu nome e e-mail. O ID e o eSIM são gerados automaticamente.
+                                </p>
+                            </div>
+
+                            {% with mensagens = get_flashed_messages() %}
+                            {% for texto in mensagens %}
+                            <div class="alert alert-danger" role="alert">{{ texto }}</div>
+                            {% endfor %}
+                            {% endwith %}
+
+                            {% if pacote_escolhido %}
+                            <div class="alert alert-primary small" role="status">
+                                <i class="bi bi-bag-check me-1" aria-hidden="true"></i>
+                                Plano escolhido: <strong>{{ pacote_escolhido.nome }}</strong>.
+                                Depois do cadastro você volta para a tela de aquisição.
+                            </div>
+                            {% endif %}
+
+                            <form method="POST" action="{{ url_for('criar_conta_cliente') }}">
+
+                                <input type="hidden" name="plano" value="{{ plano }}">
+                                <input type="hidden" name="destino" value="{{ destino }}">
+
+                                <div class="mb-3">
+                                    <label for="nome" class="form-label fw-semibold">Nome completo</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person" aria-hidden="true"></i></span>
+                                        <input type="text" class="form-control" id="nome" name="nome" maxlength="120"
+                                               placeholder="Ex.: Maria Silva" value="{{ formulario.get('nome', '') }}" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="email" class="form-label fw-semibold">E-mail</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                               placeholder="Ex.: maria@email.com" value="{{ formulario.get('email', '') }}" required>
+                                    </div>
+                                    <div class="form-text">Será usado para acessar sua área. A senha demonstrativa é 123456.</div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    Criar conta
+                                    <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+                                </button>
+
+                                <p class="text-center small text-secondary mt-3 mb-2">
+                                    Já tem conta?
+                                    {% if pacote_escolhido %}
+                                    <a href="{{ url_for('adquirir', plano=plano, destino=destino or None) }}"
+                                       class="fw-semibold">Voltar para a aquisição do plano</a>
+                                    {% else %}
+                                    <a href="{{ url_for('login') }}" class="fw-semibold">Acessar minha área</a>
+                                    {% endif %}
+                                </p>
+
+                                <p class="text-center mb-0">
+                                    <a href="{{ url_for('inicio') }}"
+                                       class="link-secondary link-underline-opacity-0 link-underline-opacity-100-hover">
+                                        <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
+                                        Voltar para o início
+                                    </a>
+                                </p>
+
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</main>
+
+{% if criado %}
+<!-- MODAL DE SUCESSO -->
+<div class="modal fade" id="modalContaCriada" tabindex="-1"
+     aria-labelledby="modalContaCriadaTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-success-subtle">
+                <h2 class="modal-title fs-5 fw-bold text-success-emphasis" id="modalContaCriadaTitulo">
+                    <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i>Cadastro realizado com sucesso
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>Bem-vindo(a), <strong>{{ criado.nome }}</strong>! Guarde seus dados de acesso:</p>
+                <dl class="row mb-0">
+                    <dt class="col-5 fw-normal text-secondary">ID do cliente</dt>
+                    <dd class="col-7 fw-bold">{{ criado.id }}</dd>
+                    <dt class="col-5 fw-normal text-secondary">eSIM</dt>
+                    <dd class="col-7 fw-bold">{{ criado.esim }}</dd>
+                    <dt class="col-5 fw-normal text-secondary">E-mail</dt>
+                    <dd class="col-7 fw-bold text-break">{{ criado.email }}</dd>
+                    <dt class="col-5 fw-normal text-secondary">Senha demonstrativa</dt>
+                    <dd class="col-7 fw-bold">123456</dd>
+                </dl>
+            </div>
+
+            <div class="modal-footer">
+                {% if pacote_escolhido %}
+                <a href="{{ url_for('adquirir', plano=plano, destino=destino or None) }}"
+                   class="btn btn-success">
+                    Voltar para adquirir o {{ pacote_escolhido.nome }} <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                </a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-success">
+                    Acessar minha área <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                </a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    /* Abre o modal assim que a página carrega após o cadastro. */
+    document.addEventListener('DOMContentLoaded', function () {
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalContaCriada')).show();
+    });
+</script>
+{% endif %}
+
+{% endblock %}
