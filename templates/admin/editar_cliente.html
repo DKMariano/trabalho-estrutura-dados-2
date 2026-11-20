@@ -5,9 +5,10 @@
 {% block admin_content %}
 
 {% from "admin/_componentes.html" import banner, breadcrumb, secao %}
+{% from "admin/_pacote_associado.html" import pacote_associado %}
 
 {{ breadcrumb("Clientes", url_for('admin_clientes'), "Editar cliente") }}
-{{ banner("Editar cliente", "Altere as informações do cliente selecionado.") }}
+{{ banner("Editar cliente", "Altere os dados, o eSIM e o pacote do cliente selecionado.") }}
 
 <div class="row g-4 align-items-stretch">
 
@@ -19,28 +20,16 @@
                 <form method="POST" id="formEditarCliente" data-status-original="{{ cliente.status }}"
                       action="{{ url_for('admin_editar_cliente', cliente_id=cliente.id) }}">
 
-                    {{ secao("Informações do cliente", "success") }}
+                    {{ secao("Dados do cliente", "success") }}
 
                     <div class="row g-4">
-
-                        <div class="col-12 col-md-6">
-                            <label for="id_cliente" class="form-label fw-semibold">ID do cliente</label>
-                            <div class="input-group">
-                                <input type="text" id="id_cliente" class="form-control"
-                                       value="{{ cliente.id }}" readonly>
-                                <span class="input-group-text">
-                                    <i class="bi bi-lock-fill" aria-hidden="true"></i>
-                                </span>
-                            </div>
-                            <div class="form-text">O ID do cliente não pode ser alterado.</div>
-                        </div>
 
                         <div class="col-12 col-md-6">
                             <label for="nome" class="form-label fw-semibold">
                                 Nome completo <span class="text-danger">*</span>
                             </label>
                             <input type="text" id="nome" name="nome" class="form-control"
-                                   value="{{ cliente.nome }}" required>
+                                   maxlength="120" value="{{ formulario.get('nome', cliente.nome) }}" required>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -48,18 +37,36 @@
                                 E-mail <span class="text-danger">*</span>
                             </label>
                             <input type="email" id="email" name="email" class="form-control"
-                                   value="{{ cliente.email }}" required>
+                                   value="{{ formulario.get('email', cliente.email) }}" required>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    {{ secao("eSIM associado", "success") }}
+
+                    {% set status_atual = formulario.get('status', cliente.status) %}
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+                            <label for="esim" class="form-label fw-semibold">
+                                Identificador do eSIM <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" id="esim" name="esim" class="form-control"
+                                   value="{{ formulario.get('esim', cliente.esim) }}" required>
                         </div>
 
                         <div class="col-12 col-md-6">
                             <label for="status" class="form-label fw-semibold">
-                                Status <span class="text-danger">*</span>
+                                Status do eSIM <span class="text-danger">*</span>
                             </label>
                             <select id="status" name="status" class="form-select" required>
                                 <option value="ativo"
-                                    {% if cliente.status == "ativo" %}selected{% endif %}>Ativo</option>
+                                    {% if status_atual == "ativo" %}selected{% endif %}>Ativo</option>
                                 <option value="inativo"
-                                    {% if cliente.status == "inativo" %}selected{% endif %}>Inativo</option>
+                                    {% if status_atual == "inativo" %}selected{% endif %}>Inativo</option>
                             </select>
                             <div class="form-text">
                                 Mudar o status pede confirmação. Ele não altera a validade do plano.
@@ -70,26 +77,18 @@
 
                     <hr class="my-4">
 
-                    {{ secao("eSIM", "success") }}
+                    {{ secao("Pacote associado", "success") }}
 
-                    <div class="row g-4">
+                    <p class="text-secondary">
+                        Pacote atual:
+                        <strong>{{ (cliente.pacote ~ " · " ~ pacote_atual.nome) if pacote_atual else "Sem pacote" }}</strong>.
+                        Escolha um novo pacote para associá-lo ao cliente; ele substitui o atual
+                        e a vigência é reiniciada.
+                    </p>
 
-                        <div class="col-12 col-md-6">
-                            <label for="esim" class="form-label fw-semibold">
-                                Identificador do eSIM <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" id="esim" name="esim" class="form-control"
-                                   value="{{ cliente.esim }}" required>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <span class="form-label fw-semibold d-block">Plano</span>
-                            <p class="text-secondary mb-0">
-                                O plano é alterado somente pela contratação.
-                            </p>
-                        </div>
-
-                    </div>
+                    {{ pacote_associado(pacotes, paises_por_regiao,
+                                        pacote_escolhido, paises_marcados,
+                                        "Manter o pacote atual") }}
 
                     <hr class="my-4">
 
@@ -126,12 +125,16 @@
                 <table class="table mb-4">
                     <tbody>
                         <tr>
+                            <th scope="row">ID:</th>
+                            <td class="text-end">{{ cliente.id }}</td>
+                        </tr>
+                        <tr>
                             <th scope="row">Cliente:</th>
                             <td class="text-end">{{ cliente.nome }}</td>
                         </tr>
                         <tr>
-                            <th scope="row">ID:</th>
-                            <td class="text-end">{{ cliente.id }}</td>
+                            <th scope="row">E-mail:</th>
+                            <td class="text-end text-break">{{ cliente.email }}</td>
                         </tr>
                         <tr>
                             <th scope="row">eSIM:</th>
@@ -139,7 +142,23 @@
                         </tr>
                         <tr>
                             <th scope="row">Pacote:</th>
-                            <td class="text-end">{{ cliente.pacote if cliente.pacote is not none else "Sem plano" }}</td>
+                            <td class="text-end">
+                                {{ (cliente.pacote ~ " · " ~ pacote_atual.nome) if pacote_atual else "Sem pacote" }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Países que o pacote abrange:</th>
+                            <td class="text-end">
+                                {% if not pacote_atual %}
+                                —
+                                {% elif pacote_atual.categoria == 'Global' %}
+                                Todos os países atendidos
+                                {% elif paises_abrangidos %}
+                                {{ paises_abrangidos | join(', ') }}
+                                {% else %}
+                                Nenhum país cadastrado
+                                {% endif %}
+                            </td>
                         </tr>
                     </tbody>
                 </table>

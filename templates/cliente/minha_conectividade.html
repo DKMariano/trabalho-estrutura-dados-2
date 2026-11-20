@@ -35,28 +35,26 @@
 
                 <div class="col-12 col-md-6 col-xl-3">
                     <label for="origem" class="form-label fw-semibold">
-                        Código do país de origem
+                        País de Origem
                     </label>
-                    <input type="text" id="origem" name="origem"
-                           class="form-control text-uppercase"
-                           list="listaPaises" maxlength="2" required autocomplete="off"
-                           placeholder="Ex.: BR" value="{{ formulario.origem }}">
+                    <input type="text" id="origem" name="origem" class="form-control"
+                           list="listaPaises" required autocomplete="off"
+                           placeholder="Ex.: Brasil ou BR" value="{{ origem_digitada }}">
                 </div>
 
                 <div class="col-12 col-md-6 col-xl-3">
                     <label for="destino" class="form-label fw-semibold">
-                        Código do país de destino
+                        País de Destino
                     </label>
-                    <input type="text" id="destino" name="destino"
-                           class="form-control text-uppercase"
-                           list="listaPaises" maxlength="2" required autocomplete="off"
-                           placeholder="Ex.: IT" value="{{ formulario.destino }}">
+                    <input type="text" id="destino" name="destino" class="form-control"
+                           list="listaPaises" required autocomplete="off"
+                           placeholder="Ex.: Itália ou IT" value="{{ destino_digitado }}">
                 </div>
 
-                {# Sugestões: os países da Tabela Hash. Dá para digitar qualquer código. #}
+                {# Sugestões: os países da Tabela Hash. Aceita o nome ou o código (ID). #}
                 <datalist id="listaPaises">
                     {% for codigo, pais in paises %}
-                    <option value="{{ codigo }}">{{ pais.nome }}</option>
+                    <option value="{{ pais.nome }}">{{ codigo }}</option>
                     {% endfor %}
                 </datalist>
 
@@ -85,7 +83,7 @@
 
                 <div class="col-12">
                     <p class="small text-secondary mb-1">
-                        Use o código do país. Ex.: BR, IT, PT. O destino verifica a cobertura
+                        Digite o nome ou o código do país (ex.: Itália ou IT). O destino verifica a cobertura
                         do seu plano (Etapa 2); origem e critério calculam a rota (Etapa 3).
                     </p>
                     <p class="small fw-semibold mb-1">

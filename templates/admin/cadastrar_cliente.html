@@ -5,9 +5,10 @@
 {% block admin_content %}
 
 {% from "admin/_componentes.html" import banner, breadcrumb, secao %}
+{% from "admin/_pacote_associado.html" import pacote_associado %}
 
 {{ breadcrumb("Clientes", url_for('admin_clientes'), "Cadastrar cliente") }}
-{{ banner("Cadastrar cliente", "Informe os dados do cliente e o eSIM. O plano é associado depois, na contratação.") }}
+{{ banner("Cadastrar cliente", "Informe os dados do cliente, o eSIM e o pacote associado.") }}
 
 <div class="row g-4 align-items-stretch">
 
@@ -23,23 +24,13 @@
                     <div class="row g-4">
 
                         <div class="col-12 col-md-6">
-                            <label for="id" class="form-label fw-semibold">ID do cliente</label>
-                            <input type="number" class="form-control" id="id" name="id"
-                                   min="1" step="1" placeholder="Ex.: 58372"
-                                   value="{{ formulario.get('id', '') }}" required>
-                            <div class="form-text">
-                                Identificador único. Não poderá ser alterado após o cadastro.
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
                             <label for="nome" class="form-label fw-semibold">Nome completo</label>
                             <input type="text" class="form-control" id="nome" name="nome"
                                    maxlength="120" placeholder="Ex.: Maria Silva"
                                    value="{{ formulario.get('nome', '') }}" required>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <label for="email" class="form-label fw-semibold">E-mail</label>
                             <input type="email" class="form-control" id="email" name="email"
                                    placeholder="Ex.: maria@email.com"
@@ -50,7 +41,7 @@
 
                     <hr class="my-4">
 
-                    {{ secao("eSIM e status", "success") }}
+                    {{ secao("eSIM associado", "success") }}
 
                     <div class="row g-4">
 
@@ -64,7 +55,7 @@
                         </div>
 
                         <div class="col-12 col-md-6">
-                            <label for="status" class="form-label fw-semibold">Status</label>
+                            <label for="status" class="form-label fw-semibold">Status do eSIM</label>
                             <select class="form-select" id="status" name="status">
                                 <option value="ativo"
                                     {% if formulario.get('status', 'ativo') == 'ativo' %}selected{% endif %}>
@@ -77,11 +68,19 @@
                             </select>
                             <div class="form-text">
                                 Novos clientes são ativos. Se escolher Inativo, o cliente
-                                será cadastrado sem acesso ao sistema.
+                                será cadastrado sem acesso ao sistema e sem pacote.
                             </div>
                         </div>
 
                     </div>
+
+                    <hr class="my-4">
+
+                    {{ secao("Pacote associado", "success") }}
+
+                    {{ pacote_associado(pacotes, paises_por_regiao,
+                                        formulario.get('pacote', ''), paises_marcados,
+                                        "Sem pacote (o cliente contrata depois)") }}
 
                     <hr class="my-4">
 
@@ -113,7 +112,8 @@
                 <div class="mb-4">
                     <strong>ID do cliente</strong>
                     <p class="text-secondary mb-0">
-                        Use um identificador único para a busca na Árvore B.
+                        Gerado automaticamente (próximo: <strong>{{ proximo_id }}</strong>).
+                        É a chave da busca na Árvore B e não muda depois do cadastro.
                     </p>
                 </div>
 
@@ -125,10 +125,11 @@
                 </div>
 
                 <div class="mb-4">
-                    <strong>Plano</strong>
+                    <strong>Pacote</strong>
                     <p class="text-secondary mb-0">
-                        O cliente é cadastrado sem plano. O pacote é associado na
-                        contratação, onde o Basic recebe os 3 países.
+                        Escolha o pacote do cliente ou deixe sem pacote para ele
+                        contratar depois. No Basic, marque os 3 países da região.
+                        A vigência começa na data do cadastro.
                     </p>
                 </div>
 

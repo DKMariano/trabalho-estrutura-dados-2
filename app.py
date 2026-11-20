@@ -43,7 +43,9 @@ from dados_site.dados_etapa02 import (
     excluir_cliente_fisicamente,
     criar_conta,
     contratar_plano,
+    proximo_id,
     resumo_arvore_b,
+    instrumentacao_arvore_b,
 )
 
 #ATENÇÃO!!!! APAGAR ESSE IMPORT QUANDO CRIAR O GRAFO
@@ -605,8 +607,9 @@ def minha_conectividade(cliente_id):
     )
 
     if request.method == "POST":
-        formulario["origem"] = request.form.get("origem", "").strip().upper()
-        formulario["destino"] = request.form.get("destino", "").strip().upper()
+        # Origem e destino aceitam o nome ou o código do país (ex.: Itália ou IT)
+        formulario["origem"] = resolver_pais(request.form.get("origem", ""))
+        formulario["destino"] = resolver_pais(request.form.get("destino", ""))
         formulario["criterio"] = request.form.get("criterio", "").strip()
 
         # Etapa 2: o cliente vem da URL; o destino, do formulário.
@@ -644,6 +647,8 @@ def minha_conectividade(cliente_id):
         cliente=cliente,
         paises=paises_disponiveis,
         formulario=formulario,
+        origem_digitada=nome_do_pais(formulario["origem"]),
+        destino_digitado=nome_do_pais(formulario["destino"]),
         resposta=resposta,
         rota=rota,
         pagina_ativa="conectividade",
@@ -1072,14 +1077,19 @@ def admin_clientes():
 @app.route("/admin/arvore-b")
 def admin_arvore_b():
     """
-    Página da Árvore B. A busca usa o índice de ID ou o de e-mail
-    (com "@") e mostra a posição devolvida e o registro lido nessa posição.
+    Página da Árvore B. O administrador escolhe o índice (?indice=id ou
+    ?indice=email) e a página mostra somente a instrumentação dessa árvore.
+    A busca (?chave=) devolve a posição e o registro lido nessa posição.
     """
+    indice = request.args.get("indice", "id").strip()
+    if indice not in ("id", "email"):
+        indice = "id"
+
     chave = request.args.get("chave", "").strip()
     busca = None
 
     if chave:
-        if "@" in chave:
+        if indice == "email":
             cliente, instrumentacao = buscar_cliente_por_email(chave)
         else:
             cliente, instrumentacao = buscar_cliente_por_id(chave)
@@ -1094,36 +1104,104 @@ def admin_arvore_b():
 
     return render_template(
         "admin/arvore_b.html",
-        arvore=resumo_arvore_b(),
+        indice=indice,
         chave=chave,
-        busca=busca
+        busca=busca,
+        metricas=instrumentacao_arvore_b(indice)
     )
 
 # =====================================
 # CADASTRO DE CLIENTES
 # =====================================
 
+def pacote_escolhido_pelo_admin(formulario, pacotes):
+    """
+    Pacote escolhido pelo admin no cadastro ou na edição do cliente.
+
+    Devolve None quando nenhum pacote foi escolhido; senão, (código, pacote,
+    países). No Basic, valida os 3 países da região na Tabela Hash.
+    Lança ValueError. Chamada ANTES de gravar, para não salvar pela metade.
+    """
+    codigo = formulario.get("pacote", "").strip()
+    if not codigo:
+        return None
+
+    pacote = pacotes.get(codigo)
+    if pacote is None:
+        raise ValueError("Selecione um pacote válido.")
+
+    if formulario.get("status", "ativo").strip() != "ativo":
+        raise ValueError("Para associar um pacote, o status do eSIM deve ser Ativo.")
+
+    if pacote["categoria"] == "Basic":
+        paises = validar_paises_basic(pacote, formulario.getlist("paises"), tabela_paises)
+    else:
+        paises = []   # Plus e Global não guardam países
+
+    return codigo, pacote, paises
+
+
+def associar_pacote(cliente_id, escolha):
+    """Grava o pacote no registro do cliente; a vigência começa agora."""
+    codigo, pacote, paises = escolha
+
+    inicio = datetime.now().astimezone().replace(microsecond=0)
+    fim = calcular_fim(inicio, pacote)
+
+    contratar_plano(cliente_id, codigo, paises, inicio.isoformat(), fim.isoformat())
+
+
+def paises_abrangidos(cliente, pacote):
+    """Nomes dos países cobertos pelo pacote do cliente (Global: lista vazia)."""
+    if pacote is None:
+        return []
+
+    if pacote["categoria"] == "Basic":
+        return [nome_do_pais(codigo) for codigo in cliente.get("paises_ativos", [])]
+
+    if pacote["categoria"] == "Plus":
+        return [nome for _, nome in paises_agrupados_por_regiao().get(pacote["regiao"], [])]
+
+    return []
+
+
 @app.route("/admin/clientes/cadastrar", methods=["GET", "POST"])
 def admin_cadastrar_cliente():
 
+    pacotes = carregar_pacotes()
     formulario = {}
+    paises_marcados = []
 
     if request.method == "POST":
 
         formulario = request.form.to_dict()
+        paises_marcados = request.form.getlist("paises")
 
         try:
+            escolha = pacote_escolhido_pelo_admin(request.form, pacotes)
+
+            # O ID é gerado (maior ID + 1), como na criação de conta pelo cliente.
+            formulario["id"] = str(proximo_id())
+
             # Simula: grava no fim do arquivo e insere ID e e-mail nas Árvores B.
-            # O cliente nasce sem plano; o pacote é associado na contratação.
-            cadastrar_cliente(formulario)
-            flash("Cliente cadastrado com sucesso!", "success")
+            cliente = cadastrar_cliente(formulario)
+
+            # Pacote escolhido pelo admin: grava no registro (mesma posição).
+            if escolha:
+                associar_pacote(cliente["id"], escolha)
+
+            flash(f"Cliente {cliente['id']} cadastrado com sucesso!", "success")
             return redirect(url_for("admin_clientes"))
         except ValueError as erro:
             flash(str(erro), "danger")
 
     return render_template(
         "admin/cadastrar_cliente.html",
-        formulario=formulario
+        formulario=formulario,
+        pacotes=pacotes,
+        paises_por_regiao=paises_agrupados_por_regiao(),
+        paises_marcados=paises_marcados,
+        proximo_id=proximo_id()
     )
 
 
@@ -1173,11 +1251,25 @@ def admin_editar_cliente(cliente_id):
         flash("Cliente não encontrado.", "danger")
         return redirect(url_for("admin_clientes"))
 
+    pacotes = carregar_pacotes()
+    formulario = {}
+    paises_marcados = list(cliente.get("paises_ativos", []))
+
     if request.method == "POST":
 
+        formulario = request.form.to_dict()
+        paises_marcados = request.form.getlist("paises")
+
         try:
+            escolha = pacote_escolhido_pelo_admin(request.form, pacotes)
+
             # Simula: altera o registro na mesma posição do arquivo.
             editar_cliente(cliente_id, request.form)
+
+            # Novo pacote escolhido: substitui o atual e reinicia a vigência.
+            if escolha:
+                associar_pacote(cliente_id, escolha)
+
             flash("Cliente atualizado com sucesso!", "success")
             return redirect(
                 url_for(
@@ -1188,9 +1280,18 @@ def admin_editar_cliente(cliente_id):
         except ValueError as erro:
             flash(str(erro), "danger")
 
+    pacote_atual = pacotes.get(str(cliente["pacote"]))
+
     return render_template(
         "admin/editar_cliente.html",
         cliente=cliente,
+        formulario=formulario,
+        pacotes=pacotes,
+        pacote_atual=pacote_atual,
+        pacote_escolhido=formulario.get("pacote", ""),
+        paises_marcados=paises_marcados,
+        paises_por_regiao=paises_agrupados_por_regiao(),
+        paises_abrangidos=paises_abrangidos(cliente, pacote_atual),
         pagina_ativa="clientes"
     )
 
@@ -1271,8 +1372,9 @@ def admin_consulta():
     """
     formulario = {
         "cliente": request.args.get("cliente", "58372").strip(),
-        "destino": request.args.get("destino", "IT").strip().upper(),
-        "origem": request.args.get("origem", "BR").strip().upper()
+        # Origem e destino aceitam o nome ou o código do país (ex.: Itália ou IT)
+        "origem": resolver_pais(request.args.get("origem", "BR")),
+        "destino": resolver_pais(request.args.get("destino", "IT"))
     }
 
     resposta = consultar_cobertura_cliente(
@@ -1290,6 +1392,8 @@ def admin_consulta():
         "admin/consulta.html",
         paises=sorted(tabela_paises.listar(), key=lambda item: item[1]["nome"]),
         formulario=formulario,
+        origem_digitada=nome_do_pais(formulario["origem"]),
+        destino_digitado=nome_do_pais(formulario["destino"]),
         resposta=resposta,
         rota=rota
     )

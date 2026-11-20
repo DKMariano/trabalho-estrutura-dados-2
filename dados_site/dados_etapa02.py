@@ -545,3 +545,66 @@ ARVORE_B_DEMONSTRACAO = {
 def resumo_arvore_b():
     """Números demonstrativos da Árvore B (trocar por arvore_b.py na Etapa 2)."""
     return ARVORE_B_DEMONSTRACAO
+
+
+# =============================================================================
+# INSTRUMENTAÇÃO POR ÁRVORE (DEMONSTRATIVO) — página /admin/arvore-b
+# =============================================================================
+#
+# Cada índice tem a sua própria instrumentação: a árvore de ID e a de e-mail
+# são estruturas separadas. Formato combinado com o backend definitivo:
+#
+#   ultima_busca: comparações, nós visitados e tempo (µs) da última busca
+#   acumulado:    comparações totais e total de buscas desde que o
+#                 servidor foi iniciado
+#   estado:       altura, divisões, total de chaves e o tempo da última
+#                 operação estrutural ("insercao" ou "reconstrucao"), em µs
+#
+# Nenhum valor é calculado: todos simulam o funcionamento esperado.
+
+INSTRUMENTACAO_ARVORES_DEMONSTRACAO = {
+    "id": {
+        "arvore": "id",
+        "nome": "Árvore B de ID",
+        "chave": "ID do cliente (inteiro)",
+        "icone": "bi-123",
+        "grau": 12,
+        "ultima_busca": {"comparacoes": 9, "nos_visitados": 3, "tempo_us": 6.80},
+        "acumulado": {"comparacoes_totais": 126, "total_buscas": 14},
+        "estado": {
+            "altura": 2,
+            "divisoes": 61,
+            "total_chaves": 1000,
+            "ultima_operacao": "reconstrucao",
+            "tempo_execucao_us": 42600.0,
+        },
+        "simulado": True,
+    },
+    "email": {
+        "arvore": "email",
+        "nome": "Árvore B de e-mail",
+        "chave": "e-mail normalizado (minúsculas, sem espaços)",
+        "icone": "bi-envelope",
+        "grau": 12,
+        "ultima_busca": {"comparacoes": 11, "nos_visitados": 3, "tempo_us": 8.15},
+        "acumulado": {"comparacoes_totais": 98, "total_buscas": 9},
+        "estado": {
+            "altura": 2,
+            "divisoes": 64,
+            "total_chaves": 1000,
+            "ultima_operacao": "insercao",
+            "tempo_execucao_us": 14.20,
+        },
+        "simulado": True,
+    },
+}
+
+
+def instrumentacao_arvore_b(arvore):
+    """
+    Instrumentação de UMA árvore: "id" ou "email" (qualquer outro valor -> "id").
+    Trocar pela instrumentação real de arvore_b.py quando ela existir.
+    """
+    return INSTRUMENTACAO_ARVORES_DEMONSTRACAO.get(
+        arvore, INSTRUMENTACAO_ARVORES_DEMONSTRACAO["id"]
+    )

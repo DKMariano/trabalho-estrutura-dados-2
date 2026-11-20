@@ -41,33 +41,33 @@
         <form action="{{ url_for('admin_consulta') }}" method="GET"
               class="row g-3 align-items-end">
 
-            <div class="col-12 col-md-6 col-xl-4">
+            <div class="col-12 col-md-6 col-xl-3">
                 <label for="cliente" class="form-label fw-semibold">Cliente (ID ou e-mail)</label>
                 <input type="text" id="cliente" name="cliente" class="form-control" required
                        placeholder="Ex.: 58372 ou maria@email.com" value="{{ formulario.cliente }}">
             </div>
 
             <div class="col-12 col-md-6 col-xl-3">
-                <label for="destino" class="form-label fw-semibold">Destino</label>
-                <input type="text" id="destino" name="destino" class="form-control text-uppercase"
-                       list="listaPaises" maxlength="2" required autocomplete="off"
-                       placeholder="Ex.: IT" value="{{ formulario.destino }}">
-            </div>
-
-            <div class="col-12 col-md-6 col-xl-2">
                 <label for="origem" class="form-label fw-semibold">
                     Origem <span class="badge badge-roxo">Etapa 3</span>
                 </label>
-                <input type="text" id="origem" name="origem" class="form-control text-uppercase"
-                       list="listaPaises" maxlength="2" autocomplete="off"
-                       placeholder="Ex.: BR" value="{{ formulario.origem }}">
+                <input type="text" id="origem" name="origem" class="form-control"
+                       list="listaPaises" autocomplete="off"
+                       placeholder="Ex.: Brasil ou BR" value="{{ origem_digitada }}">
             </div>
 
-            {# Sugestões: os países da Tabela Hash. Dá para digitar qualquer código,
-               inclusive um que não exista, para ver o erro. #}
+            <div class="col-12 col-md-6 col-xl-3">
+                <label for="destino" class="form-label fw-semibold">Destino</label>
+                <input type="text" id="destino" name="destino" class="form-control"
+                       list="listaPaises" required autocomplete="off"
+                       placeholder="Ex.: Itália ou IT" value="{{ destino_digitado }}">
+            </div>
+
+            {# Sugestões: os países da Tabela Hash. Aceita o nome ou o código (ID);
+               dá para digitar um país que não exista, para ver o erro. #}
             <datalist id="listaPaises">
                 {% for codigo, pais in paises %}
-                <option value="{{ codigo }}">{{ pais.nome }}</option>
+                <option value="{{ pais.nome }}">{{ codigo }}</option>
                 {% endfor %}
             </datalist>
 
@@ -80,7 +80,8 @@
             <div class="col-12">
                 <small class="text-secondary">
                     Número: busca na Árvore B de ID. Texto com "@": busca na Árvore B de e-mail.
-                    O destino é consultado pela chave na Tabela Hash. A origem só é usada
+                    Origem e destino aceitam o nome ou o código do país (ex.: Itália ou IT);
+                    o destino é consultado pela chave na Tabela Hash. A origem só é usada
                     pela rota da Etapa 3.
                 </small>
             </div>
