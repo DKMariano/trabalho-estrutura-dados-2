@@ -377,11 +377,29 @@ def cliente_dashboard(cliente_id):
     pacotes = carregar_pacotes()
     pacote = pacotes.get(str(cliente["pacote"]))
 
+    # Texto da cobertura do plano (card Meu plano)
+    cobertura = None
+    if pacote:
+        if pacote["categoria"] == "Basic":
+            cobertura = ", ".join(nome_do_pais(codigo) for codigo in cliente["paises_ativos"])
+        elif pacote["categoria"] == "Plus":
+            total = len(paises_agrupados_por_regiao().get(pacote["regiao"], []))
+            cobertura = f"Os {total} países da {pacote['regiao']}"
+        else:
+            cobertura = f"Os {len(tabela_paises.listar())} países atendidos"
+
+    # Resumo do histórico (card Minha conectividade): total e consulta mais recente
+    historico = historico_do_cliente(cliente_id, 1)
+    ultima_consulta = historico["registros"][0] if historico["registros"] else None
+
     return render_template(
         "cliente/dashboard.html",
         cliente=cliente,
         pacote=pacote,
+        cobertura=cobertura,
         plano_vigente=plano_vigente(cliente),
+        total_consultas=historico["total"],
+        ultima_consulta=ultima_consulta,
         pagina_ativa="dashboard"
     )
 
@@ -1131,7 +1149,7 @@ def pacote_escolhido_pelo_admin(formulario, pacotes):
         raise ValueError("Selecione um pacote válido.")
 
     if formulario.get("status", "ativo").strip() != "ativo":
-        raise ValueError("Para associar um pacote, o status do eSIM deve ser Ativo.")
+        raise ValueError("Para associar um pacote, o status do cliente deve ser Ativo.")
 
     if pacote["categoria"] == "Basic":
         paises = validar_paises_basic(pacote, formulario.getlist("paises"), tabela_paises)
@@ -1263,8 +1281,13 @@ def admin_editar_cliente(cliente_id):
         try:
             escolha = pacote_escolhido_pelo_admin(request.form, pacotes)
 
+            # O e-mail é chave da Árvore B de e-mail e não pode ser alterado
+            # (DC-07): o formulário não envia o campo e o valor atual é mantido.
+            dados = request.form.to_dict()
+            dados["email"] = cliente["email"]
+
             # Simula: altera o registro na mesma posição do arquivo.
-            editar_cliente(cliente_id, request.form)
+            editar_cliente(cliente_id, dados)
 
             # Novo pacote escolhido: substitui o atual e reinicia a vigência.
             if escolha:
@@ -1292,6 +1315,7 @@ def admin_editar_cliente(cliente_id):
         paises_marcados=paises_marcados,
         paises_por_regiao=paises_agrupados_por_regiao(),
         paises_abrangidos=paises_abrangidos(cliente, pacote_atual),
+        plano_vigente=plano_vigente(cliente),
         pagina_ativa="clientes"
     )
 

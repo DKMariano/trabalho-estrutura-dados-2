@@ -66,36 +66,50 @@
                     </span>
                     <div>
                         <h2 class="h4 fw-bold mb-0">Meu plano</h2>
-                        <p class="mb-0 text-secondary">{{ pacote["nome"] if pacote else "Sem plano contratado" }}</p>
+                        <p class="mb-0 text-secondary">{{ ("Tipo " ~ pacote["categoria"]) if pacote else "Sem plano contratado" }}</p>
                     </div>
                 </div>
 
-                {% if pacote %}
                 <div class="mb-3">
-                    {% if plano_vigente %}
-                    <span class="badge bg-success-subtle text-success-emphasis">Plano vigente até {{ cliente.contratacao_fim | data_br }}</span>
+                    {% if not pacote %}
+                    <span class="badge text-bg-secondary">Sem plano</span>
+                    {% elif plano_vigente %}
+                    <span class="badge bg-success-subtle text-success-emphasis"><i class="bi bi-check-circle me-1" aria-hidden="true"></i>Plano vigente</span>
                     {% else %}
-                    <span class="badge text-bg-warning">Plano expirado em {{ cliente.contratacao_fim | data_br }}</span>
+                    <span class="badge text-bg-warning"><i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>Plano expirado</span>
                     {% endif %}
                 </div>
 
-                <div class="d-flex gap-4 mb-3">
-                    <div>
-                        <strong class="d-block fs-4 lh-1">{{ pacote["dados_gb"] }} GB</strong>
-                        <small class="text-secondary">Franquia</small>
-                    </div>
-                    <div class="vr"></div>
-                    <div>
-                        <strong class="d-block fs-4 lh-1">{{ pacote["validade_dias"] }} dias</strong>
-                        <small class="text-secondary">Validade</small>
-                    </div>
-                </div>
-
-                {% if cliente.paises_ativos %}
-                <p class="mb-4"><span class="text-secondary">Países:</span>
-                    <strong>{{ cliente.paises_ativos | join(', ') }}</strong></p>
-                {% endif %}
+                {% if pacote %}
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item d-flex justify-content-between gap-3 px-0">
+                        <span class="text-secondary">Plano</span>
+                        <strong class="text-end">{{ cliente["pacote"] }} · {{ pacote["nome"] }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between gap-3 px-0">
+                        <span class="text-secondary">Vigência</span>
+                        <strong class="text-end">{{ cliente.contratacao_inicio | data_br }} a {{ cliente.contratacao_fim | data_br }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between gap-3 px-0">
+                        <span class="text-secondary">Cobertura</span>
+                        <strong class="text-end">{{ cobertura }}</strong>
+                    </li>
+                </ul>
                 {% else %}
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-secondary">Plano</span>
+                        <strong>Nenhum</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-secondary">Vigência</span>
+                        <strong>—</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-secondary">Cobertura</span>
+                        <strong>—</strong>
+                    </li>
+                </ul>
                 <p class="text-secondary mb-4">
                     Consulte o seu destino e escolha um plano para a viagem.
                 </p>
@@ -127,15 +141,31 @@
 
                 <p class="mb-3">Cobertura do destino e roteamento multicritério com histórico de consultas.</p>
 
-                <ul class="list-unstyled mb-4">
-                    <li class="d-flex gap-2 mb-2">
-                        <i class="bi bi-signpost-split text-secondary" aria-hidden="true"></i>
-                        Menor latência ou menor custo simulado.
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-secondary">Consultas no histórico</span>
+                        <strong>{{ total_consultas }}</strong>
                     </li>
-                    <li class="d-flex gap-2">
-                        <i class="bi bi-clock text-roxo" aria-hidden="true"></i>
-                        Rotas e resultados salvos no histórico.
+                    {% if ultima_consulta %}
+                    {% set u = ultima_consulta %}
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-secondary">Última consulta</span>
+                        <strong>{{ u.data | data_br }} {{ u.data[11:16] }}</strong>
                     </li>
+                    <li class="list-group-item d-flex justify-content-between gap-3 px-0">
+                        <span class="text-secondary">Última rota</span>
+                        <strong class="text-end">{{ u.origem_nome }} → {{ u.destino_nome }} · {{ u.latencia_total_ms }} ms</strong>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-secondary">Última consulta</span>
+                        <strong>Nenhuma ainda</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-secondary">Última rota</span>
+                        <strong>—</strong>
+                    </li>
+                    {% endif %}
                 </ul>
 
                 <a href="{{ url_for('minha_conectividade', cliente_id=cliente['id']) }}"

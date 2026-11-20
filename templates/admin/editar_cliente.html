@@ -32,35 +32,12 @@
                                    maxlength="120" value="{{ formulario.get('nome', cliente.nome) }}" required>
                         </div>
 
-                        <div class="col-12 col-md-6">
-                            <label for="email" class="form-label fw-semibold">
-                                E-mail <span class="text-danger">*</span>
-                            </label>
-                            <input type="email" id="email" name="email" class="form-control"
-                                   value="{{ formulario.get('email', cliente.email) }}" required>
-                        </div>
 
-                    </div>
-
-                    <hr class="my-4">
-
-                    {{ secao("eSIM associado", "success") }}
-
-                    {% set status_atual = formulario.get('status', cliente.status) %}
-
-                    <div class="row g-4">
-
-                        <div class="col-12 col-md-6">
-                            <label for="esim" class="form-label fw-semibold">
-                                Identificador do eSIM <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" id="esim" name="esim" class="form-control"
-                                   value="{{ formulario.get('esim', cliente.esim) }}" required>
-                        </div>
+                        {% set status_atual = formulario.get('status', cliente.status) %}
 
                         <div class="col-12 col-md-6">
                             <label for="status" class="form-label fw-semibold">
-                                Status do eSIM <span class="text-danger">*</span>
+                                Status do cliente <span class="text-danger">*</span>
                             </label>
                             <select id="status" name="status" class="form-select" required>
                                 <option value="ativo"
@@ -77,11 +54,30 @@
 
                     <hr class="my-4">
 
+                    {{ secao("eSIM associado", "success") }}
+
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+                            <label for="esim" class="form-label fw-semibold">
+                                Identificador do eSIM <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" id="esim" name="esim" class="form-control"
+                                   value="{{ formulario.get('esim', cliente.esim) }}" required>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
                     {{ secao("Pacote associado", "success") }}
 
                     <p class="text-secondary">
                         Pacote atual:
-                        <strong>{{ (cliente.pacote ~ " · " ~ pacote_atual.nome) if pacote_atual else "Sem pacote" }}</strong>.
+                        <strong>{{ (cliente.pacote ~ " · " ~ pacote_atual.nome) if pacote_atual else "Sem pacote" }}</strong>{% if pacote_atual %},
+                        vigência de <strong>{{ cliente.contratacao_inicio | data_br }}</strong>
+                        a <strong>{{ cliente.contratacao_fim | data_br }}</strong>
+                        {% if plano_vigente %}<span class="badge bg-success-subtle text-success-emphasis">Plano vigente</span>{% else %}<span class="badge text-bg-warning">Plano expirado</span>{% endif %}{% endif %}.
                         Escolha um novo pacote para associá-lo ao cliente; ele substitui o atual
                         e a vigência é reiniciada.
                     </p>
@@ -137,6 +133,10 @@
                             <td class="text-end text-break">{{ cliente.email }}</td>
                         </tr>
                         <tr>
+                            <th scope="row">Status:</th>
+                            <td class="text-end">{{ cliente.status | capitalize }}</td>
+                        </tr>
+                        <tr>
                             <th scope="row">eSIM:</th>
                             <td class="text-end">{{ cliente.esim }}</td>
                         </tr>
@@ -147,7 +147,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">Países que o pacote abrange:</th>
+                            <th scope="row">Vigência: </th>
+                            <td class="text-end">
+                                {% if pacote_atual %}{{ cliente.contratacao_inicio | data_br }} a {{ cliente.contratacao_fim | data_br }}{% else %}—{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Países com cobertura:</th>
                             <td class="text-end">
                                 {% if not pacote_atual %}
                                 —
@@ -165,7 +171,8 @@
 
                 <div class="alert alert-primary small mb-0" role="note">
                     <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
-                    O ID identifica o cliente e permanece fixo durante a edição.
+                    O ID e o e-mail são as chaves das Árvores B (de ID e de e-mail)
+                    e não podem ser editados.
                 </div>
 
             </div>

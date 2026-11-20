@@ -37,6 +37,24 @@
                                    value="{{ formulario.get('email', '') }}" required>
                         </div>
 
+                        <div class="col-12 col-md-6">
+                            <label for="status" class="form-label fw-semibold">Status do cliente</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="ativo"
+                                    {% if formulario.get('status', 'ativo') == 'ativo' %}selected{% endif %}>
+                                    Ativo
+                                </option>
+                                <option value="inativo"
+                                    {% if formulario.get('status') == 'inativo' %}selected{% endif %}>
+                                    Inativo
+                                </option>
+                            </select>
+                            <div class="form-text">
+                                Novos clientes são ativos. Se escolher Inativo, o cliente
+                                será cadastrado sem acesso ao sistema e sem pacote.
+                            </div>
+                        </div>
+
                     </div>
 
                     <hr class="my-4">
@@ -52,24 +70,6 @@
                             <input type="text" class="form-control" id="esim" name="esim"
                                    placeholder="Ex.: ESIM-83921"
                                    value="{{ formulario.get('esim', '') }}" required>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="status" class="form-label fw-semibold">Status do eSIM</label>
-                            <select class="form-select" id="status" name="status">
-                                <option value="ativo"
-                                    {% if formulario.get('status', 'ativo') == 'ativo' %}selected{% endif %}>
-                                    Ativo
-                                </option>
-                                <option value="inativo"
-                                    {% if formulario.get('status') == 'inativo' %}selected{% endif %}>
-                                    Inativo
-                                </option>
-                            </select>
-                            <div class="form-text">
-                                Novos clientes são ativos. Se escolher Inativo, o cliente
-                                será cadastrado sem acesso ao sistema e sem pacote.
-                            </div>
                         </div>
 
                     </div>

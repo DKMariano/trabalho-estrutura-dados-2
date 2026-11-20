@@ -62,7 +62,7 @@
                         <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Voltar
                     </a>
                     <div class="d-flex flex-wrap gap-2">
-                        {{ botao_status(cliente) }}
+                        {% if cliente.status == "inativo" %}{{ botao_status(cliente) }}{% endif %}
                         <a href="{{ url_for('admin_editar_cliente', cliente_id=cliente.id) }}"
                            class="btn btn-success">
                             <i class="bi bi-pencil me-2" aria-hidden="true"></i>Editar cliente
