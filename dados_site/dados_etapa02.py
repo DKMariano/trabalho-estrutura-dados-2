@@ -1,243 +1,499 @@
-
 """
 DGB SIM — Etapa 02
-Dados SIMULADOS de clientes e eSIMs (temporários).
-
-ATENÇÃO: este arquivo NÃO é a Árvore B.
-
-Ele existe apenas para que as telas da Etapa 2 possam ser montadas antes
-do backend definitivo. As funções abaixo têm os mesmos nomes e o mesmo
-formato de retorno que o backend real deverá oferecer. Quando a Árvore B
-e o arquivos/clientes.json estiverem prontos, basta trocar o import no
-app.py e no servico_conectividade.py, e este arquivo poderá ser excluído.
+Backend de clientes: duas Árvores B (ID e e-mail) + persistência em JSON.
 
 Organização (decisões D1, D2 e D8):
-- CLIENTES_DEMONSTRACAO é uma LISTA. O índice de cada registro simula a
-  "posição no arquivo" que a Árvore B guardará (chave -> posição).
-- Uma posição com None simula um registro excluído fisicamente: as
-  demais posições não se deslocam.
-- O campo do pacote se chama "pacote" (como no PDF oficial).
+- arquivos/clientes.json é uma LISTA. O índice de cada registro é a
+  "posição no arquivo" que as Árvores B guardam (chave -> posição).
+- Uma posição com None é um cliente excluído fisicamente: as demais
+  posições não se deslocam e o ID nunca é reutilizado
+  (arquivos/controle_ids.json guarda proximo_id e ids_utilizados).
+- A Árvore B de ID tem chave inteira; a de e-mail tem chave str normalizada
+  (strip().lower()). Nenhuma delas guarda dados do cliente, só a posição.
+- Buscas por ID ou e-mail SEMPRE descem a Árvore B; nunca percorrem a lista.
 
-As buscas daqui percorrem a lista, o que NÃO é permitido no backend real.
-Por isso toda instrumentação devolvida traz "simulado": True e não
-inventa métricas: comparações, nós visitados, altura e divisões ficam
-None até a Árvore B existir.
+Regra de ouro das mutações (cadastrar, editar, inativar, reativar, excluir,
+contratar): VALIDAR -> PREPARAR a cópia -> GRAVAR em arquivo -> SÓ ENTÃO
+atualizar a memória e as árvores. Quem devolve cliente devolve uma CÓPIA.
 
-Também reúne os números demonstrativos da página Árvore B (layout para
-aprovação). Nenhum deles é calculado: simulam o funcionamento esperado.
+Dois bloqueios (sem rollback, sem nova tentativa, sem restauração):
+- "Indisponível": os dados não puderam ser carregados/reconstruídos. Toda
+  função de clientes lança ErroIndices (exceto normalizar_email,
+  resumo_arvore_b e instrumentacao_arvore_b). As funcionalidades de países
+  (Etapa 1) continuam funcionando, porque o import nunca lança exceção.
+- "Falha de gravação": um OSError ao gravar bloqueia toda ALTERAÇÃO até
+  reiniciar a aplicação (ou chamar inicializar()); consultas continuam.
+
+Pacote no cadastro/edição (DC-08/DC-14): o app.py atual valida o pacote com
+request.form.getlist("paises") e o associa DEPOIS, por contratar_plano().
+Como request.form.to_dict() guarda só o primeiro país, cadastrar_cliente() e
+editar_cliente() só aplicam um pacote quando "dados" traz "pacote" E
+"paises_ativos" (lista; vazia para Plus/Global). Sem "paises_ativos", o campo
+"pacote" é ignorado aqui e o fluxo do app.py (contratar_plano) segue valendo.
 """
 
+import threading
+from datetime import datetime
+
+from arquivos import persistencia_clientes as persistencia
+from arquivos.persistencia_clientes import CAMINHO_CLIENTES, CAMINHO_CONTROLE
+from arquivos.persistencia_pacotes import carregar_pacotes
+from arquivos.persistencia_paises import carregar_paises
+from dados_site.regras_planos import calcular_fim, validar_paises_basic
+from estruturas.arvore_b import ArvoreB
+
 STATUS_VALIDOS = ("ativo", "inativo")
+GRAU_MINIMO = 3
+SENHA_PADRAO = "123456"
+MAX_PROBLEMAS_NA_MENSAGEM = 10
+
+# Mensagens exatas (consumidas pelo app.py e pelos testes).
+MSG_FALHA_GRAVACAO = (
+    "Não foi possível gravar os dados de clientes. As alterações de clientes "
+    "estão bloqueadas até a aplicação ser reiniciada."
+)
+MSG_NAO_ENCONTRADO = "Cliente não encontrado."
+MSG_CAMPOS_VAZIOS = "Preencha todos os campos obrigatórios."
+MSG_EMAIL_INVALIDO = "Informe um e-mail válido."
+MSG_EMAIL_DUPLICADO = "Já existe um cliente com esse e-mail."
+MSG_STATUS_INVALIDO = "Selecione um status válido."
+MSG_EMAIL_IMUTAVEL = "O e-mail não pode ser alterado."
+MSG_JA_INATIVO = "O cliente já está inativo."
+MSG_JA_ATIVO = "O cliente já está ativo."
+MSG_EXCLUIR_ATIVO = (
+    "Somente clientes inativos podem ser excluídos permanentemente. "
+    "Inative o cliente antes."
+)
+MSG_CONFIRMACAO = "Confirmação inválida: digite o ID do cliente ou EXCLUIR."
+MSG_CIENCIA = "Marque a ciência de que a exclusão é irreversível."
+MSG_CONTRATAR_INATIVO = "Seu cadastro está inativo. Procure a administração da DGB SIM."
+MSG_PLANO_INVALIDO = "Selecione um plano válido."
+MSG_PACOTE_STATUS = "Para associar um pacote, o status do cliente deve ser Ativo."
+
+
+class ErroIndices(RuntimeError):
+    """Dados de clientes indisponíveis (arquivos ou índices inconsistentes)."""
 
 
 # =============================================================================
-# CLIENTES (SIMULADOS)
+# ESTADO EM MEMÓRIA
 # =============================================================================
-#
-# Casos cobertos, para demonstrar as telas:
-#   posição 0 a 4 -> ativos com plano vigente (Plus, Global e Basic)
-#   posição 5     -> ativo com plano expirado
-#   posição 6     -> ativo sem plano
-#   posição 7     -> inativo com plano vigente (a inativação preserva tudo)
-#   posição 8     -> inativo sem plano
 
-CLIENTES_DEMONSTRACAO = [
-    {   # posição 0
-        "id": 1001,
-        "nome": "Ines",
-        "email": "ines@ed2.com",
-        "senha": "123456",
-        "esim": "ESIM-10001",
-        "pacote": 102,
-        "paises_ativos": [],
-        "contratacao_inicio": "2026-11-10T10:00:00-03:00",
-        "contratacao_fim": "2026-12-10T10:00:00-03:00",
-        "status": "ativo",
-    },
-    {   # posição 1 — cliente do exemplo do enunciado (Árvore B × Tabela Hash)
-        "id": 58372,
-        "nome": "Maria Silva",
-        "email": "maria@email.com",
-        "senha": "123456",
-        "esim": "ESIM-83921",
-        "pacote": 102,
-        "paises_ativos": [],
-        "contratacao_inicio": "2026-11-10T10:00:00-03:00",
-        "contratacao_fim": "2026-12-10T10:00:00-03:00",
-        "status": "ativo",
-    },
-    {   # posição 2
-        "id": 58373,
-        "nome": "Bruno Lima",
-        "email": "bruno@example.com",
-        "senha": "123456",
-        "esim": "ESIM-01002",
-        "pacote": 202,
-        "paises_ativos": [],
-        "contratacao_inicio": "2026-11-05T09:00:00-03:00",
-        "contratacao_fim": "2026-12-05T09:00:00-03:00",
-        "status": "ativo",
-    },
-    {   # posição 3
-        "id": 58374,
-        "nome": "Carla Mendes",
-        "email": "carla@example.com",
-        "senha": "123456",
-        "esim": "ESIM-01003",
-        "pacote": 301,
-        "paises_ativos": [],
-        "contratacao_inicio": "2026-11-01T08:00:00-03:00",
-        "contratacao_fim": "2026-12-01T08:00:00-03:00",
-        "status": "ativo",
-    },
-    {   # posição 4 — Basic: exatamente 3 países da região do plano
-        "id": 58375,
-        "nome": "Diego Santos",
-        "email": "diego@example.com",
-        "senha": "123456",
-        "esim": "ESIM-01004",
-        "pacote": 201,
-        "paises_ativos": ["BR", "CL", "MX"],
-        "contratacao_inicio": "2026-11-12T14:00:00-03:00",
-        "contratacao_fim": "2026-11-27T14:00:00-03:00",
-        "status": "ativo",
-    },
-    {   # posição 5 — plano expirado (o cliente continua ativo)
-        "id": 58376,
-        "nome": "Elisa Costa",
-        "email": "elisa@example.com",
-        "senha": "123456",
-        "esim": "ESIM-01005",
-        "pacote": 202,
-        "paises_ativos": [],
-        "contratacao_inicio": "2026-10-01T10:00:00-03:00",
-        "contratacao_fim": "2026-10-31T10:00:00-03:00",
-        "status": "ativo",
-    },
-    {   # posição 6 — ainda sem plano contratado
-        "id": 58377,
-        "nome": "Fábio Rocha",
-        "email": "fabio@example.com",
-        "senha": "123456",
-        "esim": "ESIM-01006",
-        "pacote": None,
-        "paises_ativos": [],
-        "contratacao_inicio": None,
-        "contratacao_fim": None,
-        "status": "ativo",
-    },
-    {   # posição 7 — inativo: pacote, países e datas são preservados
-        "id": 58378,
-        "nome": "Gabriela Nunes",
-        "email": "gabriela@example.com",
-        "senha": "123456",
-        "esim": "ESIM-01007",
-        "pacote": 102,
-        "paises_ativos": [],
-        "contratacao_inicio": "2026-11-08T11:00:00-03:00",
-        "contratacao_fim": "2026-12-08T11:00:00-03:00",
-        "status": "inativo",
-    },
-    {   # posição 8
-        "id": 58379,
-        "nome": "Hugo Alves",
-        "email": "hugo@example.com",
-        "senha": "123456",
-        "esim": "ESIM-01008",
-        "pacote": None,
-        "paises_ativos": [],
-        "contratacao_inicio": None,
-        "contratacao_fim": None,
-        "status": "inativo",
-    },
-]
+_clientes = []                                   # list[dict | None]
+_controle_ids = {"proximo_id": 1, "ids_utilizados": []}
+_arvore_id = ArvoreB(GRAU_MINIMO, "id")          # chave int
+_arvore_email = ArvoreB(GRAU_MINIMO, "email")    # chave str normalizada
+_caminho_clientes = CAMINHO_CLIENTES
+_caminho_controle = CAMINHO_CONTROLE
+_erro_indisponivel = None                        # str | None
+_erro_gravacao = None                            # str | None
+
+# O Flask atende em várias threads: as alterações são serializadas para que
+# dois cadastros simultâneos não recebam o mesmo ID.
+_TRAVA = threading.RLock()
 
 
 # =============================================================================
-# FUNÇÕES SIMULADAS (mesma interface que o backend real deverá oferecer)
+# CONSTRUÇÃO DOS ÍNDICES E INICIALIZAÇÃO
 # =============================================================================
+
+def construir_indices(clientes):
+    """
+    Constrói do zero as duas Árvores B a partir da lista de clientes.
+
+    Pula posições None (excluídos), valida id e e-mail de cada registro,
+    confere duplicidades, carrega as árvores, roda validar() e compara o
+    percurso em ordem com os pares esperados.
+
+    Devolve (arvore_id, arvore_email). Lança ValueError com os problemas
+    encontrados (a mensagem mostra os primeiros e a quantidade restante).
+    """
+    problemas = []
+    pares_id, pares_email = [], []
+    posicao_do_id, posicao_do_email = {}, {}
+
+    for posicao, registro in enumerate(clientes):
+        if registro is None:
+            continue
+
+        if not isinstance(registro, dict):
+            problemas.append(f"posição {posicao}: registro inválido")
+            continue
+
+        cid = registro.get("id")
+        if type(cid) is not int or cid <= 0:
+            problemas.append(f"posição {posicao}: id inválido ({cid!r})")
+        elif cid in posicao_do_id:
+            problemas.append(
+                f"id {cid} duplicado (posições {posicao_do_id[cid]} e {posicao})"
+            )
+        else:
+            posicao_do_id[cid] = posicao
+            pares_id.append((cid, posicao))
+
+        email = registro.get("email")
+        if (not isinstance(email, str) or email != email.strip().lower()
+                or "@" not in email):
+            problemas.append(f"posição {posicao}: e-mail inválido ou não normalizado ({email!r})")
+        elif email in posicao_do_email:
+            problemas.append(
+                f"e-mail {email} duplicado (posições {posicao_do_email[email]} e {posicao})"
+            )
+        else:
+            posicao_do_email[email] = posicao
+            pares_email.append((email, posicao))
+
+    arvore_id = ArvoreB(GRAU_MINIMO, "id")
+    arvore_email = ArvoreB(GRAU_MINIMO, "email")
+
+    if not problemas:
+        try:
+            arvore_id.carregar(pares_id)
+            arvore_email.carregar(pares_email)
+
+            for rotulo, arvore, pares in (
+                ("ID", arvore_id, pares_id),
+                ("e-mail", arvore_email, pares_email),
+            ):
+                for inconsistencia in arvore.validar():
+                    problemas.append(f"Árvore B de {rotulo}: {inconsistencia}")
+                if arvore.percorrer_em_ordem() != sorted(pares):
+                    problemas.append(
+                        f"Árvore B de {rotulo}: percurso em ordem diferente dos registros"
+                    )
+        except Exception as erro:  # a árvore recusou algum dado
+            problemas.append(f"falha ao construir as Árvores B: {erro}")
+
+    if problemas:
+        mostrados = problemas[:MAX_PROBLEMAS_NA_MENSAGEM]
+        texto = "; ".join(mostrados)
+        if len(problemas) > len(mostrados):
+            texto += f"; e mais {len(problemas) - len(mostrados)} problema(s)"
+        raise ValueError(texto)
+
+    return arvore_id, arvore_email
+
+
+def _motivo(erro):
+    """Texto curto (sem ponto final) para a mensagem de indisponibilidade."""
+    if isinstance(erro, FileNotFoundError):
+        texto = f"arquivo não encontrado ({erro.filename})"
+    elif isinstance(erro, OSError):
+        texto = f"falha ao ler {erro.filename}: {erro.strerror}" if erro.filename else str(erro)
+    elif isinstance(erro, ValueError) and type(erro).__name__ == "JSONDecodeError":
+        texto = f"JSON inválido ({erro})"
+    else:
+        texto = str(erro)
+    return texto.strip().rstrip(".").strip() or type(erro).__name__
+
+
+def inicializar(caminho_clientes=None, caminho_controle=None):
+    """
+    Carrega clientes.json e controle_ids.json, reconstrói as duas Árvores B
+    e confere o controle de IDs.
+
+    Com caminhos, todas as gravações seguintes usam esses caminhos; sem
+    caminhos, volta aos padrão. NUNCA lança exceção: qualquer falha liga o
+    aviso "indisponível" para o Flask subir e a Etapa 1 continuar funcionando.
+    """
+    global _clientes, _controle_ids, _arvore_id, _arvore_email
+    global _caminho_clientes, _caminho_controle, _erro_indisponivel, _erro_gravacao
+
+    with _TRAVA:
+        _caminho_clientes = caminho_clientes if caminho_clientes is not None else CAMINHO_CLIENTES
+        _caminho_controle = caminho_controle if caminho_controle is not None else CAMINHO_CONTROLE
+
+        try:
+            clientes = persistencia.carregar_clientes(_caminho_clientes)
+            controle = persistencia.carregar_controle_ids(_caminho_controle)
+            arvore_id, arvore_email = construir_indices(clientes)
+
+            inconsistencias = persistencia.validar_controle_ids(clientes, controle)
+            if inconsistencias:
+                raise ValueError("controle de IDs inconsistente: " + "; ".join(inconsistencias))
+        except Exception as erro:
+            _clientes = []
+            _controle_ids = {"proximo_id": 1, "ids_utilizados": []}
+            _arvore_id = ArvoreB(GRAU_MINIMO, "id")
+            _arvore_email = ArvoreB(GRAU_MINIMO, "email")
+            _erro_indisponivel = _motivo(erro)
+            _erro_gravacao = None
+            return
+
+        _clientes = clientes
+        _controle_ids = controle
+        _arvore_id = arvore_id
+        _arvore_email = arvore_email
+        _erro_indisponivel = None
+        _erro_gravacao = None
+
+
+# =============================================================================
+# BLOQUEIOS E AUXILIARES
+# =============================================================================
+
+def _mensagem_indisponivel():
+    return (
+        f"Os dados de clientes estão indisponíveis: {_erro_indisponivel}. "
+        "As funcionalidades de países continuam disponíveis."
+    )
+
+
+def _exigir_disponivel():
+    """Toda função de clientes (exceto as isentas) começa por aqui."""
+    if _erro_indisponivel is not None:
+        raise ErroIndices(_mensagem_indisponivel())
+
+
+def _exigir_alteracao():
+    """Toda função que ALTERA dados começa por aqui."""
+    _exigir_disponivel()
+    if _erro_gravacao is not None:
+        raise ValueError(MSG_FALHA_GRAVACAO)
+
+
+def _falha_de_gravacao():
+    """Liga o bloqueio de gravação e devolve o erro a ser lançado."""
+    global _erro_gravacao
+    _erro_gravacao = MSG_FALHA_GRAVACAO
+    return ValueError(MSG_FALHA_GRAVACAO)
+
+
+def _gravar_clientes(lista):
+    try:
+        persistencia.salvar_clientes(lista, _caminho_clientes)
+    except OSError as erro:
+        raise _falha_de_gravacao() from erro
+
+
+def _gravar_controle(controle):
+    try:
+        persistencia.salvar_controle_ids(controle, _caminho_controle)
+    except OSError as erro:
+        raise _falha_de_gravacao() from erro
+
 
 def normalizar_email(email):
     """Remove espaços das pontas e converte para minúsculas."""
     return str(email or "").strip().lower()
 
 
-def _instrumentacao(arvore, chave, posicao):
-    """
-    Formato combinado para a instrumentação de uma busca na Árvore B.
+def _texto(valor):
+    return "" if valor is None else str(valor).strip()
 
-    Aqui só "posicao" é conhecida. As métricas da árvore ficam None,
-    porque a busca simulada não percorre nenhum nó.
+
+def _converter_id(valor):
+    """int > 0 ou None (não consulta a árvore com ID inválido)."""
+    if isinstance(valor, int) and not isinstance(valor, bool):
+        cid = valor
+    else:
+        texto = _texto(valor)
+        if not (texto.isascii() and texto.isdigit()):
+            return None
+        cid = int(texto)
+    return cid if cid > 0 else None
+
+
+def _copia(registro):
+    """Cópia defensiva: nunca expõe o dicionário interno de _clientes."""
+    copia = dict(registro)
+    copia["paises_ativos"] = list(registro.get("paises_ativos") or [])
+    return copia
+
+
+def _email_valido(email):
+    if email.count("@") != 1 or any(caractere.isspace() for caractere in email):
+        return False
+    usuario, dominio = email.split("@")
+    return bool(usuario) and bool(dominio)
+
+
+def _localizar(cliente_id):
+    """Busca na Árvore B de ID. Devolve (cid, posicao, registro) ou lança ValueError."""
+    cid = _converter_id(cliente_id)
+    if cid is None:
+        raise ValueError(MSG_NAO_ENCONTRADO)
+
+    posicao, _ = _arvore_id.buscar(cid)
+    if posicao is None or posicao >= len(_clientes) or _clientes[posicao] is None:
+        raise ValueError(MSG_NAO_ENCONTRADO)
+
+    return cid, posicao, _clientes[posicao]
+
+
+def _substituir(posicao, novo_registro):
+    """GRAVA a lista com o registro trocado e SÓ ENTÃO atualiza a memória."""
+    global _clientes
+    nova_lista = list(_clientes)
+    nova_lista[posicao] = novo_registro
+    _gravar_clientes(nova_lista)
+    _clientes = nova_lista
+    return _copia(novo_registro)
+
+
+def _lista_de_paises(valor):
+    if valor is None:
+        return []
+    if isinstance(valor, str):
+        return [valor]
+    return list(valor)
+
+
+def _texto_de_data(valor):
+    return valor.isoformat() if isinstance(valor, datetime) else valor
+
+
+# =============================================================================
+# REGRAS DE PLANO (Tabela Hash da Etapa 1 + catálogo pacotes.json)
+# =============================================================================
+
+def _validar_plano(pacote_codigo, paises):
     """
+    Devolve (codigo_int, pacote, paises_normalizados). Lança ValueError.
+
+    Basic: exatamente 3 países distintos da região do plano, consultados um a
+    um na Tabela Hash. Plus e Global não guardam países.
+    """
+    try:
+        pacotes = carregar_pacotes()
+    except (OSError, ValueError) as erro:
+        raise ValueError("Não foi possível consultar o catálogo de pacotes.") from erro
+
+    chave = _texto(pacote_codigo)
+    pacote = pacotes.get(chave)
+    if pacote is None:
+        raise ValueError(MSG_PLANO_INVALIDO)
+
+    if pacote.get("categoria") == "Basic":
+        try:
+            tabela = carregar_paises()
+        except (OSError, ValueError, KeyError) as erro:
+            raise ValueError("Não foi possível consultar o catálogo de países.") from erro
+        normalizados = validar_paises_basic(pacote, _lista_de_paises(paises), tabela)
+    else:
+        normalizados = []
+
+    return int(chave), pacote, normalizados
+
+
+def _plano_dos_dados(dados, status):
+    """
+    Plano enviado junto do cadastro/edição (ver docstring do módulo).
+    Devolve None ou um dicionário com os quatro campos de contratação.
+    """
+    codigo = _texto(dados.get("pacote"))
+    if not codigo or "paises_ativos" not in dados:
+        return None
+
+    if status != "ativo":
+        raise ValueError(MSG_PACOTE_STATUS)
+
+    codigo_int, pacote, paises = _validar_plano(codigo, dados["paises_ativos"])
+
+    inicio = _texto_de_data(dados.get("contratacao_inicio"))
+    fim = _texto_de_data(dados.get("contratacao_fim"))
+    if not inicio or not fim:
+        agora = datetime.now().astimezone().replace(microsecond=0)
+        inicio, fim = agora.isoformat(), calcular_fim(agora, pacote).isoformat()
+
     return {
-        "arvore": arvore,              # "id" ou "email"
-        "chave": chave,
-        "encontrado": posicao is not None,
-        "posicao": posicao,
-        "comparacoes": None,
-        "nos_visitados": None,
-        "altura": None,
-        "divisoes": None,
-        "simulado": True,
+        "pacote": codigo_int,
+        "paises_ativos": paises,
+        "contratacao_inicio": inicio,
+        "contratacao_fim": fim,
     }
 
 
-def _posicao_por_id(cliente_id):
-    for posicao, registro in enumerate(CLIENTES_DEMONSTRACAO):
-        if registro is not None and registro["id"] == cliente_id:
-            return posicao
-    return None
+# =============================================================================
+# INSTRUMENTAÇÃO
+# =============================================================================
+
+NOMES_ARVORES = {
+    "id": {
+        "arvore": "id",
+        "nome": "Árvore B de ID",
+        "chave": "ID do cliente (inteiro)",
+        "icone": "bi-123",
+    },
+    "email": {
+        "arvore": "email",
+        "nome": "Árvore B de e-mail",
+        "chave": "e-mail normalizado (minúsculas, sem espaços)",
+        "icone": "bi-envelope",
+    },
+}
 
 
-def _posicao_por_email(email):
-    for posicao, registro in enumerate(CLIENTES_DEMONSTRACAO):
-        if registro is not None and registro["email"] == email:
-            return posicao
-    return None
+def _instrumentacao_busca(arvore, nome, chave, posicao, metricas_busca):
+    """Formato combinado para a instrumentação de UMA busca."""
+    return {
+        "arvore": nome,
+        "chave": chave,
+        "encontrado": posicao is not None,
+        "posicao": posicao,
+        "comparacoes": metricas_busca["comparacoes"],
+        "nos_visitados": metricas_busca["nos_visitados"],
+        "altura": arvore.altura(),
+        "divisoes": arvore.metricas()["estado"]["divisoes"],
+        "simulado": False,
+    }
 
+
+_SEM_BUSCA = {"comparacoes": 0, "nos_visitados": 0}
+
+
+# =============================================================================
+# CONSULTAS
+# =============================================================================
 
 def buscar_cliente_por_id(cliente_id):
     """
-    Simula: Árvore B de ID -> posição -> registro.
-
-    Devolve (cliente, instrumentacao). cliente é None se não existir.
+    Árvore B de ID -> posição -> registro.
+    Devolve (cópia do cliente ou None, instrumentacao).
     """
-    try:
-        cliente_id = int(str(cliente_id).strip())
-    except (TypeError, ValueError):
-        return None, _instrumentacao("id", cliente_id, None)
+    _exigir_disponivel()
 
-    posicao = _posicao_por_id(cliente_id)
-    cliente = CLIENTES_DEMONSTRACAO[posicao] if posicao is not None else None
+    cid = _converter_id(cliente_id)
+    if cid is None:
+        # ID inválido: a árvore nem é consultada e as métricas não mudam.
+        return None, _instrumentacao_busca(_arvore_id, "id", cliente_id, None, _SEM_BUSCA)
 
-    return cliente, _instrumentacao("id", cliente_id, posicao)
+    posicao, metricas_busca = _arvore_id.buscar(cid)
+    cliente = _copia(_clientes[posicao]) if posicao is not None else None
+
+    return cliente, _instrumentacao_busca(_arvore_id, "id", cid, posicao, metricas_busca)
 
 
 def buscar_cliente_por_email(email):
     """
-    Simula: Árvore B de e-mail -> posição -> registro.
-
-    O e-mail é normalizado antes da busca.
-    Devolve (cliente, instrumentacao).
+    Árvore B de e-mail -> posição -> registro (o e-mail é normalizado antes).
+    Devolve (cópia do cliente ou None, instrumentacao).
     """
-    email = normalizar_email(email)
-    posicao = _posicao_por_email(email)
-    cliente = CLIENTES_DEMONSTRACAO[posicao] if posicao is not None else None
+    _exigir_disponivel()
 
-    return cliente, _instrumentacao("email", email, posicao)
+    email_norm = normalizar_email(email)
+    if not email_norm:
+        return None, _instrumentacao_busca(_arvore_email, "email", email_norm, None, _SEM_BUSCA)
+
+    posicao, metricas_busca = _arvore_email.buscar(email_norm)
+    cliente = _copia(_clientes[posicao]) if posicao is not None else None
+
+    return cliente, _instrumentacao_busca(_arvore_email, "email", email_norm, posicao, metricas_busca)
 
 
 def listar_clientes(busca="", pacote="", status="ativo"):
     """
-    Simula o percurso em ordem da Árvore B de ID (clientes ordenados por ID)
-    e aplica os filtros da tela administrativa.
+    Lista para a tela administrativa.
 
-    busca:  número -> Árvore B de ID; texto com "@" -> Árvore B de e-mail;
-            outro texto -> parte do nome (filtro sobre o percurso).
+    busca:  só dígitos -> Árvore B de ID; com "@" -> Árvore B de e-mail;
+            outro texto -> parte do nome, sobre o percurso em ordem da
+            Árvore B de ID (já ordenado por ID).
     pacote: código do pacote, "sem" (sem plano) ou "" (todos).
     status: "ativo" (padrão), "inativo" ou "todos".
     """
-    busca = str(busca or "").strip()
+    _exigir_disponivel()
+
+    busca = _texto(busca)
 
     if busca.isdigit():
         cliente, _ = buscar_cliente_por_id(busca)
@@ -246,12 +502,9 @@ def listar_clientes(busca="", pacote="", status="ativo"):
         cliente, _ = buscar_cliente_por_email(busca)
         clientes = [cliente] if cliente else []
     else:
-        clientes = sorted(
-            (registro for registro in CLIENTES_DEMONSTRACAO if registro is not None),
-            key=lambda registro: registro["id"],
-        )
+        clientes = [_copia(_clientes[posicao]) for _, posicao in _arvore_id.percorrer_em_ordem()]
         if busca:
-            clientes = [c for c in clientes if busca.lower() in c["nome"].lower()]
+            clientes = [c for c in clientes if busca.lower() in str(c["nome"]).lower()]
 
     if status in STATUS_VALIDOS:
         clientes = [c for c in clientes if c["status"] == status]
@@ -265,346 +518,336 @@ def listar_clientes(busca="", pacote="", status="ativo"):
 
 
 def total_clientes():
-    """Quantidade de registros válidos (exclui posições removidas)."""
-    return sum(1 for registro in CLIENTES_DEMONSTRACAO if registro is not None)
+    """Quantidade de clientes indexados (exclui posições removidas)."""
+    _exigir_disponivel()
+    return _arvore_id.total_chaves()
 
 
-def _validar_dados(nome, email, esim, status, ignorar_id=None):
-    """Validações comuns ao cadastro e à edição. Lança ValueError."""
+def proximo_id():
+    """Próximo ID livre, vindo do controle de IDs (nunca reutiliza ID excluído)."""
+    _exigir_disponivel()
+    return _controle_ids["proximo_id"]
+
+
+# =============================================================================
+# ALTERAÇÕES
+# =============================================================================
+
+def _validar_campos(nome, email, esim, status):
     if not nome or not email or not esim:
-        raise ValueError("Preencha todos os campos obrigatórios.")
-
-    if "@" not in email or email.startswith("@") or email.endswith("@"):
-        raise ValueError("Informe um e-mail válido.")
-
-    outro, _ = buscar_cliente_por_email(email)
-    if outro is not None and outro["id"] != ignorar_id:
-        raise ValueError("Já existe um cliente com esse e-mail.")
-
-    for registro in CLIENTES_DEMONSTRACAO:
-        if registro is not None and registro["esim"] == esim and registro["id"] != ignorar_id:
-            raise ValueError("Já existe um cliente com esse eSIM.")
-
+        raise ValueError(MSG_CAMPOS_VAZIOS)
+    if not _email_valido(email):
+        raise ValueError(MSG_EMAIL_INVALIDO)
     if status not in STATUS_VALIDOS:
-        raise ValueError("Selecione um status válido.")
+        raise ValueError(MSG_STATUS_INVALIDO)
 
 
 def cadastrar_cliente(dados):
     """
-    Simula: acrescenta o registro no FINAL da lista (nova posição) e
-    "insere" a chave nas duas Árvores B.
+    Cadastro administrativo. Lê nome, email, esim e status (padrão "ativo");
+    qualquer "id" enviado é ignorado: o ID vem do controle de IDs.
 
-    O cliente nasce sem plano (decisão P1): o pacote é associado
-    somente pela contratação.
-
-    dados: id, nome, email, esim, status (texto do formulário).
-    Devolve o cliente criado. Lança ValueError em caso de dado inválido.
+    Ordem de gravação: 1) controle_ids.json, 2) clientes.json (novo registro
+    no FIM), 3) memória e as duas Árvores B. O eSIM não precisa ser único.
+    Sem plano contratado, pacote/países/datas ficam vazios (decisão P1).
+    Devolve a cópia do cliente criado. Lança ValueError.
     """
-    id_texto = str(dados.get("id", "")).strip()
+    global _clientes, _controle_ids, _erro_indisponivel
 
-    if not id_texto.isdigit() or int(id_texto) <= 0:
-        raise ValueError("Informe um ID numérico válido.")
+    with _TRAVA:
+        _exigir_alteracao()
 
-    cliente_id = int(id_texto)
-    if _posicao_por_id(cliente_id) is not None:
-        raise ValueError("Já existe um cliente com esse ID.")
+        nome = _texto(dados.get("nome"))
+        email = normalizar_email(dados.get("email"))
+        esim = _texto(dados.get("esim"))
+        status = _texto(dados.get("status")) or "ativo"
 
-    nome = str(dados.get("nome", "")).strip()
-    email = normalizar_email(dados.get("email"))
-    esim = str(dados.get("esim", "")).strip()
-    status = str(dados.get("status", "ativo")).strip() or "ativo"
+        _validar_campos(nome, email, esim, status)
+        if _arvore_email.contem(email):
+            raise ValueError(MSG_EMAIL_DUPLICADO)
 
-    _validar_dados(nome, email, esim, status)
+        plano = _plano_dos_dados(dados, status)
 
-    cliente = {
-        "id": cliente_id,
-        "nome": nome,
-        "email": email,
-        "senha": "123456",
-        "esim": esim,
-        "pacote": None,
-        "paises_ativos": [],
-        "contratacao_inicio": None,
-        "contratacao_fim": None,
-        "status": status,
-    }
+        novo_id = _controle_ids["proximo_id"]
+        posicao = len(_clientes)
+        cliente = {
+            "id": novo_id,
+            "nome": nome,
+            "email": email,
+            "senha": SENHA_PADRAO,
+            "esim": esim,
+            "pacote": None,
+            "paises_ativos": [],
+            "contratacao_inicio": None,
+            "contratacao_fim": None,
+            "status": status,
+        }
+        if plano:
+            cliente.update(plano)
 
-    CLIENTES_DEMONSTRACAO.append(cliente)
-    return cliente
+        novo_controle = {
+            "proximo_id": novo_id + 1,
+            "ids_utilizados": list(_controle_ids["ids_utilizados"]) + [novo_id],
+        }
 
+        # 1) controle de IDs primeiro: se algo falhar depois, o ID já foi consumido.
+        _gravar_controle(novo_controle)
+        _controle_ids = novo_controle
 
-def editar_cliente(cliente_id, dados):
-    """
-    Simula: localiza pela Árvore B de ID e altera o registro NO MESMO
-    LUGAR (a posição não muda). Se o e-mail mudar, o backend real deverá
-    remover a chave antiga da Árvore B de e-mail e inserir a nova.
+        # 2) arquivo de clientes, com o novo registro no final.
+        nova_lista = list(_clientes) + [cliente]
+        _gravar_clientes(nova_lista)
 
-    Campos editáveis: nome, e-mail, eSIM e status. O ID é imutável e o
-    pacote só muda pela contratação.
-    Devolve o cliente alterado. Lança ValueError.
-    """
-    cliente, _ = buscar_cliente_por_id(cliente_id)
-    if cliente is None:
-        raise ValueError("Cliente não encontrado.")
+        # 3) memória e índices.
+        _clientes = nova_lista
+        try:
+            _arvore_id.inserir(novo_id, posicao)
+            _arvore_email.inserir(email, posicao)
+        except ValueError as erro:
+            _erro_indisponivel = f"índices inconsistentes após o cadastro ({erro})"
+            raise ErroIndices(_mensagem_indisponivel()) from erro
 
-    nome = str(dados.get("nome", "")).strip()
-    email = normalizar_email(dados.get("email"))
-    esim = str(dados.get("esim", "")).strip()
-    status = str(dados.get("status", "")).strip()
-
-    _validar_dados(nome, email, esim, status, ignorar_id=cliente["id"])
-
-    cliente["nome"] = nome
-    cliente["email"] = email
-    cliente["esim"] = esim
-    cliente["status"] = status
-
-    return cliente
-
-
-def inativar_cliente(cliente_id):
-    """
-    Exclusão lógica: muda SOMENTE o status para inativo. O registro continua
-    na mesma posição do arquivo e nas duas Árvores B; pacote, países e datas
-    são preservados.
-    """
-    cliente, _ = buscar_cliente_por_id(cliente_id)
-
-    if cliente is None:
-        raise ValueError("Cliente não encontrado.")
-    if cliente["status"] == "inativo":
-        raise ValueError("O cliente já está inativo.")
-
-    cliente["status"] = "inativo"
-    return cliente
-
-
-def reativar_cliente(cliente_id):
-    """Muda SOMENTE o status para ativo, preservando os demais campos."""
-    cliente, _ = buscar_cliente_por_id(cliente_id)
-
-    if cliente is None:
-        raise ValueError("Cliente não encontrado.")
-    if cliente["status"] == "ativo":
-        raise ValueError("O cliente já está ativo.")
-
-    cliente["status"] = "ativo"
-    return cliente
-
-
-def excluir_cliente_fisicamente(cliente_id, confirmacao, ciencia):
-    """
-    Exclusão física restrita (Zona de risco):
-    - somente cliente inativo;
-    - confirmação reforçada: digitar o ID do cliente (ou EXCLUIR)
-      e marcar a ciência da irreversibilidade.
-
-    Simula: a posição passa a None (nenhuma outra posição se desloca) e as
-    chaves sairiam das duas Árvores B. O ID não é reutilizado.
-    """
-    cliente, instrumentacao = buscar_cliente_por_id(cliente_id)
-
-    if cliente is None:
-        raise ValueError("Cliente não encontrado.")
-
-    if cliente["status"] != "inativo":
-        raise ValueError(
-            "Somente clientes inativos podem ser excluídos permanentemente. "
-            "Inative o cliente antes."
-        )
-
-    if str(confirmacao or "").strip() not in (str(cliente["id"]), "EXCLUIR"):
-        raise ValueError("Confirmação inválida: digite o ID do cliente ou EXCLUIR.")
-
-    if not ciencia:
-        raise ValueError("Marque a ciência de que a exclusão é irreversível.")
-
-    CLIENTES_DEMONSTRACAO[instrumentacao["posicao"]] = None
-
-
-def proximo_id():
-    """
-    Próximo ID livre = maior ID cadastrado + 1.
-
-    Na Árvore B real, o maior ID é a chave mais à direita: basta descer
-    sempre pelo último filho até a folha. Aqui a busca é simulada.
-    """
-    ids = [registro["id"] for registro in CLIENTES_DEMONSTRACAO if registro is not None]
-    return max(ids, default=0) + 1
+        return _copia(cliente)
 
 
 def criar_conta(dados):
     """
-    Cadastro feito pelo próprio cliente (área pública).
-
-    O cliente informa nome e e-mail. ID e eSIM são gerados automaticamente,
-    a senha é a demonstrativa e o cliente nasce ativo e sem plano.
-    Devolve o cliente criado. Lança ValueError.
+    Cadastro feito pelo próprio cliente (área pública): informa nome e e-mail;
+    o eSIM é gerado (ESIM-<id>) e o cliente nasce ativo e sem plano.
     """
-    cliente_id = proximo_id()
+    with _TRAVA:
+        _exigir_disponivel()
 
-    return cadastrar_cliente({
-        "id": str(cliente_id),
-        "nome": dados.get("nome", ""),
-        "email": dados.get("email", ""),
-        "esim": f"ESIM-{cliente_id}",
-        "status": "ativo",
-    })
+        return cadastrar_cliente({
+            "nome": dados.get("nome", ""),
+            "email": dados.get("email", ""),
+            "esim": f"ESIM-{proximo_id()}",
+            "status": "ativo",
+        })
+
+
+def editar_cliente(cliente_id, dados):
+    """
+    Altera nome, eSIM e status NA MESMA POSIÇÃO. ID, e-mail, senha e posição
+    não mudam, então as Árvores B não são tocadas. O e-mail (chave de índice)
+    é imutável: enviar um e-mail diferente do atual lança ValueError.
+
+    Um pacote só é trocado nas condições descritas no docstring do módulo
+    (DC-08/DC-14): a vigência é reiniciada.
+    """
+    with _TRAVA:
+        _exigir_alteracao()
+
+        _, posicao, atual = _localizar(cliente_id)
+
+        email_enviado = normalizar_email(dados.get("email"))
+        if email_enviado and email_enviado != atual["email"]:
+            raise ValueError(MSG_EMAIL_IMUTAVEL)
+
+        nome = _texto(dados.get("nome"))
+        esim = _texto(dados.get("esim"))
+        status = _texto(dados.get("status"))
+
+        if not nome or not esim:
+            raise ValueError(MSG_CAMPOS_VAZIOS)
+        if status not in STATUS_VALIDOS:
+            raise ValueError(MSG_STATUS_INVALIDO)
+
+        plano = _plano_dos_dados(dados, status)
+
+        novo = _copia(atual)
+        novo.update({"nome": nome, "esim": esim, "status": status})
+        if plano:
+            novo.update(plano)
+
+        return _substituir(posicao, novo)
+
+
+def _mudar_status(cliente_id, novo_status, mensagem_repetido):
+    with _TRAVA:
+        _exigir_alteracao()
+
+        _, posicao, atual = _localizar(cliente_id)
+        if atual["status"] == novo_status:
+            raise ValueError(mensagem_repetido)
+
+        novo = _copia(atual)
+        novo["status"] = novo_status
+        return _substituir(posicao, novo)
+
+
+def inativar_cliente(cliente_id):
+    """Exclusão lógica: muda SOMENTE o status. Continua nas duas Árvores B."""
+    return _mudar_status(cliente_id, "inativo", MSG_JA_INATIVO)
+
+
+def reativar_cliente(cliente_id):
+    """Muda SOMENTE o status para ativo, preservando todo o resto."""
+    return _mudar_status(cliente_id, "ativo", MSG_JA_ATIVO)
+
+
+def excluir_cliente_fisicamente(cliente_id, confirmacao, ciencia):
+    """
+    Exclusão física (zona de risco): só cliente inativo, com confirmação
+    (ID ou EXCLUIR) e ciência da irreversibilidade.
+
+    A posição vira None no clientes.json (nenhuma outra se desloca) e o ID
+    continua em ids_utilizados. As duas Árvores B são reconstruídas do zero;
+    se a reconstrução falhar, os dados ficam indisponíveis.
+    """
+    global _clientes, _arvore_id, _arvore_email, _erro_indisponivel
+
+    with _TRAVA:
+        _exigir_alteracao()
+
+        cid, posicao, atual = _localizar(cliente_id)
+
+        if atual["status"] != "inativo":
+            raise ValueError(MSG_EXCLUIR_ATIVO)
+
+        resposta = _texto(confirmacao)
+        if resposta != str(cid) and resposta.upper() != "EXCLUIR":
+            raise ValueError(MSG_CONFIRMACAO)
+
+        if not ciencia:
+            raise ValueError(MSG_CIENCIA)
+
+        nova_lista = list(_clientes)
+        nova_lista[posicao] = None
+        _gravar_clientes(nova_lista)
+        _clientes = nova_lista
+
+        try:
+            _arvore_id, _arvore_email = construir_indices(nova_lista)
+        except Exception as erro:
+            _arvore_id = ArvoreB(GRAU_MINIMO, "id")
+            _arvore_email = ArvoreB(GRAU_MINIMO, "email")
+            _erro_indisponivel = _motivo(erro)
 
 
 def contratar_plano(cliente_id, pacote_codigo, paises_ativos, inicio, fim):
     """
-    Grava a contratação no registro do cliente (mesma posição do arquivo).
-    Nenhuma chave das Árvores B muda. As validações ficam em regras_planos
-    e na rota, antes desta chamada.
+    Grava a contratação no registro (mesma posição; nenhuma chave de Árvore B
+    muda). Exige cliente ativo e plano válido: no Basic, 3 países distintos da
+    região do plano, consultados na Tabela Hash; Plus e Global guardam [].
     """
-    cliente, _ = buscar_cliente_por_id(cliente_id)
+    with _TRAVA:
+        _exigir_alteracao()
 
-    if cliente is None:
-        raise ValueError("Cliente não encontrado.")
-    if cliente["status"] != "ativo":
-        raise ValueError("Seu cadastro está inativo. Procure a administração da DGB SIM.")
+        _, posicao, atual = _localizar(cliente_id)
+        if atual["status"] != "ativo":
+            raise ValueError(MSG_CONTRATAR_INATIVO)
 
-    cliente["pacote"] = int(pacote_codigo)
-    cliente["paises_ativos"] = list(paises_ativos)
-    cliente["contratacao_inicio"] = inicio
-    cliente["contratacao_fim"] = fim
+        codigo, _, paises = _validar_plano(pacote_codigo, paises_ativos)
 
-    return cliente
+        novo = _copia(atual)
+        novo.update({
+            "pacote": codigo,
+            "paises_ativos": paises,
+            "contratacao_inicio": _texto_de_data(inicio),
+            "contratacao_fim": _texto_de_data(fim),
+        })
+        return _substituir(posicao, novo)
 
 
 # =============================================================================
-# ÁRVORE B (DEMONSTRATIVO)
+# ÁRVORE B — RESUMO E INSTRUMENTAÇÃO (nunca lançam erro)
 # =============================================================================
-#
-# A Árvore B guarda APENAS a chave (ID do cliente) e a posição do registro
-# no arquivo. Todos os demais dados ficam no arquivo clientes.json.
 
-ARVORE_B_DEMONSTRACAO = {
-    "grau": 12,                 # grau mínimo: até 23 chaves por nó
-    "clientes": 1000,
-    "altura": 2,                # raiz no nível 0
-    "nos": 64,
-    "divisoes": 61,             # divisões de nó durante a carga
-    "media_nos_visitados": 2.9,
-
-    # Exemplo de entradas do índice: chave + posição (nº do registro).
-    "indice": [
-        {"id": 53082, "posicao": 267},
-        {"id": 54042, "posicao": 216},
-        {"id": 58372, "posicao": 412},
-        {"id": 65880, "posicao": 946},
-        {"id": 71279, "posicao": 656},
-    ],
-
-    # Registro lido do arquivo na posição 412 (fora da árvore).
-    "registro": {
-        "posicao": 412,
-        "id": 58372,
-        "nome": "Maria Silva",
-        "email": "maria@email.com",
-        "esim": "ESIM-83921",
-        "pacote": 102,
-        "status": "ativo",
-    },
-
-    # Operações que descem a árvore até a chave.
-    "operacoes": [
-        {"operacao": "inserir", "chamadas": 3, "sucessos": 3, "falhas": 0,
-         "nos_media": 3.0, "tempo_us": 14.20},
-        {"operacao": "buscar", "chamadas": 14, "sucessos": 12, "falhas": 2,
-         "nos_media": 2.9, "tempo_us": 6.80},
-        {"operacao": "alterar", "chamadas": 2, "sucessos": 2, "falhas": 0,
-         "nos_media": 3.0, "tempo_us": 9.40},
-    ],
-
-    # Últimas operações (a mais recente primeiro).
-    "eventos": [
-        {"hora": "18:52:10", "operacao": "buscar", "id": 58372,
-         "sucesso": True, "resultado": "Encontrado", "nos": 3, "posicao": 412},
-        {"hora": "18:51:47", "operacao": "buscar", "id": 12345,
-         "sucesso": False, "resultado": "Não encontrado", "nos": 3, "posicao": None},
-        {"hora": "18:50:05", "operacao": "alterar", "id": 58372,
-         "sucesso": True, "resultado": "Sucesso", "nos": 3, "posicao": 412},
-        {"hora": "18:49:31", "operacao": "inserir", "id": 80001,
-         "sucesso": True, "resultado": "Sucesso", "nos": 3, "posicao": 1001},
-        {"hora": "18:48:12", "operacao": "buscar", "id": 71279,
-         "sucesso": True, "resultado": "Encontrado", "nos": 3, "posicao": 656},
-    ],
-
-    # Exemplo do enunciado: Árvore B (cliente) seguida da Tabela Hash (destino).
-    "consulta_integrada": {
-        "cliente_id": 58372,
-        "destino": "IT",
-        "pais": "Itália",
-        "tecnologia": "5G",
-    },
-}
+def _resumo_zerado(erro):
+    return {
+        "grau": GRAU_MINIMO,
+        "clientes": 0,
+        "altura": 0,
+        "nos": 0,
+        "media_nos_visitados": 0.0,
+        "divisoes": 0,
+        "disponivel": False,
+        "erro": erro,
+    }
 
 
 def resumo_arvore_b():
-    """Números demonstrativos da Árvore B (trocar por arvore_b.py na Etapa 2)."""
-    return ARVORE_B_DEMONSTRACAO
+    """Números da Árvore B de ID para o painel (dashboard)."""
+    if _erro_indisponivel is not None:
+        return _resumo_zerado(_mensagem_indisponivel())
+
+    try:
+        metricas = _arvore_id.metricas()
+        acumulado, estado = metricas["acumulado"], metricas["estado"]
+        buscas = acumulado["total_buscas"]
+        media = round(acumulado["nos_visitados_totais"] / buscas, 1) if buscas > 0 else 0.0
+
+        return {
+            "grau": GRAU_MINIMO,
+            "clientes": _arvore_id.total_chaves(),
+            "altura": _arvore_id.altura(),
+            "nos": _arvore_id.contar_nos(),
+            "media_nos_visitados": media,
+            "divisoes": estado["divisoes"],
+            "disponivel": True,
+        }
+    except Exception as erro:
+        return _resumo_zerado(f"Não foi possível ler as métricas da Árvore B: {erro}")
 
 
-# =============================================================================
-# INSTRUMENTAÇÃO POR ÁRVORE (DEMONSTRATIVO) — página /admin/arvore-b
-# =============================================================================
-#
-# Cada índice tem a sua própria instrumentação: a árvore de ID e a de e-mail
-# são estruturas separadas. Formato combinado com o backend definitivo:
-#
-#   ultima_busca: comparações, nós visitados e tempo (µs) da última busca
-#   acumulado:    comparações totais e total de buscas desde que o
-#                 servidor foi iniciado
-#   estado:       altura, divisões, total de chaves e o tempo da última
-#                 operação estrutural ("insercao" ou "reconstrucao"), em µs
-#
-# Nenhum valor é calculado: todos simulam o funcionamento esperado.
-
-INSTRUMENTACAO_ARVORES_DEMONSTRACAO = {
-    "id": {
-        "arvore": "id",
-        "nome": "Árvore B de ID",
-        "chave": "ID do cliente (inteiro)",
-        "icone": "bi-123",
-        "grau": 12,
-        "ultima_busca": {"comparacoes": 9, "nos_visitados": 3, "tempo_us": 6.80},
-        "acumulado": {"comparacoes_totais": 126, "total_buscas": 14},
+def _instrumentacao_zerada(arvore, erro=None):
+    dados = {
+        **NOMES_ARVORES[arvore],
+        "grau": GRAU_MINIMO,
+        "ultima_busca": {"comparacoes": 0, "nos_visitados": 0, "tempo_us": 0.0},
+        "acumulado": {"comparacoes_totais": 0, "total_buscas": 0},
         "estado": {
-            "altura": 2,
-            "divisoes": 61,
-            "total_chaves": 1000,
-            "ultima_operacao": "reconstrucao",
-            "tempo_execucao_us": 42600.0,
+            "altura": 0,
+            "divisoes": 0,
+            "total_chaves": 0,
+            "ultima_operacao": None,
+            "tempo_execucao_us": 0.0,
         },
-        "simulado": True,
-    },
-    "email": {
-        "arvore": "email",
-        "nome": "Árvore B de e-mail",
-        "chave": "e-mail normalizado (minúsculas, sem espaços)",
-        "icone": "bi-envelope",
-        "grau": 12,
-        "ultima_busca": {"comparacoes": 11, "nos_visitados": 3, "tempo_us": 8.15},
-        "acumulado": {"comparacoes_totais": 98, "total_buscas": 9},
-        "estado": {
-            "altura": 2,
-            "divisoes": 64,
-            "total_chaves": 1000,
-            "ultima_operacao": "insercao",
-            "tempo_execucao_us": 14.20,
-        },
-        "simulado": True,
-    },
-}
+        "simulado": False,
+    }
+    if erro is not None:
+        dados["erro"] = erro
+    return dados
 
 
 def instrumentacao_arvore_b(arvore):
     """
-    Instrumentação de UMA árvore: "id" ou "email" (qualquer outro valor -> "id").
-    Trocar pela instrumentação real de arvore_b.py quando ela existir.
+    Instrumentação de UMA árvore: "email" -> Árvore B de e-mail; qualquer
+    outro valor -> Árvore B de ID.
     """
-    return INSTRUMENTACAO_ARVORES_DEMONSTRACAO.get(
-        arvore, INSTRUMENTACAO_ARVORES_DEMONSTRACAO["id"]
-    )
+    nome = "email" if arvore == "email" else "id"
+
+    if _erro_indisponivel is not None:
+        return _instrumentacao_zerada(nome, _mensagem_indisponivel())
+
+    try:
+        objeto = _arvore_email if nome == "email" else _arvore_id
+        metricas = objeto.metricas()
+        estado = metricas["estado"]
+
+        return {
+            **NOMES_ARVORES[nome],
+            "grau": GRAU_MINIMO,
+            "ultima_busca": dict(metricas["ultima_busca"]),
+            "acumulado": {
+                "comparacoes_totais": metricas["acumulado"]["comparacoes_totais"],
+                "total_buscas": metricas["acumulado"]["total_buscas"],
+            },
+            "estado": {
+                "altura": estado["altura"],
+                "divisoes": estado["divisoes"],
+                "total_chaves": estado["total_chaves"],
+                "ultima_operacao": estado["ultima_operacao"],
+                "tempo_execucao_us": estado["tempo_execucao_us"],
+            },
+            "simulado": False,
+        }
+    except Exception as erro:
+        return _instrumentacao_zerada(
+            nome, f"Não foi possível ler as métricas da Árvore B: {erro}"
+        )
+
+
+# Carga automática: nunca deixa exceção escapar (o Flask precisa subir).
+inicializar()
