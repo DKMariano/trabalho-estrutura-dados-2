@@ -2,34 +2,37 @@
 DGB SIM — Etapa 02
 Backend de clientes: duas Árvores B (ID e e-mail) + persistência em JSON.
 
-Organização (decisões D1, D2 e D8):
-- arquivos/clientes.json é uma LISTA. O índice de cada registro é a
+Organização:
+- arquivos/clientes.json é uma lista. O índice de cada registro é a
   "posição no arquivo" que as Árvores B guardam (chave -> posição).
 - Uma posição com None é um cliente excluído fisicamente: as demais
   posições não se deslocam e o ID nunca é reutilizado
   (arquivos/controle_ids.json guarda proximo_id e ids_utilizados).
-- A Árvore B de ID tem chave inteira; a de e-mail tem chave str normalizada
-  (strip().lower()). Nenhuma delas guarda dados do cliente, só a posição.
-- Buscas por ID ou e-mail SEMPRE descem a Árvore B; nunca percorrem a lista.
+- A Árvore B de ID usa chave inteira; a de e-mail usa o e-mail
+  normalizado (strip().lower()). As árvores não guardam os dados do
+  cliente, apenas a posição.
+- Buscas por ID ou e-mail sempre passam pela Árvore B; a lista nunca é
+  percorrida.
 
-Regra de ouro das mutações (cadastrar, editar, inativar, reativar, excluir,
-contratar): VALIDAR -> PREPARAR a cópia -> GRAVAR em arquivo -> SÓ ENTÃO
-atualizar a memória e as árvores. Quem devolve cliente devolve uma CÓPIA.
+Ordem das alterações (cadastrar, editar, inativar, reativar, excluir,
+contratar): validar, preparar uma cópia, gravar no arquivo e só depois
+atualizar a memória e as árvores. As funções que devolvem um cliente
+devolvem uma cópia.
 
-Dois bloqueios (sem rollback, sem nova tentativa, sem restauração):
-- "Indisponível": os dados não puderam ser carregados/reconstruídos. Toda
-  função de clientes lança ErroIndices (exceto normalizar_email,
-  resumo_arvore_b e instrumentacao_arvore_b). As funcionalidades de países
-  (Etapa 1) continuam funcionando, porque o import nunca lança exceção.
-- "Falha de gravação": um OSError ao gravar bloqueia toda ALTERAÇÃO até
-  reiniciar a aplicação (ou chamar inicializar()); consultas continuam.
+Situações de bloqueio (sem rollback, nova tentativa ou restauração):
+- Indisponível: os dados não puderam ser carregados ou reconstruídos.
+  Todas as funções de clientes lançam ErroIndices, exceto
+  normalizar_email, resumo_arvore_b e instrumentacao_arvore_b. As
+  funcionalidades de países (Etapa 1) continuam funcionando, porque o
+  import nunca lança exceção.
+- Falha de gravação: um OSError ao gravar bloqueia novas alterações até
+  a aplicação ser reiniciada (ou inicializar() ser chamada); as
+  consultas continuam funcionando.
 
-Pacote no cadastro/edição (DC-08/DC-14): o app.py atual valida o pacote com
-request.form.getlist("paises") e o associa DEPOIS, por contratar_plano().
-Como request.form.to_dict() guarda só o primeiro país, cadastrar_cliente() e
-editar_cliente() só aplicam um pacote quando "dados" traz "pacote" E
-"paises_ativos" (lista; vazia para Plus/Global). Sem "paises_ativos", o campo
-"pacote" é ignorado aqui e o fluxo do app.py (contratar_plano) segue valendo.
+Pacote no cadastro e na edição: cadastrar_cliente() e editar_cliente()
+só gravam um pacote quando os dados trazem "pacote" e "paises_ativos"
+(lista vazia para Plus e Global). Caso contrário, o pacote é ignorado
+aqui e o app.py faz a associação depois, com contratar_plano().
 """
 
 import threading
@@ -549,7 +552,8 @@ def cadastrar_cliente(dados):
 
     Ordem de gravação: 1) controle_ids.json, 2) clientes.json (novo registro
     no FIM), 3) memória e as duas Árvores B. O eSIM não precisa ser único.
-    Sem plano contratado, pacote/países/datas ficam vazios (decisão P1).
+    Um pacote só é trocado nas condições descritas na docstring do módulo; 
+    nesse caso, a vigência é reiniciada.
     Devolve a cópia do cliente criado. Lança ValueError.
     """
     global _clientes, _controle_ids, _erro_indisponivel

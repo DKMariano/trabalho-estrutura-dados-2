@@ -76,6 +76,21 @@ class TestePersistenciaClientes(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "controle_ids.json com formato inválido."):
                 persistencia.carregar_controle_ids(self.controle)
 
+    def test_controle_regra_rigida_aceita_pela_equipe(self):
+        # Regra mais rígida aceita pela equipe: chaves extras e valores
+        # menores ou iguais a 0 também tornam o formato inválido.
+        invalidos = (
+            {"proximo_id": 4, "ids_utilizados": [1, 2, 3], "versao": 1},
+            {"proximo_id": 0, "ids_utilizados": []},
+            {"proximo_id": 4, "ids_utilizados": [0, 1, 2]},
+            {"proximo_id": 4, "ids_utilizados": [-1, 2, 3]},
+        )
+        for conteudo in invalidos:
+            with self.subTest(conteudo=conteudo):
+                self.controle.write_text(json.dumps(conteudo), encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "controle_ids.json com formato inválido."):
+                    persistencia.carregar_controle_ids(self.controle)
+
     def test_validar_controle_ids_sem_problemas(self):
         clientes = [{"id": 1}, None, {"id": 3}]
         controle = {"proximo_id": 4, "ids_utilizados": [1, 2, 3]}   # 2 = cliente excluído

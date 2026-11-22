@@ -6,11 +6,12 @@ Disciplina: Estrutura de Dados 2
 Equipe: Bruno Barreto, Dimitrius Khouri e Guilherme Lopes
 """
 
+import unicodedata
 from datetime import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 
-from  dados_site.dados_inicio import (BENEFICIOS, DEPOIMENTOS, ITENS_CARROSSEL, PASSOS, PLANOS, APRESENTACAO_PLANOS)
+from dados_site.dados_inicio import (BENEFICIOS, DEPOIMENTOS, ITENS_CARROSSEL, PASSOS, PLANOS, APRESENTACAO_PLANOS)
 
 from dados_site.dados_usuario import USUARIOS
 
@@ -22,7 +23,7 @@ from arquivos.persistencia_paises import salvar_paises
 from arquivos.persistencia_pacotes import carregar_pacotes
 from arquivos.persistencia_historico import (carregar_historico, registrar_consulta)
 
-#ATENÇÃO!!!!  CONFIRMAR COM A PROFESSORA SE DEVEMOS MANTER OS ARQUIVOS ASSIM
+# Regras da consulta integrada (Árvore B × Tabela Hash) e dos planos.
 from dados_site.servico_conectividade import consultar_cobertura_cliente, rota_demonstrativa
 from dados_site.regras_planos import (
     planos_compativeis, plano_vigente, calcular_fim, validar_paises_basic,
@@ -58,16 +59,14 @@ from dados_site.dados_etapa03 import (
     EVENTOS_REDE_DEMONSTRACAO,
 )
 
-
-
 app = Flask(__name__)
 app.secret_key = "dgb-sim-chave-de-desenvolvimento"
 
 # Carrega os registros persistidos na estrutura em memória.
 tabela_paises = carregar_paises()
 
-# Tecnologias oferecidas nos formulários de país (decisão D5). A Tabela Hash
-# aceita 2G a 5G e não pode ser alterada; a restrição fica só na tela.
+# Tecnologias oferecidas nos formulários de país.
+# A Tabela Hash aceita 2G a 5G e não pode ser alterada; a restrição fica só na tela.
 TECNOLOGIAS_OFERECIDAS = ["4G", "5G"]
 
 
@@ -78,25 +77,41 @@ def data_br(valor):
         return "—"
     return f"{valor[8:10]}/{valor[5:7]}/{valor[0:4]}"
 
+def paginar(itens, pagina, por_pagina):
+    """
+    Divide a lista em páginas e devolve a página pedida com os números
+    usados nas telas. Página fora do intervalo é ajustada para a mais próxima.
+    """
+    total = len(itens)
+    total_paginas = max(1, (total + por_pagina - 1) // por_pagina)
+    pagina = max(1, min(pagina, total_paginas))
+
+    inicio = (pagina - 1) * por_pagina
+    fim = inicio + por_pagina
+
+    return {
+        "itens": itens[inicio:fim],
+        "total": total,
+        "pagina": pagina,
+        "total_paginas": total_paginas,
+        "inicio": inicio + 1 if total else 0,
+        "fim": min(fim, total),
+    }
+
 
 @app.errorhandler(ErroIndices)
 def tratar_erro_indices(erro):
     flash(str(erro), "danger")
     return redirect(url_for("admin"))
 
-# Referência temporária para preservar as rotas ainda não adaptadas.
-# PAISES = tabela_paises.paises
-
-
-
 @app.route("/")
 def inicio():
     return render_template(
-        "inicio.html",  
-        itens_carrossel=ITENS_CARROSSEL, 
-        beneficios=BENEFICIOS, 
-        passos=PASSOS, 
-        depoimentos=DEPOIMENTOS, 
+        "inicio.html",
+        itens_carrossel=ITENS_CARROSSEL,
+        beneficios=BENEFICIOS,
+        passos=PASSOS,
+        depoimentos=DEPOIMENTOS,
         planos=PLANOS
     )
 
@@ -105,7 +120,7 @@ def inicio():
 # POST: enviar o formulário com o destino selecionado.
 @app.route("/paises", methods=["GET", "POST"])
 def paises():
-    """Exibe o formulário e consulta a cobertura por código na TabelaHash."""    
+    """Exibe o formulário e consulta a cobertura por código na TabelaHash."""
 
     # Começa sem resultado, pois o usuário pode apenas abrir a página.
     resultado = None
@@ -114,9 +129,9 @@ def paises():
 
     if request.method == "POST":
         # Obtém o código, remove espaços e converte para maiúsculas.
-        codigo_selecionado = request.form.get("destino", "").strip().upper()     
-        
-        # Busca o país na TabelaHash; retorna None se não encontrar.   
+        codigo_selecionado = request.form.get("destino", "").strip().upper()
+
+        # Busca o país na TabelaHash; retorna None se não encontrar.
         resultado = tabela_paises.buscar(codigo_selecionado)
 
         nao_encontrado = resultado is None
@@ -124,7 +139,6 @@ def paises():
     # Planos que podem cobrir o destino encontrado na Tabela Hash.
     compativeis = planos_compativeis(resultado, carregar_pacotes()) if resultado else []
 
-    # Envia os países, o resultado e a seleção ao template.
     return render_template(
         "paises.html",
         paises=sorted(tabela_paises.listar(), key=lambda item: item[1]["nome"]),
@@ -430,21 +444,14 @@ def cliente_conta(cliente_id):
         pagina_ativa="conta"
     )
 
-
-# =====================================
-# CONTRATAÇÃO DE PLANO
-# =====================================
-
 # =====================================
 # PAÍS DIGITADO PELO CLIENTE
 # =====================================
 
 def _sem_acento(texto):
-    """'Itália' -> 'italia' (para comparar o que o cliente digitou)."""
-    import unicodedata
+    """'Itália' -> 'italia' (para comparar o que o cliente digitou)."""  
     texto = unicodedata.normalize("NFD", texto)
     return "".join(c for c in texto if unicodedata.category(c) != "Mn").lower()
-
 
 def resolver_pais(texto):
     """
@@ -580,25 +587,18 @@ def historico_do_cliente(cliente_id, pagina, por_pagina=5):
 
     registros.reverse()
 
-    total = len(registros)
-
-    total_paginas = max(1, (total + por_pagina - 1) // por_pagina)
-    pagina = max(1, min(pagina, total_paginas))
-
-    inicio = (pagina - 1) * por_pagina
-    fim = inicio + por_pagina
+    paginacao = paginar(registros, pagina, por_pagina)
 
     return {
-        "registros": registros[inicio:fim],
-        "total": total,
-        "pagina": pagina,
-        "total_paginas": total_paginas,
-        "inicio": inicio + 1 if total else 0,
-        "fim": min(fim, total),
+        "registros": paginacao["itens"],
+        "total": paginacao["total"],
+        "pagina": paginacao["pagina"],
+        "total_paginas": paginacao["total_paginas"],
+        "inicio": paginacao["inicio"],
+        "fim": paginacao["fim"],
         "por_pagina": por_pagina,
         "opcoes_por_pagina": OPCOES_POR_PAGINA
     }
-
 
 @app.route(
     "/cliente/<int:cliente_id>/minha-conectividade",
@@ -683,9 +683,7 @@ def minha_conectividade(cliente_id):
         )
     )
 
-# =====================================
 # HISTÓRICO DO CLIENTE
-# =====================================
 
 @app.route("/cliente/<int:cliente_id>/historico")
 def cliente_historico(cliente_id):
@@ -728,9 +726,7 @@ def ler_por_pagina():
 
 @app.route("/admin/paises")
 def admin_paises():
-    # Pendente: integrar esta operação à classe TabelaHash.
-    # Feito
-    
+
     busca = request.args.get("busca", "").strip().lower()
     regiao = request.args.get("regiao", "").strip()
 
@@ -738,12 +734,9 @@ def admin_paises():
 
     por_pagina = ler_por_pagina()
 
-    # paises_filtrados = list(PAISES.items())
     paises_filtrados = sorted(tabela_paises.listar(), key=lambda item: item[1]["nome"])
 
-    # =====================================
     # BUSCA POR NOME OU CÓDIGO
-    # =====================================
 
     if busca:
         # 1) Descobre quais códigos (chaves) correspondem ao que foi digitado,
@@ -767,9 +760,7 @@ def admin_paises():
             tabela_paises.buscar(busca)
             paises_filtrados = []
 
-    # =====================================
     # FILTRO POR REGIÃO
-    # =====================================
 
     if regiao:
         paises_filtrados = [
@@ -778,70 +769,33 @@ def admin_paises():
             if pais["regiao"] == regiao
         ]
 
-    # =====================================
     # REGIÕES DISPONÍVEIS
-    # =====================================
 
     regioes = sorted({
         pais["regiao"]
         for _, pais in tabela_paises.listar()
     })
 
-    # =====================================
     # PAGINAÇÃO
-    # =====================================
 
-    total_filtrados = len(paises_filtrados)
-
-    total_paginas = max(
-        1,
-        (total_filtrados + por_pagina - 1) // por_pagina
-    )
-
-    if pagina < 1:
-        pagina = 1
-
-    if pagina > total_paginas:
-        pagina = total_paginas
-
-    inicio = (pagina - 1) * por_pagina
-    fim = inicio + por_pagina
-
-    paises_pagina = paises_filtrados[inicio:fim]
+    paginacao = paginar(paises_filtrados, pagina, por_pagina)
 
     return render_template(
         "admin/paises.html",
-        paises=paises_pagina,
+        paises=paginacao["itens"],
         total_paises=tabela_paises.tam(),
-        total_filtrados=total_filtrados,
+        total_filtrados=paginacao["total"],
         regioes=regioes,
         busca=busca,
         regiao_selecionada=regiao,
-        pagina=pagina,
-        total_paginas=total_paginas,
+        pagina=paginacao["pagina"],
+        total_paginas=paginacao["total_paginas"],
         por_pagina=por_pagina,
         opcoes_por_pagina=OPCOES_POR_PAGINA_ADMIN
     )
 
 @app.route("/admin/paises/cadastrar", methods=["GET", "POST"])
 def admin_cadastrar_pais():
-    # Pendente: integrar esta operação à classe TabelaHash.
-    #Feito
-
-    # regioes = [
-    #     "África",
-    #     "América",
-    #     "Ásia",
-    #     "Europa",
-    #     "Oceania"
-    # ]
-
-    # tecnologias = [
-    #     "2G",
-    #     "3G",
-    #     "4G",
-    #     "5G"
-    # ]
 
     mensagem = None
     dados_formulario = {}
@@ -861,27 +815,6 @@ def admin_cadastrar_pais():
             "operadora": operadora,
             "tecnologia": tecnologia
         }
-
-        # Validação dos campos obrigatórios.
-        # if not nome or not codigo or not regiao or not operadora or not tecnologia:
-        #     mensagem = "Preencha todos os campos obrigatórios."
-
-        # # O código utilizado como chave deve possuir duas letras.
-        # elif len(codigo) != 2 or not codigo.isalpha():
-        #     mensagem = "O código do país deve possuir exatamente 2 letras."
-
-        # # Impede que uma chave já existente seja sobrescrita.
-        # #elif codigo in PAISES:
-        # elif tabela_paises.buscar(codigo) is not None:
-        #     mensagem = "Já existe um país cadastrado com esse código."
-
-        # else:
-            # PAISES[codigo] = {
-            #     "nome": nome,
-            #     "regiao": regiao,
-            #     "operadora": operadora,
-            #     "tecnologia": tecnologia
-            # }
 
         try:
             tabela_paises.inserir(codigo, nome, regiao, operadora, tecnologia)
@@ -904,8 +837,6 @@ def admin_cadastrar_pais():
 
 @app.route("/admin/paises/<codigo>")
 def admin_visualizar_pais(codigo):
-    # Pendente: integrar esta operação à classe TabelaHash.
-    # Feito
 
     codigo = codigo.upper()
 
@@ -926,8 +857,6 @@ def admin_visualizar_pais(codigo):
     methods=["GET", "POST"]
 )
 def admin_editar_pais(codigo):
-    # Pendente: integrar esta operação à classe TabelaHash. 
-    # Feito
 
     codigo = codigo.upper()
 
@@ -941,12 +870,6 @@ def admin_editar_pais(codigo):
     dados = pais
 
     if request.method == "POST":
-
-        # pais["nome"] = request.form.get("nome", "").strip()
-        # pais["regiao"] = request.form.get("regiao", "").strip()
-        # pais["operadora"] = request.form.get("operadora", "").strip()
-        # pais["tecnologia"] = request.form.get("tecnologia", "").strip()
-
         nome = request.form.get("nome", "").strip()
         regiao = request.form.get("regiao", "").strip()
         operadora = request.form.get("operadora", "").strip()
@@ -981,8 +904,6 @@ def admin_excluir_pais(codigo):
 
     codigo = codigo.upper()
 
-    # if codigo in PAISES:
-    #     del PAISES[codigo]
     try:
         tabela_paises.remover(codigo)
         salvar_paises(tabela_paises)
@@ -1009,8 +930,7 @@ def admin_tabela_hash():
 
 @app.route("/admin/clientes", methods=["GET"])
 def admin_clientes():
-
-    # Catálogo existente de pacotes.
+    
     pacotes = carregar_pacotes()
 
     nomes_pacotes = {
@@ -1038,22 +958,9 @@ def admin_clientes():
     except (TypeError, ValueError):
         pagina = 1
 
-    total_paginas = max(
-        1,
-        (total_filtrado + por_pagina - 1) // por_pagina
-    )
-
-    pagina = max(1, min(pagina, total_paginas))
-
-    indice_inicial = (pagina - 1) * por_pagina
-    indice_final = indice_inicial + por_pagina
-
-    clientes_pagina = clientes[
-        indice_inicial:indice_final
-    ]
-
-    inicio = indice_inicial + 1 if total_filtrado else 0
-    fim = min(indice_final, total_filtrado)
+    paginacao = paginar(clientes, pagina, por_pagina)
+    pagina = paginacao["pagina"]
+    total_paginas = paginacao["total_paginas"]
 
     # Paginação compacta, mesmo com muitos clientes.
     numeros = sorted({
@@ -1078,7 +985,7 @@ def admin_clientes():
 
     return render_template(
         "admin/clientes.html",
-        clientes=clientes_pagina,
+        clientes=paginacao["itens"],
         nomes_pacotes=nomes_pacotes,
         pacotes=pacotes,
         status_selecionado=status,
@@ -1089,11 +996,11 @@ def admin_clientes():
         pagina=pagina,
         total_paginas=total_paginas,
         paginas_visiveis=paginas_visiveis,
-        inicio=inicio,
-        fim=fim,
+        fim=paginacao["fim"],
         por_pagina=por_pagina,
         opcoes_por_pagina=OPCOES_POR_PAGINA_ADMIN
     )
+
 # =====================================
 # ARVORE B CLIENTES
 # =====================================
@@ -1236,21 +1143,16 @@ def admin_cadastrar_cliente():
 @app.route("/admin/clientes/<int:cliente_id>")
 def admin_visualizar_cliente(cliente_id):
 
-    # Busca o cliente.
     cliente, _ = buscar_cliente_por_id(cliente_id)
 
-    # Verifica se o cliente existe.
     if cliente is None:
         flash("Cliente não encontrado.", "danger")
         return redirect(url_for("admin_clientes"))
 
-    # Carrega o catálogo de pacotes.
     pacotes = carregar_pacotes()
 
-    # Recupera o pacote associado.
     pacote = pacotes.get(str(cliente["pacote"]))
 
-    # Renderiza a tela.
     return render_template(
         "admin/visualizar_cliente.html",
         cliente=cliente,
@@ -1287,8 +1189,7 @@ def admin_editar_cliente(cliente_id):
         try:
             escolha = pacote_escolhido_pelo_admin(request.form, pacotes)
 
-            # O e-mail é chave da Árvore B de e-mail e não pode ser alterado
-            # (DC-07): o formulário não envia o campo e o valor atual é mantido.
+            # O e-mail é chave da Árvore B de e-mail e não pode ser alterado: o formulário não envia o campo e o valor atual é mantido.
             dados = request.form.to_dict()
             dados["email"] = cliente["email"]
 

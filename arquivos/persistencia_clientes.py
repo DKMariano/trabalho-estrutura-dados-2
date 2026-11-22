@@ -151,7 +151,15 @@ def validar_controle_ids(clientes, controle):
 
 
 def _formato_controle_valido(controle):
-    """Confere o formato estrutural do controle de IDs."""
+    """
+    Confere o formato estrutural do controle de IDs.
+
+    O formato só é válido se:
+    - o conteúdo for um dicionário com exatamente as chaves proximo_id
+      e ids_utilizados (chaves extras são recusadas);
+    - proximo_id for um inteiro (não bool) maior que 0;
+    - ids_utilizados for uma lista de inteiros (não bool) maiores que 0.
+    """
     # type(...) é usado intencionalmente para rejeitar subclasses inesperadas e, no caso dos inteiros, impedir que bool seja aceito como ID.
     if type(controle) is not dict:
         return False
