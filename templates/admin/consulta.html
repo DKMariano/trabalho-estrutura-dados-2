@@ -44,7 +44,7 @@
             <div class="col-12 col-md-6 col-xl-3">
                 <label for="cliente" class="form-label fw-semibold">Cliente (ID ou e-mail)</label>
                 <input type="text" id="cliente" name="cliente" class="form-control" required
-                       placeholder="Ex.: 58372 ou maria@email.com" value="{{ formulario.cliente }}">
+                       placeholder="Ex.: 1001 ou ines@ed2.com" value="{{ formulario.cliente }}">
             </div>
 
             <div class="col-12 col-md-6 col-xl-3">
@@ -360,7 +360,7 @@
 {{ aviso_simulacao(
     "modalSimulacao",
     "Dados simulados",
-    "A busca do cliente usa dados simulados até a Árvore B ser implementada (Etapa 2). O destino é consultado na Tabela Hash real. A rota é simulada e será calculada pelo grafo na Etapa 3.",
+    "A busca do cliente usa a Árvore B real e o destino é consultado na Tabela Hash real. Somente a rota é simulada: ela será calculada pelo grafo (Dijkstra) na Etapa 3.",
     2,
     "secondary"
 ) }}
