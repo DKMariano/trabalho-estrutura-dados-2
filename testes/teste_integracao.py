@@ -21,7 +21,7 @@ ROTAS_GET = [
     "/admin", "/admin/paises", "/admin/paises/IT", "/admin/paises/IT/editar",
     "/admin/paises/cadastrar", "/admin/tabela-hash",
     "/admin/clientes", "/admin/clientes?status=todos", "/admin/clientes?busca=1001",
-    "/admin/clientes?busca=cliente1002@example.com", "/admin/clientes?busca=Fictício",
+    "/admin/clientes?busca=beatriz.barbosa1002@example.com", "/admin/clientes?busca=Barbosa",
     "/admin/clientes?status=inativo&pacote=sem&pagina=3&por_pagina=20",
     "/admin/clientes/cadastrar", "/admin/clientes/1001", "/admin/clientes/1001/editar",
     "/admin/clientes/2", "/admin/arvore-b", "/admin/arvore-b?chave=1001",
@@ -82,13 +82,13 @@ class TesteLoginEBuscas(BaseIntegracao):
 
     def test_login_com_cliente_do_json(self):
         resposta = self.cliente.post("/login", data={
-            "tipo_acesso": "cliente", "usuario": "cliente1002@example.com", "senha": "123456"})
+            "tipo_acesso": "cliente", "usuario": "beatriz.barbosa1002@example.com", "senha": "123456"})
         self.assertEqual(resposta.status_code, 302)
         self.assertTrue(resposta.headers["Location"].endswith("/cliente/2"))
 
     def test_login_de_inativo_e_senha_errada(self):
         resposta = self.cliente.post("/login", data={
-            "tipo_acesso": "cliente", "usuario": "cliente1001@example.com", "senha": "123456"})
+            "tipo_acesso": "cliente", "usuario": "nicolas.cardoso1001@example.com", "senha": "123456"})
         self.assertIn("Seu cadastro está inativo", self.html(resposta))
 
         resposta = self.cliente.post("/login", data={
@@ -129,7 +129,7 @@ class TesteLoginEBuscas(BaseIntegracao):
         self.assertNotIn("A busca de clientes é simulada", html,
                          "Pendência P7: texto fixo obsoleto em templates/admin/consulta.html")
 
-        html = self.html(self.cliente.get("/admin/consulta?cliente=cliente1002@example.com&destino=BR"))
+        html = self.html(self.cliente.get("/admin/consulta?cliente=beatriz.barbosa1002@example.com&destino=BR"))
         self.assertIn("Árvore B de e-mail", html)
 
 
@@ -169,7 +169,7 @@ class TesteOperacoesCadastrais(BaseIntegracao):
             "nome": "Nome Editado", "esim": "ESIM-ED", "status": "ativo"})
         self.assertEqual(resposta.status_code, 302)
         self.assertEqual(self.lista_gravada()[1]["nome"], "Nome Editado")
-        self.assertEqual(self.lista_gravada()[1]["email"], "cliente1002@example.com")
+        self.assertEqual(self.lista_gravada()[1]["email"], "beatriz.barbosa1002@example.com")
 
         # Cliente ativo não pode ser excluído
         resposta = self.cliente.post("/admin/clientes/2/excluir",

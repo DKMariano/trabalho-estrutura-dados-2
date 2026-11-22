@@ -97,6 +97,17 @@ class TesteInsercaoEDivisao(unittest.TestCase):
                 arvore.inserir(chave, 1)
         self.assertEqual(arvore.total_chaves(), 1)
 
+    def test_carregar_lista_vazia(self):
+        # Decisão 7: lista vazia é aceita (todos os clientes excluídos)
+        arvore = ArvoreB(3, "id")
+        arvore.carregar([])
+        estado = arvore.metricas()["estado"]
+        self.assertEqual(arvore.total_chaves(), 0)
+        self.assertEqual(arvore.altura(), 0)
+        self.assertEqual(estado["ultima_operacao"], "reconstrucao")
+        self.assertEqual(arvore.validar(), [])
+        self.assertIsNone(arvore.buscar(1)[0])
+
     def test_carregar_so_com_arvore_vazia(self):
         arvore = ArvoreB(3, "id")
         arvore.carregar([(1, 0), (2, 1)])

@@ -12,14 +12,16 @@ Uso (executado manualmente, a partir da raiz do projeto):
 
 Regras (DC-05 e DC-12):
 - Clientes 1 a 1000 fictícios:
-    nome   "Cliente Fictício NNNN"
-    e-mail "cliente{1000+id}@example.com"
+    nome   nome e sobrenome de pessoa, sem repetição (ex.: "Ana Souza")
+    e-mail "{nome}.{sobrenome}{1000+id}@example.com", sem acentos
+           (ex.: "ana.souza1002@example.com"); o número garante e-mail único
     eSIM   "ESIM-0{1000+id}"
     senha  "123456" (fixa; DC-14)
     inativo    quando id % 11 == 1
     sem plano  quando id % 5 == 1
-  Plano, países do Basic e datas são sorteados com semente fixa:
-  rodar duas vezes gera exatamente os mesmos arquivos.
+  Plano, países do Basic e datas são sorteados com semente fixa, e os
+  nomes com outra semente fixa (SEMENTE_NOMES): rodar duas vezes gera
+  exatamente os mesmos arquivos.
 - Cliente 1001 (Ines): registro de demonstração, idêntico ao da carga original.
 
 Segurança (DUV-007, DUV-011, DC-02):
@@ -39,6 +41,7 @@ import json
 import os
 import random
 import sys
+import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -51,6 +54,7 @@ CAMINHO_PACOTES = PASTA / "pacotes.json"
 CAMINHO_PAISES = PASTA / "paises.json"
 
 SEMENTE = 2026                 # semente fixa: resultado reproduzível
+SEMENTE_NOMES = 2027           # semente própria dos nomes: não altera o sorteio dos planos
 QUANTIDADE_FICTICIOS = 1000    # clientes 1 a 1000 (o 1001 é a Ines)
 SENHA_DEMONSTRATIVA = "123456"
 
@@ -76,6 +80,29 @@ CLIENTE_INES = {
 }
 
 
+# Nomes fictícios. As combinações nome + sobrenome são embaralhadas com
+# SEMENTE_NOMES e as 1.000 primeiras são usadas, então nenhum nome se repete.
+PRIMEIROS_NOMES = (
+    "Ana", "Beatriz", "Camila", "Daniela", "Eduarda", "Fernanda", "Gabriela",
+    "Helena", "Isabela", "Juliana", "Larissa", "Luana", "Mariana", "Natália",
+    "Patrícia", "Rafaela", "Sofia", "Tatiane", "Valéria", "Yasmin",
+    "Alice", "Bruna", "Cecília", "Débora", "Lívia",
+    "André", "Bruno", "Carlos", "Diego", "Eduardo", "Felipe", "Gabriel",
+    "Henrique", "Igor", "João", "Lucas", "Marcelo", "Nicolas", "Otávio",
+    "Paulo", "Rafael", "Samuel", "Thiago", "Vinícius", "Wagner",
+    "Arthur", "Caio", "Davi", "Leonardo", "Mateus",
+)
+
+SOBRENOMES = (
+    "Almeida", "Alves", "Andrade", "Araújo", "Barbosa", "Barros", "Batista",
+    "Borges", "Cardoso", "Carvalho", "Castro", "Costa", "Cunha", "Dias",
+    "Duarte", "Fernandes", "Ferreira", "Freitas", "Gomes", "Lima",
+    "Lopes", "Machado", "Martins", "Melo", "Mendes", "Monteiro", "Moreira",
+    "Moura", "Nascimento", "Nunes", "Oliveira", "Pereira", "Pinto", "Ramos",
+    "Ribeiro", "Rocha", "Santos", "Silva", "Souza", "Teixeira",
+)
+
+
 # =============================================================================
 # LEITURA DOS CATÁLOGOS
 # =============================================================================
@@ -97,14 +124,31 @@ def paises_por_regiao(paises):
 # GERAÇÃO
 # =============================================================================
 
-def gerar_cliente(cliente_id, sorteio, pacotes, grupos):
+def sem_acentos(texto):
+    """Remove acentos e cedilha (ex.: "Natália" -> "Natalia")."""
+    decomposto = unicodedata.normalize("NFKD", texto)
+    return "".join(c for c in decomposto if not unicodedata.combining(c))
+
+
+def nomes_ficticios(quantidade):
+    """Devolve `quantidade` pares (primeiro nome, sobrenome) sem repetição."""
+    combinacoes = [(nome, sobrenome) for nome in PRIMEIROS_NOMES for sobrenome in SOBRENOMES]
+    if quantidade > len(combinacoes):
+        raise ValueError("Há menos combinações de nomes do que clientes a gerar.")
+    random.Random(SEMENTE_NOMES).shuffle(combinacoes)
+    return combinacoes[:quantidade]
+
+
+def gerar_cliente(cliente_id, sorteio, pacotes, grupos, nome_pessoa):
     """Monta um cliente fictício seguindo as regras da carga."""
     numero = 1000 + cliente_id
+    primeiro, sobrenome = nome_pessoa
+    usuario = sem_acentos(f"{primeiro}.{sobrenome}").lower()
 
     cliente = {
         "id": cliente_id,
-        "nome": f"Cliente Fictício {cliente_id:04d}",
-        "email": f"cliente{numero}@example.com",
+        "nome": f"{primeiro} {sobrenome}",
+        "email": f"{usuario}{numero}@example.com",
         "senha": SENHA_DEMONSTRATIVA,
         "esim": f"ESIM-{numero:05d}",
         "pacote": None,
@@ -140,9 +184,10 @@ def gerar_carga(pacotes, paises):
     """Devolve (clientes, controle) gerados em memória."""
     sorteio = random.Random(SEMENTE)
     grupos = paises_por_regiao(paises)
+    nomes = nomes_ficticios(QUANTIDADE_FICTICIOS)
 
     clientes = [
-        gerar_cliente(cliente_id, sorteio, pacotes, grupos)
+        gerar_cliente(cliente_id, sorteio, pacotes, grupos, nomes[cliente_id - 1])
         for cliente_id in range(1, QUANTIDADE_FICTICIOS + 1)
     ]
     clientes.append(dict(CLIENTE_INES))

@@ -95,7 +95,7 @@ class TesteCargaEBusca(BaseClientes):
         self.assertEqual(len(backend.listar_clientes(pacote="sem", status="todos")), 200)
         self.assertEqual([c["id"] for c in backend.listar_clientes(busca="1001")], [1001])
         self.assertEqual([c["id"] for c in backend.listar_clientes(busca="ines@ed2.com")], [1001])
-        self.assertEqual([c["id"] for c in backend.listar_clientes(busca="Fictício 0002")], [2])
+        self.assertEqual([c["id"] for c in backend.listar_clientes(busca="Beatriz Barbosa")], [2])
 
     def test_listagem_usa_a_arvore(self):
         with mock.patch.object(backend._arvore_id, "percorrer_em_ordem", return_value=[(2, 1)]) as percurso:
@@ -163,7 +163,7 @@ class TesteEdicaoEStatus(BaseClientes):
     def test_editar_nome_esim_status(self):
         cliente = backend.editar_cliente(2, {
             "nome": "Novo Nome", "esim": "ESIM-NOVO", "status": "inativo",
-            "email": "cliente1002@example.com",
+            "email": "beatriz.barbosa1002@example.com",
         })
         self.assertEqual((cliente["nome"], cliente["esim"], cliente["status"]),
                          ("Novo Nome", "ESIM-NOVO", "inativo"))
@@ -249,7 +249,7 @@ class TesteExclusaoFisica(BaseClientes):
         self.assertEqual(backend._arvore_id.validar(), [])
 
         self.assertIsNone(backend.buscar_cliente_por_id(1)[0])
-        self.assertIsNone(backend.buscar_cliente_por_email("cliente1001@example.com")[0])
+        self.assertIsNone(backend.buscar_cliente_por_email("nicolas.cardoso1001@example.com")[0])
         self.assertEqual(backend.buscar_cliente_por_id(2)[1]["posicao"], 1)
 
         # O ID continua no histórico e o próximo cadastro não o reutiliza

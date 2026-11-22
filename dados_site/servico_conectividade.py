@@ -21,7 +21,7 @@ cliente e qualquer destino.
 Não executa algoritmos de grafos.
 """
 
-# ATENÇÃO: trocar pelo módulo real quando a Árvore B estiver pronta.
+# Backend de clientes da Etapa 2: buscas pelas Árvores B (ID e e-mail).
 from dados_site.dados_etapa02 import buscar_cliente_por_id, buscar_cliente_por_email
 
 from dados_site.regras_planos import (

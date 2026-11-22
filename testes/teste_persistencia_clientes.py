@@ -103,6 +103,19 @@ class TestePersistenciaClientes(unittest.TestCase):
                 persistencia.salvar_clientes([{"id": 1}, {"id": 2}], self.clientes)
 
         self.assertEqual(self.clientes.read_bytes(), original)
+        # Decisão 8: o .tmp criado nesta tentativa é apagado
+        self.assertEqual(list(self.pasta.glob("*.tmp")), [])
+
+    def test_dado_nao_serializavel_nao_deixa_tmp(self):
+        # Decisão 8: qualquer falha (não só OSError) apaga o .tmp e relança o erro
+        persistencia.salvar_clientes([{"id": 1}], self.clientes)
+        original = self.clientes.read_bytes()
+
+        with self.assertRaises(TypeError):
+            persistencia.salvar_clientes([{"id": 2, "data": object()}], self.clientes)
+
+        self.assertEqual(self.clientes.read_bytes(), original)
+        self.assertEqual(list(self.pasta.glob("*.tmp")), [])
 
     def test_le_os_arquivos_reais_sem_alterar(self):
         clientes = persistencia.carregar_clientes()
