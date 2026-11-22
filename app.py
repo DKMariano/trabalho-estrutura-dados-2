@@ -1374,7 +1374,7 @@ def admin_reativar_cliente(cliente_id):
 )
 def admin_excluir_cliente(cliente_id):
     try:
-        # Simula: a posição do registro fica vazia e as chaves saem das Árvores B.
+        # A posição vira null no clientes.json e as duas Árvores B são reconstruídas.
         excluir_cliente_fisicamente(
             cliente_id,
             request.form.get("confirmacao", ""),
