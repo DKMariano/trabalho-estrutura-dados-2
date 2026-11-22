@@ -1,7 +1,7 @@
 # DGB SIM
 
 **Etapa 01 — Tabela Hash e Aplicação Web** (entrega prevista: 20/10/2026)  
-**Etapa 02 — Árvore B e clientes** (entrega prevista: 24/11/2026) — frontend pronto com dados simulados; Árvores B em implementação.
+**Etapa 02 — Árvore B e clientes** (entrega prevista: 24/11/2026) — Árvores B de ID e de e-mail integradas ao Flask, com testes de integração.
 
 Sistema Web desenvolvido como trabalho prático da disciplina de **Estruturas de Dados II**, utilizando **Python, Flask, HTML, CSS, Bootstrap e Jinja**.
 
@@ -261,9 +261,9 @@ Dados de cobertura
 
 ### Etapa 02 — Árvore B
 
-A segunda etapa adicionará o gerenciamento de clientes e eSIMs utilizando uma **Árvore B**.
+A segunda etapa adiciona o gerenciamento de clientes e eSIMs utilizando uma **Árvore B**.
 
-Fluxo previsto:
+Fluxo:
 
 ```text
 Cliente
@@ -277,18 +277,72 @@ Tabela Hash
 Cobertura
 ```
 
-### Etapa 02 — Estado atual do frontend
+### Etapa 02 — Implementação (Árvore B e clientes)
 
-As telas da Etapa 2 estão prontas e funcionam com **dados simulados** em `dados_site/dados_etapa02.py`. As funções desse arquivo têm a mesma interface que o backend definitivo deverá oferecer; na integração, basta trocar o import em `app.py` e em `dados_site/servico_conectividade.py`.
+A Etapa 2 está integrada de ponta a ponta: as telas administrativas e a área do cliente leem e gravam clientes por meio de **duas Árvores B reais**, e a página `/admin/arvore-b` mostra a instrumentação medida nessas árvores (comparações, nós visitados, altura, divisões e tempos), sem valores simulados.
 
-- **Árvores B (decisões D1 e D2):** duas árvores, por ID e por e-mail, que guardam somente **chave → posição** do registro. Os clientes ficarão em `arquivos/clientes.json`, organizado como **lista**; a posição na lista é a localização devolvida pela árvore. A exclusão física deixa a posição vazia (`null`), sem deslocar as demais.
-- **Consulta integrada:** Árvore B (cliente) → pacote do cliente → Tabela Hash (destino) → cobertura. As telas mostram qual estrutura respondeu cada passo e marcam como "Simulado" o que ainda não vem da Árvore B real.
-- **Status do cliente:** ativo/inativo. A inativação é o fluxo normal e preserva o registro e os índices; a exclusão física fica na "Zona de risco", só para cliente inativo.
-- **Planos:** 101/102 Europa, 201/202 América, 301 IlimitadoSIM e 401/402 Ásia (códigos do enunciado preservados). O Basic cobre exatamente 3 países da sua região, escolhidos na contratação.
-- **Países:** 21 países (7 por continente). Na interface, o campo `regiao` aparece com o rótulo "Continente"; os formulários oferecem as tecnologias 4G e 5G.
-- **Testes:** `python testes/teste_bloco1.py` a `teste_bloco5.py` (cliente de testes do Flask, sem gravar arquivos).
+#### Estrutura de Dados — Árvore B
+
+**Convenção adotada: grau mínimo `t = 3`** (convenção do livro do Cormen):
+
+| Propriedade | Valor com `t = 3` |
+|---|---|
+| Máximo de chaves por nó (`2t − 1`) | 5 |
+| Máximo de filhos por nó (`2t`) | 6 |
+| Mínimo de chaves em nó não-raiz (`t − 1`) | 2 |
+| Chaves na raiz | de 1 a 5 |
+| Folhas | todas na mesma profundidade |
+
+Em bibliografias que definem a árvore pela **ordem** (máximo de filhos), essa mesma árvore é a de **ordem 6**.
+
+**Índices duplos.** Há duas Árvores B independentes:
+
+- **Árvore B de ID:** chave inteira (`id` do cliente);
+- **Árvore B de e-mail:** chave normalizada (`strip().lower()`: minúsculas e sem espaços nas pontas).
+
+Cada nó guarda exclusivamente pares **`(chave, posicao)`**, em que `posicao` é o índice do cliente na **lista** de `arquivos/clientes.json`. Os dados completos do cliente nunca ficam dentro dos nós: a árvore localiza a posição e o registro é lido no arquivo, nessa posição. Buscas por ID ou e-mail sempre descem a árvore; nunca percorrem a lista.
+
+Módulos: `estruturas/arvore_b.py` (a estrutura), `arquivos/persistencia_clientes.py` (leitura e gravação dos JSON) e `dados_site/dados_etapa02.py` (regras de negócio, índices e instrumentação usados pelo `app.py`).
+
+<!-- INSERIR PARÁGRAFO DO INTEGRANTE 1 SOBRE BUSCA/INSERÇÃO/DIVISÃO -->
+
+#### Decisões de arquitetura e regras de negócio
+
+- **Exclusão física:** a posição do cliente em `clientes.json` vira `null`, preservando as demais posições (nenhuma se desloca). Em seguida, os **dois índices são reconstruídos por inteiro** a partir da lista. Não há remoção interna de nós (fusão/empréstimo). Só clientes **inativos** podem ser excluídos, com confirmação (ID ou `EXCLUIR`) e ciência de que a ação é irreversível. A inativação é o fluxo normal e preserva registro e índices.
+- **Geração de IDs:** contador sequencial persistente em `arquivos/controle_ids.json` (`proximo_id` e `ids_utilizados`). O histórico de IDs já atribuídos impede a **reutilização**, mesmo após exclusão física.
+- **E-mail imutável:** depois do cadastro, o e-mail não pode ser alterado, porque é a chave da Árvore B de e-mail. No formulário de edição ele aparece como campo somente leitura (`readonly`, não `disabled`) e, mesmo que outro valor seja enviado, o servidor mantém o e-mail cadastrado.
+- **eSIM editável:** o identificador do eSIM pode ser alterado e **não tem verificação de unicidade** nesta etapa.
+- **Sem sessão ou autenticação:** a área administrativa é demonstrativa (as rotas `/admin` não são protegidas) e o cliente é identificado pela URL `/cliente/<id>`. O acesso de cliente inativo é barrado no login e também ao digitar a URL.
+- **Ordem das gravações:** validar, preparar a cópia, gravar em arquivo e só então atualizar a memória e as árvores.
+- **Dados indisponíveis:** se `clientes.json` ou `controle_ids.json` estiverem ausentes, ilegíveis ou inconsistentes (por exemplo, e-mail duplicado), os índices não são montados. Qualquer rota de clientes lança `ErroIndices`, tratada em `app.py`: o usuário volta ao painel `/admin` com um aviso. As funcionalidades da Etapa 1 (países e Tabela Hash) continuam funcionando.
+- **Planos:** os códigos e franquias diferem **de propósito** da tabela ilustrativa do enunciado: 101/102 Europa, 201/202 América, 301 IlimitadoSIM (30 GB) e 401/402 Ásia. O Basic cobre exatamente 3 países da sua região, escolhidos na contratação.
+- **Consulta integrada:** Árvore B (cliente) → pacote do cliente → Tabela Hash (destino) → cobertura. O cliente padrão da tela é o `1001`.
+- **Países:** o campo `regiao` aparece na interface como "Continente"; os formulários oferecem as tecnologias 4G e 5G.
 
 O registro completo das decisões está em `documentos/DGB_SIM_Decisoes_Etapa2.docx`.
+
+#### Carga inicial de clientes
+
+`arquivos/gerar_clientes.py` gera a carga de demonstração (1.000 clientes fictícios mais o cliente 1001, com semente fixa, então o resultado é reproduzível). Ele recusa sobrescrever arquivos existentes sem `--forcar`:
+
+```bash
+python arquivos/gerar_clientes.py
+```
+
+Alguns acessos úteis para demonstração: o cliente `cliente1002@example.com` (senha `123456`) é ativo e vai para `/cliente/2`; clientes cujo ID deixa resto 1 na divisão por 11 são gerados **inativos**.
+
+#### Testes
+
+Execute a partir da raiz do projeto:
+
+```bash
+python -m unittest discover -s testes -t ..
+```
+
+- `testes/teste_clientes.py`: backend de clientes (`dados_etapa02.py`);
+- `testes/teste_integracao.py`: rotas Flask com `app.test_client()` (login, bloqueio de inativo, página da Árvore B, tratamento de `ErroIndices` e rotas da Etapa 1).
+
+Os testes trabalham em **cópias temporárias** de `clientes.json` e `controle_ids.json`; os arquivos reais não são alterados (os módulos conferem isso ao final).
 
 ### Etapa 03 — Grafos
 
@@ -437,9 +491,10 @@ Por esse motivo, algumas soluções relacionadas à autenticação, persistênci
 
 ### Próximas etapas
 
-- [x] Telas da Etapa 2 (clientes, contratação, consulta integrada, Árvore B) com dados simulados
-- [ ] Implementação da Árvore B (ID e e-mail, chave → posição)
-- [ ] `arquivos/clientes.json` com cerca de 1.000 clientes gerados automaticamente
+- [x] Telas da Etapa 2 (clientes, contratação, consulta integrada, Árvore B)
+- [x] Implementação da Árvore B (ID e e-mail, chave → posição)
+- [x] `arquivos/clientes.json` com cerca de 1.000 clientes gerados automaticamente
+- [x] Integração das Árvores B ao Flask e testes de integração
 - [ ] Implementação do grafo
 - [ ] BFS e DFS
 - [ ] Roteamento com Dijkstra

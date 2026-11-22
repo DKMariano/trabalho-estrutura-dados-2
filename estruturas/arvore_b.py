@@ -1,3 +1,4 @@
+
 """
 Etapa 2 — Árvore B
 
@@ -27,7 +28,7 @@ class ArvoreB:
             raise ValueError("O grau mínimo deve ser um inteiro maior ou igual a 2.")
 
         self.grau_minimo = grau_minimo
-        self.nome = nome
+        self.nome = nome 
         # Como a árvore começa vazia, sua raiz é uma folha.
         self.raiz = NoArvoreB(folha=True)
 
@@ -35,14 +36,14 @@ class ArvoreB:
         self._ultima_busca = {
             "comparacoes": 0,
             "nos_visitados": 0,
-            "tempo_us": 0.0
+            "tempo_us": 0.0 
         }
-
+        
         # Métricas acumuladas
         self._comparacoes_totais = 0
         self._total_buscas = 0
         self._nos_visitados_totais = 0
-
+        
         # Estado da árvore
         self._divisoes = 0
         self._ultima_operacao = None
@@ -69,7 +70,7 @@ class ArvoreB:
         else:
             raise ValueError("A chave deve ser um inteiro ou uma string.")
 
-
+        
 
     def _procurar(self, chave):
         """
@@ -188,7 +189,7 @@ class ArvoreB:
 
         posicao, _, _ = self._procurar(chave)
         return posicao is not None
-
+    
     def _estado_atual(self):
         """
         Calcula o estado atual da árvore.
@@ -246,9 +247,10 @@ class ArvoreB:
                 "ultima_operacao": self._ultima_operacao,
                 "tempo_execucao_us": self._tempo_execucao_us
             }
-        }
+        }               
 
     def _dividir_filho(self, pai, indice):
+        
         """
         Divide um filho cheio do nó pai.
 
@@ -259,7 +261,7 @@ class ArvoreB:
 
         t = self.grau_minimo
 
-        # Seleciona o filho cheio
+        # Seleciona o filho cheio 
         filho = pai.filhos[indice]
 
         # Cria um novo nó do mesmo tipo do filho.
@@ -299,12 +301,12 @@ class ArvoreB:
 
         Antes de descer para um filho cheio, divide-o.
         """
-
+  
         indice = len(no.chaves) - 1
 
         # Caso 1: o nó é uma filha
         if no.folha:
-
+            
             # Procura a posição de inserção.
             while indice >= 0 and chave < no.chaves[indice]:
                 indice -= 1
@@ -313,9 +315,9 @@ class ArvoreB:
             no.chaves.insert(indice + 1, chave)
             no.posicoes.insert(indice + 1, posicao)
             return
-
+ 
         # Caso 2: o nó é interno.
-        # Identifica o filho pelo qual devemos continuar.
+        # Identifica o filho pelo qual devemos continuar.       
         while indice >= 0 and chave < no.chaves[indice]:
             indice -= 1
 
@@ -338,11 +340,11 @@ class ArvoreB:
 
         Rejeita chaves duplicadas, posições inválidas
         e tipos de chave incompatíveis.
-        """
+        """           
 
         # Valida a chave utilizando o método existente
         self._validar_chave(chave)
-
+        
         # A posição corresponde ao índice na lista JSON.
         if type(posicao) is not int or posicao < 0:
             raise ValueError("A posição deve ser um inteiro maior ou igual a zero.")
@@ -379,7 +381,7 @@ class ArvoreB:
 
         # Insere na raiz, que agora não está cheia.
         self._inserir_nao_cheio(self.raiz, chave, posicao)
-
+        
         # Registra a operação concluída.
         fim_ns = time.perf_counter_ns()
 
@@ -406,7 +408,7 @@ class ArvoreB:
             # Função auxiliar recursiva que chama a si mesma para visitar os filhos
             for indice, chave in enumerate(no.chaves):
 
-                # Em nós internos, visita primeiro o filho à esquerda da chave atual.
+                # Em nós internos, visita primeiro o filho à esquerda da chave atual.     
                 if not no.folha:
                     percorrer_no(no.filhos[indice])
 
@@ -424,7 +426,7 @@ class ArvoreB:
 
         percorrer_no(self.raiz)
 
-        return pares_ordenados
+        return pares_ordenados    
 
     def altura(self):
 
@@ -459,14 +461,14 @@ class ArvoreB:
         altura = 1
 
         # Em uma Árvore B válida, todas as folhas estão a mesma profundidade.
-        #
+        # 
         # Por isso, basta seguir o primeiro filho de cada nó interno até alcançar uma folha.
         while not no_atual.folha:
             no_atual = no_atual.filhos[0]
 
             #Cada descida representa um novo nível
             altura += 1
-
+            
         # Ao alcançar uma folha, a quantidade de níveis percorridos corresponde à altura da árvore.
         return altura
 
@@ -482,7 +484,7 @@ class ArvoreB:
                  Retorna 0 quando a árvore está vazia.
 
         Não modifica a estrutura nem as métricas da árvore.
-        """
+        """   
         def contar(no):
             """
             Conta as chaves de um nó e de seus descendentes.
@@ -497,14 +499,14 @@ class ArvoreB:
             # Caso base: se não existe nó, não existem chaves para contabilizar.
             if no is None:
                 return 0
-
+            
             # Começamos contando as chaves do nó atual.
             total = len(no.chaves)
 
             # Se o nó for interno, contabiliza  as chaves dos seus descendentes.
             if not no.folha:
                 # Percorre todos os filhos do nó atual.
-                for filho in no.filhos:
+                for filho in no.filhos:                
 
                     # A chamada recursiva retorna a quantidade de chaves armazenadas na subárvore do filho.
                     # Somamos esse valor ao total acumulado.
@@ -512,7 +514,7 @@ class ArvoreB:
 
             # Retorna o total de chaves deste nó juntamente com as de seus descendentes.
             return total
-
+        
         # Inicia a contagem a partir da raiz.
         # Se a árvore estiver vazia, o resultado será zero.
         return contar(self.raiz)
@@ -618,7 +620,7 @@ class ArvoreB:
         # Armazena o tempo total, não apenas o tempo d aúltima inserção realizada
         self._tempo_execucao_us = tempo_total_us
 
-
+                
     def validar(self):
         """
         Verifica os invariantes estruturais da Árvore B.
@@ -747,7 +749,7 @@ class ArvoreB:
             # 3. VERIFICAÇÃO DA QUANTIDADE DE CHAVES
 
             if eh_raiz:
-                # A raiz é uma exceção à ocupação mínima.
+                # A raiz é uma exceção à ocupação mínima. 
                 # Ela pode possuir menos de t - 1 chaves.
                 # Uma árvore vazia possui uma raiz folha com zero chaves e nenhum filho.
                 if quantidade > limite_maximo:
@@ -845,7 +847,7 @@ class ArvoreB:
             # 7. VERIFICAÇÃO DOS LIMITES DA SUBÁRVORE
 
             # Além da ordenação dentro do nó, cada chave deve respeitar os limites dos ancestrais.
-
+  
             for chave in chaves:
 
                 # Verifica o limite inferior, quando existir.

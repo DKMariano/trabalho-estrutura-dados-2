@@ -46,6 +46,7 @@ from dados_site.dados_etapa02 import (
     proximo_id,
     resumo_arvore_b,
     instrumentacao_arvore_b,
+    ErroIndices,
 )
 
 #ATENÇÃO!!!! APAGAR ESSE IMPORT QUANDO CRIAR O GRAFO
@@ -77,6 +78,12 @@ def data_br(valor):
     if not valor:
         return "—"
     return f"{valor[8:10]}/{valor[5:7]}/{valor[0:4]}"
+
+
+@app.errorhandler(ErroIndices)
+def tratar_erro_indices(erro):
+    flash(str(erro), "danger")
+    return redirect(url_for("admin"))
 
 # Referência temporária para preservar as rotas ainda não adaptadas.
 # PAISES = tabela_paises.paises
@@ -1395,7 +1402,7 @@ def admin_consulta():
     A rota (Etapa 3) é apenas demonstrativa e não interfere no resultado.
     """
     formulario = {
-        "cliente": request.args.get("cliente", "58372").strip(),
+        "cliente": request.args.get("cliente", "1001").strip(),
         # Origem e destino aceitam o nome ou o código do país (ex.: Itália ou IT)
         "origem": resolver_pais(request.args.get("origem", "BR")),
         "destino": resolver_pais(request.args.get("destino", "IT"))
