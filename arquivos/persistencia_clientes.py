@@ -24,20 +24,17 @@ def carregar_clientes(caminho=CAMINHO_CLIENTES):
     Os valores null do JSON são convertidos em None pelo módulo json
     e permanecem nas mesmas posições da lista.
     """
-    # Path aceita tanto strings quanto objetos Path, facilitando o uso
-    # dos caminhos reais e também de pastas temporárias nos testes.
-    # O módulo json converte automaticamente null em None. Nenhuma posição
-    # é removida durante a leitura, preservando os índices das Árvores B.
+    # Path aceita tanto strings quanto objetos Path, facilitando o uso dos caminhos reais e também de pastas temporárias nos testes.
+    # O módulo json converte automaticamente null em None. Nenhuma posição é removida durante a leitura, preservando os índices das Árvores B.
     with Path(caminho).open("r", encoding="utf-8") as arquivo:
         clientes = json.load(arquivo)
 
-    # O backend depende de posições estáveis. Por isso, o arquivo deve
-    # representar uma lista, e não um dicionário indexado por ID.
+    # O backend depende de posições estáveis. Por isso, o arquivo deve representar uma lista, e não um dicionário indexado por ID.
     if type(clientes) is not list:
         raise ValueError("clientes.json não contém uma lista.")
 
-    # A lista é devolvida como foi persistida. Regras de cliente e construção
-    # dos índices pertencem a dados_site/dados_etapa02.py.
+    # A lista é devolvida como foi persistida. 
+    # Regras de cliente e construção dos índices pertencem a dados_site/dados_etapa02.py.
     return clientes
 
 
@@ -48,8 +45,7 @@ def salvar_clientes(clientes, caminho=CAMINHO_CLIENTES):
     A função apenas persiste os dados recebidos. As validações dos
     clientes pertencem ao backend de clientes.
     """
-    # A função não valida regras de cliente. A responsabilidade aqui é
-    # somente persistir exatamente o estado preparado pelo backend.
+    # A função não valida regras de cliente. A responsabilidade aqui é somente persistir exatamente o estado preparado pelo backend.
     _gravar_json(
         dados=clientes,
         caminho=caminho,
@@ -64,13 +60,11 @@ def carregar_controle_ids(caminho=CAMINHO_CONTROLE):
     Lança ValueError quando o JSON não segue o formato definido para
     proximo_id e ids_utilizados.
     """
-    # O controle é separado de clientes.json porque também registra IDs de
-    # clientes já excluídos, impedindo que identificadores sejam reutilizados.
+    # O controle é separado de clientes.json porque também registra IDs de clientes já excluídos, impedindo que identificadores sejam reutilizados.
     with Path(caminho).open("r", encoding="utf-8") as arquivo:
         controle = json.load(arquivo)
 
-    # A validação estrutural impede que o backend receba um contador sem
-    # histórico ou com tipos incompatíveis com os IDs dos clientes.
+    # A validação estrutural impede que o backend receba um contador sem histórico ou com tipos incompatíveis com os IDs dos clientes.
     if not _formato_controle_valido(controle):
         raise ValueError("controle_ids.json com formato inválido.")
 
@@ -84,8 +78,8 @@ def salvar_controle_ids(controle, caminho=CAMINHO_CONTROLE):
     A função apenas persiste os dados recebidos. A validação de
     coerência é feita separadamente por validar_controle_ids.
     """
-    # A coerência com clientes.json é verificada separadamente. Assim,
-    # salvar_controle_ids permanece uma operação simples de persistência.
+    # A coerência com clientes.json é verificada separadamente. 
+    # Assim, salvar_controle_ids permanece uma operação simples de persistência.
     _gravar_json(
         dados=controle,
         caminho=caminho,
@@ -114,11 +108,9 @@ def validar_controle_ids(clientes, controle):
     ids_utilizados = controle["ids_utilizados"]
     proximo_id = controle["proximo_id"]
 
-    # A validação só reúne mensagens. Nenhum contador, histórico ou registro
-    # é alterado, pois correção automática está fora do contrato da Etapa 2.
+    # A validação só reúne mensagens. Nenhum contador, histórico ou registro é alterado, pois correção automática está fora do contrato da Etapa 2.
 
-    # Dois conjuntos permitem detectar repetição em uma única passagem, sem
-    # modificar a ordem ou o conteúdo da lista persistida.
+    # Dois conjuntos permitem detectar repetição em uma única passagem, sem modificar a ordem ou o conteúdo da lista persistida.
     ids_repetidos = set()
     ids_encontrados = set()
 
@@ -128,16 +120,15 @@ def validar_controle_ids(clientes, controle):
         else:
             ids_encontrados.add(cliente_id)
 
-    # Uma mensagem é produzida para cada ID repetido, conforme o
-    # contrato da auditoria de integração.
+    # Uma mensagem é produzida para cada ID repetido, conforme o contrato da auditoria de integração.
     for cliente_id in sorted(ids_repetidos):
         problemas.append(
             f"ID {cliente_id} repetido em ids_utilizados."
         )
 
     for cliente in clientes:
-        # None representa uma exclusão física. A posição continua ocupada
-        # logicamente para não deslocar registros apontados pelas Árvores B.
+        # None representa uma exclusão física. 
+        # A posição continua ocupada logicamente para não deslocar registros apontados pelas Árvores B.
         if cliente is None:
             continue
 
@@ -161,8 +152,7 @@ def validar_controle_ids(clientes, controle):
 
 def _formato_controle_valido(controle):
     """Confere o formato estrutural do controle de IDs."""
-    # type(...) é usado intencionalmente para rejeitar subclasses inesperadas
-    # e, no caso dos inteiros, impedir que bool seja aceito como ID.
+    # type(...) é usado intencionalmente para rejeitar subclasses inesperadas e, no caso dos inteiros, impedir que bool seja aceito como ID.
     if type(controle) is not dict:
         return False
 
@@ -191,13 +181,13 @@ def _gravar_json(dados, caminho, indentacao):
 
     O temporário fica na mesma pasta do destino. Depois da escrita,
     flush e fsync garantem o envio ao disco antes de os.replace.
-    Em caso de OSError, o temporário é removido quando possível e o
-    erro original é relançado, sem nova tentativa ou restauração.
+    Em caso de erro (OSError ou dado que não pode ser convertido em JSON),
+    o temporário é removido quando possível e o erro original é relançado,
+    sem nova tentativa ou restauração (Decisão 8).
     """
     caminho = Path(caminho)
 
-    # A pasta é criada apenas quando necessário. Nos testes, isso facilita usar
-    # diretórios temporários sem preparar previamente toda a estrutura.
+    # A pasta é criada apenas quando necessário. Nos testes, isso facilita usar diretórios temporários sem preparar previamente toda a estrutura.
     caminho.parent.mkdir(parents=True, exist_ok=True)
     temporario = caminho.with_name(caminho.name + ".tmp")
 
@@ -212,18 +202,17 @@ def _gravar_json(dados, caminho, indentacao):
             # A quebra final mantém os JSON legíveis em editores e no Git.
             arquivo.write("\n")
 
-            # flush transfere o buffer do Python ao sistema operacional; fsync
-            # solicita que o conteúdo seja efetivamente sincronizado em disco.
+            # flush transfere o buffer do Python ao sistema operacional; 
+            # fsync solicita que o conteúdo seja efetivamente sincronizado em disco.
             arquivo.flush()
             os.fsync(arquivo.fileno())
 
-        # A substituição ocorre somente depois que o conteúdo completo
-        # foi escrito e sincronizado. O arquivo original não fica parcial.
+        # A substituição ocorre somente depois que o conteúdo completo foi escrito e sincronizado. O arquivo original não fica parcial.
         os.replace(temporario, caminho)
 
-    except OSError:
-        # Se a escrita ou a substituição falhar, somente o temporário criado
-        # nesta tentativa é removido. O arquivo original não é modificado.
+    except Exception:
+        # Qualquer falha (disco, permissão ou dado não serializável) remove somente o temporário criado nesta tentativa. 
+        # O arquivo original não é modificado, pois os.replace não chegou a ocorrer.
         try:
             temporario.unlink(missing_ok=True)
         except OSError:

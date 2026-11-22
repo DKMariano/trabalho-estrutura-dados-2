@@ -18,7 +18,7 @@ from dados_site.dados_usuario import USUARIOS
 from arquivos.persistencia_paises import carregar_paises
 from arquivos.persistencia_paises import salvar_paises
 
-#ATENÇÃO!!!!  CONFIRMAR COM A PROFESSORA SE OS ARQUIVOS JSON  DOS PACPOTES DEVEM SER CARREGADOS na TabelaHash.
+# Pacotes ficam em JSON (não são estrutura principal, conforme o enunciado).
 from arquivos.persistencia_pacotes import carregar_pacotes
 from arquivos.persistencia_historico import (carregar_historico, registrar_consulta)
 
@@ -29,8 +29,7 @@ from dados_site.regras_planos import (
     sugestoes_upgrade
 )
 
-#ATENÇÃO!!!! TROCAR ESTE IMPORT PELO MÓDULO REAL QUANDO A ÁRVORE B ESTIVER PRONTA.
-# As funções abaixo são SIMULADAS e têm a mesma interface do backend definitivo.
+# Backend de clientes da Etapa 2: Árvores B (ID e e-mail) + arquivos JSON.
 from dados_site.dados_etapa02 import (
     buscar_cliente_por_id,
     buscar_cliente_por_email,
@@ -199,7 +198,7 @@ def login():
 
 def autenticar_cliente(email, senha):
     """
-    Localiza o cliente pela Árvore B de e-mail (simulada por enquanto),
+    Localiza o cliente pela Árvore B de e-mail,
     confere a senha demonstrativa e o status.
     Devolve (cliente, None) ou (None, mensagem de erro).
     """
@@ -334,7 +333,7 @@ def criar_conta_cliente():
         formulario = request.form.to_dict()
 
         try:
-            # Simula: gravação no fim do arquivo e inserção nas duas Árvores B.
+            # Grava no fim do clientes.json e insere ID e e-mail nas duas Árvores B.
             cliente = criar_conta(formulario)
             return redirect(url_for("criar_conta_cliente", criado=cliente["id"],
                                     plano=plano or None, destino=destino or None))
@@ -1025,7 +1024,7 @@ def admin_clientes():
     status = request.args.get("status", "ativo").strip() or "ativo"
     pacote_filtro = request.args.get("pacote", "").strip()
 
-    # Percurso em ordem da Árvore B de ID (simulado por enquanto) + filtros.
+    # Percurso em ordem da Árvore B de ID + filtros.
     clientes = listar_clientes(busca=busca, pacote=pacote_filtro, status=status)
 
     total_clientes_cadastrados = total_clientes()
@@ -1205,10 +1204,10 @@ def admin_cadastrar_cliente():
         try:
             escolha = pacote_escolhido_pelo_admin(request.form, pacotes)
 
-            # O ID é gerado (maior ID + 1), como na criação de conta pelo cliente.
+            # O ID vem do controle_ids.json (proximo_id); IDs excluídos nunca são reutilizados
             formulario["id"] = str(proximo_id())
 
-            # Simula: grava no fim do arquivo e insere ID e e-mail nas Árvores B.
+            # Grava no fim do clientes.json e insere ID e e-mail nas Árvores B.
             cliente = cadastrar_cliente(formulario)
 
             # Pacote escolhido pelo admin: grava no registro (mesma posição).
@@ -1237,7 +1236,7 @@ def admin_cadastrar_cliente():
 @app.route("/admin/clientes/<int:cliente_id>")
 def admin_visualizar_cliente(cliente_id):
 
-    # Busca o cliente (Árvore B de ID; simulada por enquanto).
+    # Busca o cliente.
     cliente, _ = buscar_cliente_por_id(cliente_id)
 
     # Verifica se o cliente existe.
@@ -1293,7 +1292,7 @@ def admin_editar_cliente(cliente_id):
             dados = request.form.to_dict()
             dados["email"] = cliente["email"]
 
-            # Simula: altera o registro na mesma posição do arquivo.
+            # Altera o registro na mesma posição do clientes.json; as Árvores B não mudam.
             editar_cliente(cliente_id, dados)
 
             # Novo pacote escolhido: substitui o atual e reinicia a vigência.
