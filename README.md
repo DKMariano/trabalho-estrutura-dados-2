@@ -159,7 +159,7 @@ O administrador possui acesso às funcionalidades de gerenciamento, incluindo:
 ### Limitações conhecidas
 
 - O login valida usuário e senha, mas não cria sessão: as rotas `/admin` e `/cliente/<id>` não são protegidas e podem ser acessadas diretamente pela URL, e o botão "Sair" apenas leva de volta ao login (veja "Acesso de demonstração e rotas").
-- As credenciais de teste ficam em `dados_site/dados_usuario.py`, em texto simples.
+- As credenciais de teste ficam em `dados_site/credenciais_admin.py`, em texto simples.
 - A `secret_key` do Flask está fixa no código. Fora do contexto acadêmico, ela seria lida de uma variável de ambiente.
 - O conteúdo da página inicial (carrossel, benefícios, planos e depoimentos) vem de dados estáticos em `dados_site/dados_inicio.py`.
 - Países (Etapa 01): falhas de leitura ou escrita do `paises.json` não têm tratamento específico. Uma falha de gravação pode deixar o estado em memória diferente do arquivo, pois a alteração ocorre antes do salvamento. (Os clientes da Etapa 02 seguem regras próprias; veja a seção da Etapa 02.)
@@ -229,9 +229,9 @@ Com a carga atual, as duas árvores têm formas diferentes porque recebem as cha
 
 A inserção em ordem crescente deixa a maioria dos nós com o mínimo de 2 chaves, o que leva a árvore de ID à maior altura possível para 1.001 chaves com t = 3 (a menor seria 4). Na árvore de e-mail, as chaves chegam embaralhadas, os nós ficam mais cheios e a árvore fica mais baixa.
 
-### Backend de clientes (`dados_site/dados_etapa02.py`)
+### Backend de clientes (`servicos/clientes.py`)
 
-É a interface pública usada pelo `app.py` e pelo `servico_conectividade.py`. As assinaturas foram preservadas; o funcionamento interno passou de dados simulados para as Árvores B e os arquivos JSON.
+É a interface pública usada pelas rotas (`rotas/`) e pelo `servicos/conectividade.py`. As assinaturas foram preservadas; o funcionamento interno passou de dados simulados para as Árvores B e os arquivos JSON.
 
 - **Inicialização:** ao importar o módulo, `inicializar()` lê os dois JSON, ignora posições `null` (clientes excluídos), confere ID e e-mail de cada registro, procura duplicatas, constrói as duas árvores, confere os invariantes e se cada chave aponta para a posição correta, e valida o controle de IDs. Os índices só ficam disponíveis depois de todas as verificações.
 - **Cadastro** (administrativo e "Criar conta"): o ID vem do contador persistente; o registro entra no **final** da lista (posição = tamanho anterior) e as chaves são inseridas nas duas árvores. O administrador pode associar um pacote no cadastro e na edição (o Basic exige 3 países da região, validados na Tabela Hash).
@@ -306,7 +306,7 @@ Com sementes e data-base fixas (uma semente para planos e datas, outra para os n
 
 ### Testes automatizados
 
-A pasta `testes/` tem 71 testes (`unittest`), executados a partir da raiz do projeto:
+A pasta `testes/` tem 72 testes (`unittest`), executados a partir da raiz do projeto:
 
 ```bash
 python -m unittest discover -s testes -t .
@@ -360,7 +360,7 @@ O enunciado pede, para a Etapa 02, a "primeira implementação funcional do dife
 ```text
 trabalho-estrutura-dados-2/
 │
-├── app.py                        rotas Flask (interface)
+├── app.py                        cria o app, carrega a Tabela Hash e liga as rotas
 ├── README.md
 ├── LICENSE
 ├── .gitignore
@@ -381,15 +381,23 @@ trabalho-estrutura-dados-2/
 │   ├── controle_ids.json         contador e histórico de IDs
 │   └── historico.json            consultas demonstrativas (Etapa 03)
 │
-├── dados_site/
-│   ├── dados_etapa02.py          backend de clientes (Árvores B + JSON)
-│   ├── servico_conectividade.py  consulta integrada Árvore B × Tabela Hash
-│   ├── regras_planos.py          vigência, cobertura e regra do Basic
-│   ├── dados_etapa03.py          dados demonstrativos da Etapa 03
-│   ├── dados_inicio.py
-│   └── dados_usuario.py
+├── servicos/                     regras de negócio (usam as estruturas)
+│   ├── clientes.py               backend de clientes (Árvores B + JSON), login e contratação
+│   ├── planos.py                 vigência, cobertura, regra do Basic e pacote do admin
+│   ├── paises.py                 país digitado pelo nome ou pelo código (Tabela Hash)
+│   └── conectividade.py          consulta integrada Árvore B × Tabela Hash
 │
-├── testes/                       71 testes (unittest)
+├── rotas/                        rotas Flask (@app.route), separadas por área
+│   ├── publicas.py               início, cobertura, planos, login, compra e criar conta
+│   ├── cliente.py                área do cliente (/cliente/<id>/...)
+│   └── admin.py                  painel administrativo (/admin/...)
+│
+├── dados_site/                   dados fixos de tela
+│   ├── dados_inicio.py           conteúdo da página inicial
+│   ├── credenciais_admin.py      login de demonstração do administrador
+│   └── dados_etapa03.py          dados demonstrativos da Etapa 03
+│
+├── testes/                       72 testes (unittest)
 │   ├── apoio.py
 │   ├── teste_arvore_b.py
 │   ├── teste_persistencia_clientes.py
@@ -400,6 +408,21 @@ trabalho-estrutura-dados-2/
 ├── static/                       bootstrap/, css/, js/, img/
 └── templates/                    páginas públicas, admin/ e cliente/
 ```
+
+### Arquitetura
+
+A tela chama a rota, a rota chama o serviço, e o serviço usa a estrutura de dados e grava no arquivo.
+
+```text
+templates/  →  rotas/  →  servicos/  →  estruturas/      +  arquivos/
+  (tela)       (Flask)    (regras)     (Tabela Hash,       (JSON)
+                                         Árvore B)
+```
+
+- As rotas usam `@app.route` com os mesmos nomes de função (sem Blueprint), por isso os `url_for` dos templates não mudam.
+- Onde a rota usa a estrutura diretamente (por exemplo, `tabela_paises.buscar(codigo)` nas telas de países), a chamada fica na própria rota, para ficar visível na demonstração.
+- Um serviço só existe quando reúne regras; não há arquivos que apenas repassam chamadas para a Tabela Hash ou para a Árvore B.
+- O `app.py` importa as rotas na **última linha**, depois de criar `app` e `tabela_paises`, e as rotas importam esses dois do `app.py`. Se esse import subir para o topo, o servidor não inicia (importação circular).
 
 A estrutura poderá sofrer alterações durante a implementação das estruturas de dados previstas nas próximas etapas.
 
@@ -416,6 +439,8 @@ estruturas/
 arquivos/
 └── rede.json
 ```
+
+O `grafo.py` substituirá os dados demonstrativos de `dados_site/dados_etapa03.py`, que será removido junto com o import marcado com "ATENÇÃO" em `rotas/admin.py`. As regras de rota (roteamento multicritério e histórico) ficarão em `servicos/`.
 
 Essa separação permite que o Flask funcione principalmente como interface, enquanto as operações principais são executadas pelas estruturas de dados desenvolvidas pela equipe.
 
@@ -580,7 +605,7 @@ O login é feito na tela `/login`, escolhendo a aba correspondente ao perfil:
 | Cliente Ines (ID 1001) | `ines@ed2.com` | `123456` | `/cliente/1001` |
 | Demais clientes fictícios | `nome.sobrenome{1000+id}@example.com` (ex.: `beatriz.barbosa1002@example.com` → ID 2) | `123456` | `/cliente/<id>` |
 
-As credenciais do administrador estão em `dados_site/dados_usuario.py`; as dos clientes vêm de `arquivos/clientes.json` (senha demonstrativa fixa `123456`). Clientes inativos são recusados no login.
+As credenciais do administrador estão em `dados_site/credenciais_admin.py`; as dos clientes vêm de `arquivos/clientes.json` (senha demonstrativa fixa `123456`). Clientes inativos são recusados no login.
 
 ### Não há proteção de rotas
 
@@ -700,7 +725,7 @@ Por esse motivo, algumas soluções relacionadas à autenticação, persistênci
 - [x] Cadastro, busca, listagem, edição, inativação, exclusão física com reconstrução
 - [x] Integração cliente × país de destino (Árvore B × Tabela Hash)
 - [x] Instrumentação real, separada por árvore
-- [x] Testes automatizados (71)
+- [x] Testes automatizados (72)
 
 ### Próximas etapas
 

@@ -13393,10 +13393,14 @@
         "email": "ines@ed2.com",
         "senha": "123456",
         "esim": "ESIM-10001",
-        "pacote": 102,
-        "paises_ativos": [],
-        "contratacao_inicio": "2026-11-10T10:00:00-03:00",
-        "contratacao_fim": "2026-12-10T10:00:00-03:00",
+        "pacote": 201,
+        "paises_ativos": [
+            "BR",
+            "CR",
+            "MX"
+        ],
+        "contratacao_inicio": "2026-11-22T20:23:56-03:00",
+        "contratacao_fim": "2026-12-07T20:23:56-03:00",
         "status": "ativo"
     }
 ]

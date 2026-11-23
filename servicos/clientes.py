@@ -1,5 +1,5 @@
 """
-DGB SIM — Etapa 02
+DGB SIM — Serviço de clientes (Etapa 02)
 Backend de clientes: duas Árvores B (ID e e-mail) + persistência em JSON.
 
 Organização:
@@ -42,7 +42,7 @@ from arquivos import persistencia_clientes as persistencia
 from arquivos.persistencia_clientes import CAMINHO_CLIENTES, CAMINHO_CONTROLE
 from arquivos.persistencia_pacotes import carregar_pacotes
 from arquivos.persistencia_paises import carregar_paises
-from dados_site.regras_planos import calcular_fim, validar_paises_basic
+from servicos.planos import calcular_fim, plano_vigente, validar_paises_basic
 from estruturas.arvore_b import ArvoreB
 
 STATUS_VALIDOS = ("ativo", "inativo")
@@ -852,6 +852,65 @@ def instrumentacao_arvore_b(arvore):
             nome, f"Não foi possível ler as métricas da Árvore B: {erro}"
         )
 
+# =====================================================================
+# LOGIN E CONTRATAÇÃO (usados pelas rotas)
+# =====================================================================
+
+MENSAGEM_INATIVO = "Seu cadastro está inativo. Procure a administração da DGB SIM."
+
+
+def autenticar_cliente(email, senha):
+    """
+    Localiza o cliente pela Árvore B de e-mail,
+    confere a senha demonstrativa e o status.
+    Devolve (cliente, None) ou (None, mensagem de erro).
+    """
+    cliente, _ = buscar_cliente_por_email(email)
+
+    if cliente is None or cliente["senha"] != senha:
+        return None, "E-mail ou senha incorretos."
+
+    if cliente["status"] != "ativo":
+        return None, MENSAGEM_INATIVO
+
+    return cliente, None
+
+def processar_contratacao(cliente, plano, paises_marcados, confirmado, pacotes, tabela_paises):
+    """
+    Regras comuns à compra pública (/adquirir) e à área do cliente:
+    - Basic: exatamente 3 países da região do plano (validados na Tabela Hash);
+    - Plus e Global: sem países;
+    - Basic, ou troca de um plano ainda vigente, exige confirmação.
+    Grava a contratação e devolve (pacote, fim). Lança ValueError.
+    """
+    pacote = pacotes.get(plano)
+
+    if pacote is None:
+        raise ValueError("Selecione um plano válido.")
+
+    if pacote["categoria"] == "Basic":
+        paises = validar_paises_basic(pacote, paises_marcados, tabela_paises)
+    else:
+        paises = []   # Plus e Global não guardam países
+
+    if (pacote["categoria"] == "Basic" or plano_vigente(cliente)) and not confirmado:
+        raise ValueError("Confirme a contratação para continuar.")
+
+    inicio = datetime.now().astimezone().replace(microsecond=0)
+    fim = calcular_fim(inicio, pacote)
+
+    contratar_plano(cliente["id"], plano, paises, inicio.isoformat(), fim.isoformat())
+    return pacote, fim
+
+
+def associar_pacote(cliente_id, escolha):
+    """Grava o pacote no registro do cliente; a vigência começa agora."""
+    codigo, pacote, paises = escolha
+
+    inicio = datetime.now().astimezone().replace(microsecond=0)
+    fim = calcular_fim(inicio, pacote)
+
+    contratar_plano(cliente_id, codigo, paises, inicio.isoformat(), fim.isoformat())
 
 # Carga automática: nunca deixa exceção escapar (o Flask precisa subir).
 inicializar()

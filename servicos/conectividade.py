@@ -22,13 +22,9 @@ Não executa algoritmos de grafos.
 """
 
 # Backend de clientes da Etapa 2: buscas pelas Árvores B (ID e e-mail).
-from dados_site.dados_etapa02 import buscar_cliente_por_id, buscar_cliente_por_email
+from servicos.clientes import buscar_cliente_por_id, buscar_cliente_por_email
 
-from dados_site.regras_planos import (
-    plano_vigente,
-    cobertura_do_plano,
-    planos_compativeis,
-)
+from servicos.planos import plano_vigente, cobertura_do_plano, planos_compativeis
 
 from dados_site.dados_etapa03 import CENARIOS_DEMONSTRACAO
 

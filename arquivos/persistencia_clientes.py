@@ -34,7 +34,7 @@ def carregar_clientes(caminho=CAMINHO_CLIENTES):
         raise ValueError("clientes.json não contém uma lista.")
 
     # A lista é devolvida como foi persistida. 
-    # Regras de cliente e construção dos índices pertencem a dados_site/dados_etapa02.py.
+    # Regras de cliente e construção dos índices pertencem a servicos/clientes.py.
     return clientes
 
 
