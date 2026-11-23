@@ -16,6 +16,8 @@ Revisar com a tarefa B4 do backend (regras puras de cobertura).
 
 from datetime import datetime, timedelta
 
+from servicos.paises import nome_do_pais, paises_agrupados_por_regiao
+
 
 def plano_vigente(cliente, agora=None):
     """True se o cliente tem plano e a data de fim ainda não chegou."""
@@ -116,3 +118,48 @@ def sugestoes_upgrade(pacote, pais_destino, pacotes):
 
     # Plus antes do Global, para a leitura ficar em ordem de abrangência.
     return sorted(sugestoes, key=lambda plano: plano["categoria"] == "Global")
+
+
+# =====================================================================
+# PACOTE ESCOLHIDO PELO ADMIN (cadastro e edição de cliente)
+# =====================================================================
+
+def pacote_escolhido_pelo_admin(formulario, pacotes, tabela_paises):
+    """
+    Pacote escolhido pelo admin no cadastro ou na edição do cliente.
+
+    Devolve None quando nenhum pacote foi escolhido; senão, (código, pacote,
+    países). No Basic, valida os 3 países da região na Tabela Hash.
+    Lança ValueError. Chamada ANTES de gravar, para não salvar pela metade.
+    """
+    codigo = formulario.get("pacote", "").strip()
+    if not codigo:
+        return None
+
+    pacote = pacotes.get(codigo)
+    if pacote is None:
+        raise ValueError("Selecione um pacote válido.")
+
+    if formulario.get("status", "ativo").strip() != "ativo":
+        raise ValueError("Para associar um pacote, o status do cliente deve ser Ativo.")
+
+    if pacote["categoria"] == "Basic":
+        paises = validar_paises_basic(pacote, formulario.getlist("paises"), tabela_paises)
+    else:
+        paises = []   # Plus e Global não guardam países
+
+    return codigo, pacote, paises
+
+
+def paises_abrangidos(cliente, pacote, tabela_paises):
+    """Nomes dos países cobertos pelo pacote do cliente (Global: lista vazia)."""
+    if pacote is None:
+        return []
+
+    if pacote["categoria"] == "Basic":
+        return [nome_do_pais(codigo, tabela_paises) for codigo in cliente.get("paises_ativos", [])]
+
+    if pacote["categoria"] == "Plus":
+        return [nome for _, nome in paises_agrupados_por_regiao(tabela_paises).get(pacote["regiao"], [])]
+
+    return []

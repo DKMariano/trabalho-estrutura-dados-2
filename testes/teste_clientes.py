@@ -1,5 +1,5 @@
 """
-Testes do backend de clientes (dados_site/dados_etapa02.py) — Guia B10.
+Testes do backend de clientes (servicos/clientes.py).
 
 Cada teste copia clientes.json e controle_ids.json para uma pasta temporária
 e chama inicializar(caminho_clientes, caminho_controle). No final, volta a
@@ -10,8 +10,8 @@ import json
 import unittest
 from unittest import mock
 
-from dados_site import dados_etapa02 as backend
-from dados_site.dados_etapa02 import ErroIndices
+from servicos import clientes as backend
+from servicos.clientes import ErroIndices
 from testes import apoio
 
 HASHES_ANTES = None

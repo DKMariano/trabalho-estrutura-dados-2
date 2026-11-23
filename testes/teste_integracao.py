@@ -10,7 +10,7 @@ import json
 import unittest
 
 from app import app
-from dados_site import dados_etapa02 as backend
+from servicos import clientes as backend
 from testes import apoio
 
 HASHES_ANTES = None
