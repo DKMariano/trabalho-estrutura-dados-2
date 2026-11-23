@@ -1,4 +1,0 @@
-mkdir dados
-New-Item dados_inicio.py -ItemType File
-python -m flask --app app run --debug
-
